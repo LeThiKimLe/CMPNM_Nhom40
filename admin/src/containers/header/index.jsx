@@ -3,7 +3,7 @@ import { Row, Col, Breadcrumb, Input } from 'antd';
 import { Link, NavLink } from 'react-router-dom';
 import { SearchOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 function Header({ name, subname }) {
   return (
     <>

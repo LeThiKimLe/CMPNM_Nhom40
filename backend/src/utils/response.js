@@ -14,7 +14,7 @@ const messages = {
 
 const Response = (res, data, httpStatus = StatusCodes.OK) =>
   res.status(httpStatus).json({
-    data,
+    ...data,
     httpStatus,
   });
 const Get = (res, data) =>
@@ -43,8 +43,12 @@ const ServerError = (res, message) =>
 const Unauthenticated = (res, message) =>
   Response(res, { message }, StatusCodes.UNAUTHORIZED);
 // ko cho phep
-const Unauthorized = (res) =>
-  Response(res, { message: messages.UNAUTHORIZE }, StatusCodes.FORBIDDEN);
+const Unauthorized = (res, messageText) =>
+  Response(
+    res,
+    { message: !messageText ? messages.UNAUTHORIZE : messageText },
+    StatusCodes.FORBIDDEN
+  );
 
 const BadRequest = (res, message) =>
   Response(res, { message }, StatusCodes.BAD_REQUEST);

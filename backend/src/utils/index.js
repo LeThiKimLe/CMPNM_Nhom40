@@ -1,7 +1,8 @@
 const {
   createJWT,
   isTokenValid,
-  attachCookiesToResponse,
+  createAccessToken,
+  createRefreshToken,
 } = require('./token/jwt');
 const {
   Response,
@@ -16,7 +17,6 @@ const {
   ServerError,
   JWTExpiredError,
 } = require('./response');
-const logger = require('./logger');
 const sendVerificationEmail = require('./send_mail/send-verification-email');
 const sendResetPasswordEmail = require('./send_mail/send-reset-password');
 const createTokenUser = require('./token/create-token-data');
@@ -25,7 +25,8 @@ const createHash = require('./createHash');
 module.exports = {
   createJWT,
   isTokenValid,
-  attachCookiesToResponse,
+  createAccessToken,
+  createRefreshToken,
   Response,
   Get,
   Create,
@@ -37,7 +38,6 @@ module.exports = {
   NotFound,
   ServerError,
   JWTExpiredError,
-  logger,
   sendVerificationEmail,
   createTokenUser,
   sendResetPasswordEmail,

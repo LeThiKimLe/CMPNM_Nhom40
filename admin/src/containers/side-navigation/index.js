@@ -2,10 +2,10 @@ import { Menu } from 'antd';
 import { NavLink, useLocation } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToolbox, faCircleUser, faRightToBracket, faPeopleGroup, faBoxesStacked, faBagShopping } from '@fortawesome/free-solid-svg-icons';
+import { faToolbox, faCircleUser, faPeopleGroup, faBoxesStacked, faBagShopping } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
-  const { pathname } = useLocation();
-  const page = pathname.replace('/', '');
+  // const { pathname } = useLocation();
+  // const page = pathname.replace('/', '');
 
   return (
     <>
@@ -15,7 +15,7 @@ function Sidenav() {
       </div>
       <hr />
       <Menu theme="light" mode="inline">
-        <Menu.Item key="1">
+        <Menu.Item key="dashboard">
           <NavLink to="/dashboard">
             <span className="icon">
               <FontAwesomeIcon icon={faToolbox} className="fa-lg" />
@@ -23,7 +23,7 @@ function Sidenav() {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="products">
           <NavLink to="/products">
             <span className="icon">
               <FontAwesomeIcon icon={faBoxesStacked} className="fa-lg" />
@@ -31,7 +31,7 @@ function Sidenav() {
             <span className="label">Products</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="3">
+        <Menu.Item key="users">
           <NavLink to="/users">
             <span className="icon">
               <FontAwesomeIcon icon={faPeopleGroup} className="fa-lg" />
@@ -39,7 +39,7 @@ function Sidenav() {
             <span className="label">Users</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="4">
+        <Menu.Item key="orders">
           <NavLink to="/orders">
             <span className="icon">
               <FontAwesomeIcon icon={faBagShopping} className="fa-lg" />
@@ -50,7 +50,7 @@ function Sidenav() {
         <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="profile">
           <NavLink to="/profile">
             <span className="icon">
               <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />

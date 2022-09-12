@@ -1,64 +1,78 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
-const crypto = require('crypto');
-const { User, Token } = require('../../models');
+const { User } = require('../../models');
 const {
-  ServerError,
-  BadRequest,
   Unauthenticated,
-  Response,
   createTokenUser,
-  attachCookiesToResponse,
+  createAccessToken,
+  createRefreshToken,
+  Unauthorized,
+  Response,
 } = require('../../utils');
 /**
  * * ENDPOINT -- http://api/admin/signin
  * * SUPPORTED PARAMETERS -- email, password
  * * DESCRIPTION -- admin signin
  */
-
+const oneDay = 60 * 60 * 24;
 const signin = async (req, res) => {
-  // find user
-  User.findOne({ email: req.body.email }).exec(async (error, admin) => {
-    if (error) return ServerError(res, error.message);
-    if (!admin) return BadRequest(res, 'Admin does not exist');
+  const { cookies } = req;
 
-    const isAuthen = await admin.authenticate(req.body.password);
-    if (!isAuthen) return BadRequest(res, 'Wrong password');
+  const { email, password } = req.body;
+  const admin = await User.findOne({ email }).exec();
+  if (!admin) return Unauthenticated(res, 'Email is not registered account');
+  const isMatch = await admin.comparePassword(password);
+  if (!isMatch) {
+    return Unauthenticated(res, 'Password is not correct');
+  }
+  if (!admin.isVerified) {
+    return Unauthenticated(res, 'Account is not verified');
+  }
+  if (!admin.isAdmin) {
+    return Unauthorized(res, 'Account is not admin account');
+  }
+  const adminData = createTokenUser(admin);
 
-    if (!admin.isAdmin) {
-      return Unauthenticated(res);
+  const accessToken = createAccessToken(adminData);
+  const newRefreshToken = createRefreshToken(adminData);
+  // Changed to let keyword
+  let newRefreshTokenArray = !cookies?.jwt
+    ? admin.refreshToken
+    : admin.refreshToken.filter((rt) => rt !== cookies.jwt);
+  if (cookies?.jwt) {
+    /* 
+      Scenario added here: 
+          1) User logs in but never uses RT and does not logout 
+          2) RT is stolen
+          3) If 1 & 2, reuse detection is needed to clear all RTs when user logs in
+      */
+    const refreshToken = cookies.jwt;
+    const foundToken = await User.findOne({ refreshToken });
+    // Detected refresh token reuse!
+    if (!foundToken) {
+      // clear out ALL previous refresh tokens
+      newRefreshTokenArray = [];
     }
-    if (!admin.isVerified) {
-      return Unauthenticated(res, 'Account is not verified');
-    }
-    const tokenUser = createTokenUser(admin);
-    // create refreshToken
-    let refreshToken = '';
-    // check token
-    const existingToken = await Token.findOne({ user: admin._id });
-    if (existingToken) {
-      const { isValid } = existingToken;
-      if (!isValid) {
-        return Unauthenticated(res);
-      }
-      refreshToken = existingToken.refreshToken;
-      attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-      return Response(res, {
-        user: tokenUser,
-      });
-    }
-    refreshToken = crypto.randomBytes(40).toString('hex');
-    const userAgent = req.headers['user-agent'];
-    const { ip } = req;
-    const userToken = { refreshToken, ip, userAgent, user: admin._id };
-    await Token.create(userToken);
-    attachCookiesToResponse({ res, admin: tokenUser, refreshToken });
-    return Response(res, {
-      user: tokenUser,
-    });
+
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: false });
+  }
+  // Saving refreshToken with current user
+  admin.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+  await admin.save();
+  // Creates Secure Cookie with refresh token
+  res.cookie('jwt', newRefreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'None',
+    maxAge: new Date(Date.now() + oneDay),
+  });
+  return Response(res, {
+    adminData,
+    accessToken,
   });
 };
+
 module.exports = {
   signin,
 };

@@ -2,11 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 const { signin } = require('../../controllers/admin/admin.controller');
+const { showProfile } = require('../../controllers/user/user.controller');
 
 const { authenticateAdmin } = require('../../middlewares/authenticate');
-const screenRouter = require('./screen.routes');
 
 router.post('/signin', signin);
-
-router.use('/screens', authenticateAdmin, screenRouter);
+router.use('/show-profile', authenticateAdmin, showProfile);
 module.exports = router;

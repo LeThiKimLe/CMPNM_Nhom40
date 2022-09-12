@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema(
     passwordTokenExpirationDate: {
       type: Date,
     },
+    refreshToken: [String],
     contactNumner: { type: String },
     profilePicture: { type: String },
   },
@@ -59,7 +60,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods = {
-  async authenticate(password) {
+  async comparePassword(password) {
     const isAuthen = await bcrypt.compare(password, this.password);
     return isAuthen;
   },
