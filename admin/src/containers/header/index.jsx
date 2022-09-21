@@ -1,10 +1,11 @@
 import React from 'react';
 import { Row, Col, Breadcrumb, Input } from 'antd';
 import { Link, NavLink } from 'react-router-dom';
-import { SearchOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { faRightToBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import TokenService from '../../features/token/token.service';
 function Header({ name, subname }) {
+  const token = TokenService.getLocalAccessToken();
   return (
     <>
       <Row gutter={[24, 0]}>
@@ -22,11 +23,21 @@ function Header({ name, subname }) {
           </div>
         </Col>
         <Col span={24} md={18} className="header-control">
-          <Link to="/sign-in" className="btn-sign-in">
-            <FontAwesomeIcon icon={faRightToBracket} />
-            <span>Sign in</span>
+          {token ? (
+            <Link to="/sign-out" className="btn-sign-in">
+              <FontAwesomeIcon icon={faRightToBracket} />
+              <span>Sign out</span>
+            </Link>
+          ) : (
+            <Link to="/sign-in" className="btn-sign-in">
+              <FontAwesomeIcon icon={faRightToBracket} />
+              <span>Sign in</span>
+            </Link>
+          )}
+          <Link to="/profile" className="btn-sign-in">
+            <FontAwesomeIcon icon={faCircleUser} />
+            <span>Profile</span>
           </Link>
-          <Input className="header-search" placeholder="Type here..." prefix={<SearchOutlined />} />
         </Col>
       </Row>
     </>

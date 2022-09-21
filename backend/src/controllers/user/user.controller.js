@@ -4,6 +4,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const { User } = require('../../models');
 const {
   ServerError,
@@ -14,6 +15,9 @@ const {
   NotFound,
   sendResetPasswordEmail,
   createHash,
+  Unauthorized,
+  createTokenUser,
+  createAccessToken,
 } = require('../../utils');
 // time expire token send email
 const fiveMinutes = 60 * 60 * 5;
@@ -33,13 +37,12 @@ const signup = (req, res) => {
       lastName,
       email,
       password,
-      isAdmin: false,
       verificationToken,
       verifyDate,
     });
 
     if (userSize === 0) {
-      newUser.isAdmin = true;
+      newUser.roles = 'admin';
     }
     // eslint-disable-next-line no-shadow,
     newUser.save(async (error, user) => {
@@ -52,7 +55,7 @@ const signup = (req, res) => {
           origin,
         });
         // nhận toàn bộ dư liệu của user
-        return Create(res, 'Success! check email to verify account', {
+        return Create(res, {
           firstName,
           email,
         });
@@ -164,6 +167,47 @@ const showProfile = async (req, res) => {
   );
   return Response(res, { user });
 };
+
+const uploadImage = async (req, res) => {
+  try {
+    const fileStr = req.body.data;
+    return res
+      .json({
+        fileStr,
+      })
+      .status(200);
+  } catch (error) {
+    console.log(error);
+    return res
+      .json({
+        error,
+      })
+      .status(404);
+  }
+};
+const reSendRefreshToken = async (req, res) => {
+  const { userId } = req.body;
+  console.log('userId', userId);
+  const foundUser = await User.findById(userId);
+  console.log('foundUser', foundUser);
+  if (foundUser) {
+    jwt.verify(
+      foundUser.refreshToken,
+      process.env.FRESH_TOKEN_SECRET,
+      // eslint-disable-next-line no-unused-vars
+      async (err, decoded) => {
+        if (err) return Unauthorized(res); // Forbidden
+        // return new access-token
+        const adminData = createTokenUser(foundUser);
+        const accessToken = createAccessToken(adminData);
+        return Response(res, {
+          adminData,
+          accessToken,
+        });
+      }
+    );
+  }
+};
 module.exports = {
   signup,
   verifyEmail,
@@ -171,4 +215,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   showProfile,
+  uploadImage,
+  reSendRefreshToken,
 };

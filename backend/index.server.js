@@ -17,14 +17,15 @@ const connect = require('./src/db/connect');
 
 const urlMongoose = process.env.MONGO_CONNECTION;
 
-const userRouter = require('./src/routes/user.route');
+const userRouter = require('./src/routes/user.routes');
 const adminRouter = require('./src/routes/admin/admin.routes');
+const categoryRouter = require('./src/routes/category.routes');
 
 app.use(cookieParser());
 app.use(helmet());
 app.use(logger);
 // built-in middleware for json
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
 app.use(credentials);
@@ -32,10 +33,11 @@ app.use(credentials);
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-app.use('/api', userRouter);
+app.use('/api/category', categoryRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api', userRouter);
 
 app.use(errorHandler);
 

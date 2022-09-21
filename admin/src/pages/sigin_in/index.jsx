@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import HeaderSignIn from './components/header';
 import FooterSignIn from './components/footer';
-import { signinAPIThunk } from '../../features/auth/auth.service';
+import authThunk from '../../features/auth/auth.service';
 import { authActions } from '../../features/auth/auth.slice';
 const { Title } = Typography;
 const { Content } = Layout;
@@ -21,7 +21,7 @@ function SignIn() {
       email,
       password,
     };
-    dispatch(signinAPIThunk(userData));
+    dispatch(authThunk.signinAPI(userData));
   };
 
   useEffect(() => {

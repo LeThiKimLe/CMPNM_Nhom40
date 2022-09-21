@@ -1,9 +1,13 @@
 const { Unauthorized } = require('../utils');
 
 // eslint-disable-next-line consistent-return
-exports.adminMiddleware = (req, res, next) => {
-  if (!req.user.isAdmin) {
+const adminCheckRole = (req, res, next) => {
+  if (req.user.roles !== 'admin') {
     return Unauthorized(res, 'Admin access denied');
   }
   next();
+};
+
+module.exports = {
+  adminCheckRole,
 };

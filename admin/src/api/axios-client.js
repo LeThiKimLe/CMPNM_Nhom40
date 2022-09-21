@@ -1,28 +1,50 @@
 import axios from 'axios';
-import { store } from '../app/store';
+import TokenService from '../features/token/token.service';
 const API_URL = 'http://localhost:3000/api';
+const token = TokenService.getLocalAccessToken();
 const axiosClient = axios.create({
   baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: token ? `Bearer ${token}` : '',
+  },
 });
-// Add a request interceptor
-axios.interceptors.request.use((req) => {
-  const { auth } = store.getState();
-  if (auth.token) {
-    req.headers.Authorization = `Bearer ${auth.token}`;
+axiosClient.interceptors.request.use((req) => {
+  const token = TokenService.getLocalAccessToken();
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
   }
   return req;
 });
 
 // Add a response interceptor
-axios.interceptors.response.use(
-  function (response) {
+axiosClient.interceptors.response.use(
+  async (response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response;
   },
-  function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
+  async function (error) {
+    const originalConfig = error.config;
+    if (originalConfig.url !== '/admin/signin' && error.response) {
+      // Access Token was expired
+      if (error.response.status === 401 && !originalConfig._retry) {
+        originalConfig._retry = true;
+        try {
+          const rs = await axiosClient.post('/admin/refresh-token', {
+            userId: TokenService.getUser().userId,
+          });
+
+          const { accessToken } = rs.data;
+          TokenService.updateLocalAccessToken(accessToken);
+
+          return axiosClient(originalConfig);
+        } catch (_error) {
+          return Promise.reject(_error);
+        }
+      }
+    }
+
     return Promise.reject(error);
   }
 );

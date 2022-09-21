@@ -28,8 +28,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
-      type: Boolean,
+    roles: {
+      type: String,
+      enum: ['user', 'admin', 'shipper'],
+      default: 'user',
     },
     verificationToken: {
       type: String,
@@ -42,17 +44,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
     verified: Date,
-    role_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Role',
-    },
     passwordToken: {
       type: String,
     },
     passwordTokenExpirationDate: {
       type: Date,
     },
-    refreshToken: [String],
+    refreshToken: {
+      type: String,
+    },
     contactNumner: { type: String },
     profilePicture: { type: String },
   },

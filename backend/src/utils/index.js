@@ -20,7 +20,7 @@ const {
 const sendVerificationEmail = require('./send_mail/send-verification-email');
 const sendResetPasswordEmail = require('./send_mail/send-reset-password');
 const createTokenUser = require('./token/create-token-data');
-const createHash = require('./createHash');
+const createHash = require('./create-hash');
 
 module.exports = {
   createJWT,

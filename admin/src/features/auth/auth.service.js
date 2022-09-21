@@ -1,8 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axios-client';
-const signinAPIThunk = createAsyncThunk('admin/signin', async (userData, thunkAPI) => {
+import TokenService from '../token/token.service';
+const signinAPI = createAsyncThunk('admin/signin', async (userData, thunkAPI) => {
   try {
-    const response = await axiosClient.post('/admin/signin', userData, { withCredentials: true });
+    const response = await axiosClient.post('/admin/signin', userData);
+    localStorage.setItem('accesstoken', response.data.accessToken);
+    TokenService.setUser(response.data.adminData);
     return response.data;
   } catch (error) {
     const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
@@ -10,7 +13,7 @@ const signinAPIThunk = createAsyncThunk('admin/signin', async (userData, thunkAP
   }
 });
 
-const showProfileAPIThunk = createAsyncThunk('admin/show-profile', async (thunkAPI) => {
+const showProfileAPI = createAsyncThunk('admin/show-profile', async (thunkAPI) => {
   try {
     const response = await axiosClient.get('/admin/refresh-token', {
       withCredentials: true,
@@ -21,4 +24,9 @@ const showProfileAPIThunk = createAsyncThunk('admin/show-profile', async (thunkA
     return thunkAPI.rejectWithValue(message);
   }
 });
-export { signinAPIThunk, showProfileAPIThunk };
+const authThunk = {
+  signinAPI,
+  showProfileAPI,
+};
+
+export default authThunk;
