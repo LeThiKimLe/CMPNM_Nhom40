@@ -44,7 +44,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   connect(urlMongoose);
-  console.log(`App listen at http://localhost:${PORT}`);
+  console.log(`App listen at https://localhost:${PORT}`);
 });
 
 module.exports = app;

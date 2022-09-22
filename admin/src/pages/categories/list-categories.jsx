@@ -1,4 +1,5 @@
-import { Row, Col, Card, Table, Switch, Avatar, Typography, Input, Button, notification, Form, Spin } from 'antd';
+/* eslint-disable array-callback-return */
+import { Row, Col, Card, Table, Switch, Image, Typography, Input, Button, notification, Form, Spin, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -7,6 +8,7 @@ import face2 from '../../assets/images/face-2.jpg';
 import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
+import EditCategoryModal from './components/modal-edit';
 const { Search } = Input;
 const { Title } = Typography;
 
@@ -16,12 +18,16 @@ function ListCategories() {
   // modal visible
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
-  const [visible, setVisible] = useState(false);
-  const [data, setData] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [form] = Form.useForm();
 
-  const { loading, success } = category;
+  const { loading, success, get } = category;
+  const [visibleAdd, setVisibleAdd] = useState(false);
+  const [visibleEdit, setVisibleEdit] = useState(false);
+  const [keyEdit, setKeyEdit] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  const [data, setData] = useState([]);
+
+  const [formAdd] = Form.useForm();
+  const [formEdit] = Form.useForm();
 
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -33,27 +39,7 @@ function ListCategories() {
       reader.onerror = (error) => reject(error);
     });
 
-  const onChange = (checked) => {
-    console.log(`switch to ${checked}`);
-  };
-
-  // table code start
-  const columns = [
-    {
-      title: 'NAME',
-      dataIndex: 'name',
-      key: 'name',
-      width: '45%',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['descend'],
-    },
-    {
-      title: 'STATUS',
-      key: 'status',
-      dataIndex: 'status',
-    },
-  ];
-  const onFinishHandle = async (values) => {
+  const onFinishAddHandle = async (values) => {
     const { name, image } = values;
     const { fileList } = image;
     const picture = await getBase64(fileList[0].originFileObj);
@@ -64,47 +50,136 @@ function ListCategories() {
     dispatch(categoryThunk.createAPI(categoryData))
       .then(() => {
         notification.success({ message: 'Category created successfully' });
-        form.resetFields();
+        formAdd.resetFields();
+        dispatch(categoryActions.reset());
         setTimeout(() => {
-          setVisible(false);
+          setVisibleAdd(false);
+          dispatch(categoryThunk.getAllAPI());
         }, 1000);
       })
       .catch(() => {
         notification.success({ message: 'Create Category error' });
       });
   };
-  const onClose = () => setVisible(false);
-  // const data = [
-  //   {
-  //     key: '1',
-  //     name: (
-  //       <>
-  //         <Avatar.Group>
-  //           <Avatar className="shape-avatar" shape="square" size={40} src={face2}></Avatar>
-  //           <div className="avatar-info">
-  //             <Title level={5}>Tiep</Title>
-  //           </div>
-  //         </Avatar.Group>{' '}
-  //       </>
-  //     ),
-
-  //     status: (
-  //       <>
-  //         <div className="ant-employed">
-  //           <Switch defaultChecked onChange={onChange} />
-  //           <a href="#pablo">Edit</a>
-  //         </div>
-  //       </>
-  //     ),
-  //   },
-  // ];
+  const onFinishEditHandle = () => {};
+  const onCloseAdd = () => {
+    setVisibleAdd(false);
+  };
+  const onChangeUpload = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+  const handleCancel = () => {
+    formAdd.resetFields();
+    setVisibleAdd(false);
+  };
+  const renderDataInEdit = (editKey) => {
+    let categoryEdit;
+    category.categories.map((category, index) => {
+      if (index === editKey) {
+        categoryEdit = category;
+      }
+    });
+    const { name, categoryImage, isActive } = categoryEdit;
+    formEdit.setFieldsValue({
+      name,
+      categoryImage,
+      checked: isActive,
+    });
+  };
+  // table code start
+  const columns = [
+    {
+      title: 'LOGO',
+      dataIndex: 'logo',
+      key: 'logo',
+      width: '25%',
+    },
+    {
+      title: 'NAME',
+      dataIndex: 'name',
+      key: 'name',
+      width: '40%',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['descend'],
+    },
+    {
+      title: 'STATUS',
+      key: 'status',
+      dataIndex: 'status',
+    },
+    {
+      title: 'ACTIONS',
+      key: 'action',
+      render: (record) => (
+        <div style={{ textAlign: 'center' }}>
+          <Space size="middle">
+            <Button
+              onClick={() => {
+                setVisibleEdit(true);
+                setKeyEdit(record.key);
+                renderDataInEdit(record.key);
+              }}
+              style={{ background: '#40E0D0', color: 'white' }}
+            >
+              Edit
+            </Button>
+            <Button style={{ background: '#FF6347', color: 'white' }}>Delete</Button>
+          </Space>
+        </div>
+      ),
+    },
+  ];
   useEffect(() => {
     dispatch(categoryThunk.getAllAPI());
   }, [dispatch]);
-  function renderTable() {}
+
+  useEffect(() => {
+    if (category.categories.length > 0) {
+      setData(
+        category.categories.map((category, index) => {
+          return {
+            key: index,
+            logo: <Image width={80} height={40} src={category.categoryImage} style={{ margin: '0 12px 0 0', paddingTop: 10, float: 'left' }} />,
+            name: (
+              <>
+                <div className="avatar-info">
+                  <Title level={4}>{category.name}</Title>
+                </div>
+              </>
+            ),
+
+            status: (
+              <>
+                <div className="ant-employed">{category.isActive ? <Switch defaultChecked /> : <Switch />}</div>
+              </>
+            ),
+          };
+        })
+      );
+    }
+  }, [category.categories]);
   return (
     <>
-      <AddCategoryModal form={form} loading={loading} onFinish={onFinishHandle} visible={visible} title="Create new category" onCancel={onClose} />
+      <AddCategoryModal
+        handleCancel={handleCancel}
+        form={formAdd}
+        loading={loading}
+        onFinish={onFinishAddHandle}
+        visible={visibleAdd}
+        fileList={fileList}
+        title="Create new category"
+        onChange={onChangeUpload}
+        onCancel={() => setVisibleAdd(false)}
+      />
+      <EditCategoryModal
+        handleCancel={handleCancel}
+        form={formEdit}
+        loading={loading}
+        onFinish={onFinishEditHandle}
+        visible={visibleEdit}
+        title="Create new category"
+        onCancel={() => setVisibleEdit(false)}
+      />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -115,7 +190,7 @@ function ListCategories() {
               extra={
                 <Row>
                   <Col>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setVisible(true)}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setVisibleAdd(true)}>
                       Add
                     </Button>
                   </Col>
@@ -138,7 +213,7 @@ function ListCategories() {
                     <Spin size="large" />
                   </div>
                 ) : (
-                  <Table columns={columns} dataSource={data} pagination={false} className="ant-border-space" />
+                  <Table columns={columns} dataSource={data} pagination={true} className="ant-border-space" />
                 )}
               </div>
             </Card>

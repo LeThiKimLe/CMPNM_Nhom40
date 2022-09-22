@@ -14,7 +14,7 @@ const create = async (req, res) => {
     folder: 'Images/Category',
     resource_type: 'auto',
   });
-  const url = uploadResponse?.url;
+  const { url } = uploadResponse;
 
   const category = new Category({
     name,

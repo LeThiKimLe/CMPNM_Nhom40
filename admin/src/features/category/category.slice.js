@@ -15,6 +15,7 @@ const categorySlice = createSlice({
     reset: (state) => {
       state.message = '';
       state.error = null;
+      state.success = false;
     },
   },
   extraReducers: (builder) => {
@@ -38,7 +39,6 @@ const categorySlice = createSlice({
       .addCase(categoryThunk.getAllAPI.fulfilled, (state, action) => {
         state.loading = false;
         state.categories = action.payload.list;
-        state.success = true;
       })
       .addCase(categoryThunk.getAllAPI.rejected, (state, action) => {
         state.error = true;

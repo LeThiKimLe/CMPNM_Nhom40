@@ -3,7 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
 
 const AddCategoryModal = (props) => {
-  const { visible, title, onFinish, loading, onCancel, form } = props;
+  const { visible, title, onFinish, loading, onCancel, form, handleCancel, onChange, fileList } = props;
   // form.submit
 
   return (
@@ -48,6 +48,8 @@ const AddCategoryModal = (props) => {
                 return false;
               }}
               accept=".png, .jpeg, .jpg"
+              onChange={onChange}
+              fileList={fileList}
             >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
@@ -62,8 +64,11 @@ const AddCategoryModal = (props) => {
             {loading ? <Spin /> : null}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+            <Button htmlType="submit" style={{ background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
               Create
+            </Button>
+            <Button onClick={handleCancel} style={{ background: '#FF6347', color: 'white', width: '30%' }}>
+              Cancel
             </Button>
           </Form.Item>
         </Form>
