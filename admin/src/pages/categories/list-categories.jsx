@@ -9,6 +9,7 @@ import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
+import ConfirmDeleteModal from './components/modal-delete';
 const { Search } = Input;
 const { Title } = Typography;
 
@@ -19,11 +20,11 @@ function ListCategories() {
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
 
-  const { loading, success, get } = category;
+  const { loading, getLoading, success, get } = category;
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
-  const [keyEdit, setKeyEdit] = useState(false);
-  const [fileList, setFileList] = useState([]);
+  const [visibleDelete, setVisibleDelete] = useState(false);
+  const [keySelected, setKeySelected] = useState('');
   const [data, setData] = useState([]);
 
   const [formAdd] = Form.useForm();
@@ -33,13 +34,32 @@ function ListCategories() {
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-
       reader.onload = () => resolve(reader.result);
-
       reader.onerror = (error) => reject(error);
     });
 
-  const onFinishAddHandle = async (values) => {
+  const onFinishEditHandle = () => {};
+
+  const handleCancel = () => {
+    formAdd.resetFields();
+    setVisibleAdd(false);
+  };
+  const renderDataInEdit = (editKey) => {
+    let categoryEdit;
+    category.categories.map((category, index) => {
+      if (index === editKey) {
+        categoryEdit = category;
+      }
+    });
+    const { name, categoryImage, isActive } = categoryEdit;
+    formEdit.setFieldsValue({
+      name,
+      categoryImage,
+      checked: isActive,
+    });
+  };
+  // todo create Category
+  const handleAddCategory = async (values) => {
     const { name, image } = values;
     const { fileList } = image;
     const picture = await getBase64(fileList[0].originFileObj);
@@ -61,30 +81,20 @@ function ListCategories() {
         notification.success({ message: 'Create Category error' });
       });
   };
-  const onFinishEditHandle = () => {};
-  const onCloseAdd = () => {
-    setVisibleAdd(false);
-  };
-  const onChangeUpload = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
-  const handleCancel = () => {
-    formAdd.resetFields();
-    setVisibleAdd(false);
-  };
-  const renderDataInEdit = (editKey) => {
-    let categoryEdit;
-    category.categories.map((category, index) => {
-      if (index === editKey) {
-        categoryEdit = category;
-      }
-    });
-    const { name, categoryImage, isActive } = categoryEdit;
-    formEdit.setFieldsValue({
-      name,
-      categoryImage,
-      checked: isActive,
-    });
+  // todo handle delete event
+  const handleDeleteCategory = () => {
+    dispatch(categoryThunk.deleteCategoryAPI(keySelected))
+      .then(() => {
+        notification.success({ message: 'Category delete successfully' });
+        dispatch(categoryActions.reset());
+        setTimeout(() => {
+          setVisibleDelete(false);
+          dispatch(categoryThunk.getAllAPI());
+        }, 1000);
+      })
+      .catch(() => {
+        notification.success({ message: 'Create Category error' });
+      });
   };
   // table code start
   const columns = [
@@ -111,34 +121,44 @@ function ListCategories() {
       title: 'ACTIONS',
       key: 'action',
       render: (record) => (
-        <div style={{ textAlign: 'center' }}>
+        <>
           <Space size="middle">
             <Button
               onClick={() => {
                 setVisibleEdit(true);
-                setKeyEdit(record.key);
+                setKeySelected(record.key);
                 renderDataInEdit(record.key);
               }}
               style={{ background: '#40E0D0', color: 'white' }}
             >
               Edit
             </Button>
-            <Button style={{ background: '#FF6347', color: 'white' }}>Delete</Button>
+            <Button
+              onClick={() => {
+                setVisibleDelete(true);
+                setKeySelected(record.key);
+              }}
+              style={{ background: '#FF6347', color: 'white' }}
+            >
+              Delete
+            </Button>
           </Space>
-        </div>
+        </>
       ),
     },
   ];
+  //* get all categories initial
   useEffect(() => {
     dispatch(categoryThunk.getAllAPI());
   }, [dispatch]);
 
+  //* watch for changes to the category.categoryies after get all categories
   useEffect(() => {
     if (category.categories.length > 0) {
       setData(
         category.categories.map((category, index) => {
           return {
-            key: index,
+            key: category._id,
             logo: <Image width={80} height={40} src={category.categoryImage} style={{ margin: '0 12px 0 0', paddingTop: 10, float: 'left' }} />,
             name: (
               <>
@@ -147,7 +167,6 @@ function ListCategories() {
                 </div>
               </>
             ),
-
             status: (
               <>
                 <div className="ant-employed">{category.isActive ? <Switch defaultChecked /> : <Switch />}</div>
@@ -156,30 +175,15 @@ function ListCategories() {
           };
         })
       );
+    } else {
+      setData([]);
     }
   }, [category.categories]);
   return (
     <>
-      <AddCategoryModal
-        handleCancel={handleCancel}
-        form={formAdd}
-        loading={loading}
-        onFinish={onFinishAddHandle}
-        visible={visibleAdd}
-        fileList={fileList}
-        title="Create new category"
-        onChange={onChangeUpload}
-        onCancel={() => setVisibleAdd(false)}
-      />
-      <EditCategoryModal
-        handleCancel={handleCancel}
-        form={formEdit}
-        loading={loading}
-        onFinish={onFinishEditHandle}
-        visible={visibleEdit}
-        title="Create new category"
-        onCancel={() => setVisibleEdit(false)}
-      />
+      <AddCategoryModal handleCancel={handleCancel} form={formAdd} loading={loading} onFinish={handleAddCategory} visible={visibleAdd} onCancel={() => setVisibleAdd(false)} />
+      <EditCategoryModal handleCancel={handleCancel} form={formEdit} loading={loading} onFinish={onFinishEditHandle} visible={visibleEdit} onCancel={() => setVisibleEdit(false)} />
+      <ConfirmDeleteModal loading={loading} visible={visibleDelete} handleDelete={handleDeleteCategory} onCancel={() => setVisibleDelete(false)} />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -201,7 +205,7 @@ function ListCategories() {
               }
             >
               <div className="table-responsive">
-                {loading ? (
+                {getLoading ? (
                   <div
                     style={{
                       display: 'flex',

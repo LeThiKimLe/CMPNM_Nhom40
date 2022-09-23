@@ -6,7 +6,6 @@ const getLocalAccessToken = () => {
   const accessToken = localStorage.getItem('accesstoken');
   return accessToken;
 };
-
 const updateLocalAccessToken = (token) => {
   localStorage.setItem('accesstoken', token);
 };

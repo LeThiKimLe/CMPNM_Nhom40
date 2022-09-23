@@ -13,8 +13,10 @@ const { Content } = Layout;
 function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [rememberMe, setRememberMe] = useState(false);
   const auth = useSelector((state) => state.auth);
   const { logging, isLoggedIn, error, user, message } = auth;
+
   const onFinish = (values) => {
     const { email, password } = values;
     const userData = {
@@ -30,9 +32,6 @@ function SignIn() {
     }
     dispatch(authActions.reset());
   }, [user, isLoggedIn, navigate, dispatch]);
-  function onChange(checked) {
-    console.log(`switch to ${checked}`);
-  }
 
   return (
     <Layout className="layout-default layout-signin">
@@ -90,7 +89,7 @@ function SignIn() {
               </Form.Item>
 
               <Form.Item name="remember" className="aligin-center" valuePropName="checked">
-                <Switch defaultChecked onChange={onChange} />
+                {rememberMe ? <Switch defaultChecked /> : <Switch />}
                 Remember me
               </Form.Item>
               <Form.Item

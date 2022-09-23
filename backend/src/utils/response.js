@@ -27,11 +27,7 @@ const Update = (res, data) =>
     data,
   });
 
-const Delete = (res, data) =>
-  Response(res, {
-    message: messages.DELETE,
-    data,
-  });
+const Delete = (res) => Response(res);
 const ServerError = (res, message) =>
   Response(res, { message }, StatusCodes.INTERNAL_SERVER_ERROR);
 // yeu cau signin

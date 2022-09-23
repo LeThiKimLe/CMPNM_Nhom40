@@ -59,7 +59,14 @@ function App() {
                 </PrivateComponent>
               }
             />
-            <Route exact path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <PrivateComponent>
+                  <Home />
+                </PrivateComponent>
+              }
+            />
             <Route exact path="/sign-in" element={<SignIn />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

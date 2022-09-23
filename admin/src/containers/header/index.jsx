@@ -1,11 +1,20 @@
 import React from 'react';
-import { Row, Col, Breadcrumb, Input } from 'antd';
+import { Row, Col, Breadcrumb, Input, Button } from 'antd';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightToBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowLeft, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch } from 'react-redux';
+import { authActions } from '../../features/auth/auth.slice';
 import TokenService from '../../features/token/token.service';
+import { useNavigate } from 'react-router-dom';
 function Header({ name, subname }) {
+  const dispatch = useDispatch();
+
   const token = TokenService.getLocalAccessToken();
+  const handleSignOut = () => {
+    dispatch(authActions.signout());
+  };
+  const navigate = useNavigate();
   return (
     <>
       <Row gutter={[24, 0]}>
@@ -24,20 +33,17 @@ function Header({ name, subname }) {
         </Col>
         <Col span={24} md={18} className="header-control">
           {token ? (
-            <Link to="/sign-out" className="btn-sign-in">
-              <FontAwesomeIcon icon={faRightToBracket} />
-              <span>Sign out</span>
-            </Link>
+            <Button className="btn-sign-in" onClick={handleSignOut}>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </Button>
           ) : (
-            <Link to="/sign-in" className="btn-sign-in">
-              <FontAwesomeIcon icon={faRightToBracket} />
-              <span>Sign in</span>
-            </Link>
+            <Button className="btn-sign-in" onClick={() => navigate('/sign-in')}>
+              <FontAwesomeIcon icon={faArrowLeft} />
+            </Button>
           )}
-          <Link to="/profile" className="btn-sign-in">
+          <Button className="btn-sign-in">
             <FontAwesomeIcon icon={faCircleUser} />
-            <span>Profile</span>
-          </Link>
+          </Button>
         </Col>
       </Row>
     </>

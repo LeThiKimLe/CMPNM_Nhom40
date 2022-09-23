@@ -39,6 +39,13 @@ const authSlice = createSlice({
         return { payload: { adminData: user, accessToken: token } };
       },
     },
+    signout: (state) => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('accesstoken');
+      state.isLoggedIn = false;
+      state.user = null;
+      state.token = null;
+    },
   },
   extraReducers: (builder) => {
     builder

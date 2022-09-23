@@ -48,8 +48,6 @@ const AddCategoryModal = (props) => {
                 return false;
               }}
               accept=".png, .jpeg, .jpg"
-              onChange={onChange}
-              fileList={fileList}
             >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
