@@ -1,11 +1,19 @@
 import { Modal, Form, Button, Upload, Input, Spin, Row, Col, Typography, Radio } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import React from 'react';
 
 const AddUserModal = (props) => {
+  const { visible, onCancel, handleChange, beforeUpload, loading, imageUrl } = props;
   const uploadButton = (
     <div>
-      <PlusOutlined /> <div style={{ marginTop: 8 }}>Upload</div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
     </div>
   );
   const options = [
@@ -22,7 +30,6 @@ const AddUserModal = (props) => {
       value: 'shipper',
     },
   ];
-  const { visible, onCancel } = props;
 
   return (
     <div
@@ -154,8 +161,18 @@ const AddUserModal = (props) => {
           >
             <div>
               <p style={{ textAlign: 'center', fontSize: '14px', fontWeight: '600' }}>Profile Picture</p>
-              <Upload name="avatar" listType="picture-card" className="avatar-uploader" showUploadList={false}>
-                {uploadButton}
+              <Upload name="avatar" accept=".png, .jpeg, .jpg" onChange={handleChange} beforeUpload={beforeUpload} listType="picture-card" className="avatar-uploader" showUploadList={false}>
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt="avatar"
+                    style={{
+                      width: '100%',
+                    }}
+                  />
+                ) : (
+                  uploadButton
+                )}
               </Upload>
             </div>
           </Col>

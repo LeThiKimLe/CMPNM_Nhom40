@@ -18,6 +18,7 @@ const {
   Unauthorized,
   createTokenUser,
   createAccessToken,
+  cloudinary,
 } = require('../../utils');
 // time expire token send email
 const fiveMinutes = 60 * 60 * 5;
@@ -170,20 +171,15 @@ const showProfile = async (req, res) => {
 };
 
 const uploadImage = async (req, res) => {
+  const { picture } = req.body.data;
   try {
-    const fileStr = req.body.data;
-    return res
-      .json({
-        fileStr,
-      })
-      .status(200);
+    const uploadResponse = await cloudinary.uploader.upload(picture, {
+      folder: 'Images/User',
+      resource_type: 'auto',
+    });
+    return Response(res, { url: uploadResponse.url });
   } catch (error) {
-    console.log(error);
-    return res
-      .json({
-        error,
-      })
-      .status(404);
+    return ServerError(res, error.message);
   }
 };
 const reSendRefreshToken = async (req, res) => {

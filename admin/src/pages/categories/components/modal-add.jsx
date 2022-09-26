@@ -3,7 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
 
 const AddCategoryModal = (props) => {
-  const { visible, title, onFinish, loading, onCancel, form, handleCancel, onChange, fileList } = props;
+  const { visible, title, onFinish, loading, onCancel, form, handleCancel } = props;
   // form.submit
 
   return (
@@ -48,6 +48,7 @@ const AddCategoryModal = (props) => {
                 return false;
               }}
               accept=".png, .jpeg, .jpg"
+              showUploadList={false}
             >
               <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
                 Click to Upload

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Row,
@@ -19,10 +20,15 @@ import {
 import face2 from "../../assets/images/face-2.jpg";
 import AddUserModal from "./components/modal-add";
 import MenuSearch from "./components/menu-search";
-
+import { getBase64 } from '../../utils';
+import userThunk from '../../features/users/user.service';
+sssssssssssssssssssssssssssssssssssssssss
 const { Title } = Typography;
 function Users() {
+  const dispatch = useDispatch();
   const [visibleAdd, setVisibleAdd] = useState(false);
+  const [loadingUplaod, setLoadingUplaod] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
   // table code start
   const columns = [
     {
@@ -112,9 +118,28 @@ function Users() {
   const onCancelAdd = () => {
     setVisibleAdd(false);
   };
+  const beforeUploadHandler = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+
+    return isJpgOrPng;
+  };
+  const onChangeUploadHandler = async (file) => {
+    const picture = await getBase64(file.fileList[0].originFileObj);
+    dispatch(userThunk.uploadImageAPI(picture))
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(() => {
+        notification.success({ message: 'Create Category error' });
+      });
+  };
   return (
     <>
-      <AddUserModal visible={visibleAdd} onCancel={onCancelAdd} />
+      <AddUserModal visible={visibleAdd} onCancel={onCancelAdd} loading={loadingUplaod} imageUrl={imageUrl} beforeUpload={beforeUploadHandler} handleChange={onChangeUploadHandler} />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -128,6 +153,7 @@ function Users() {
             </Row>
             <Row gutter={[32, 8]}>
               <Col>
+
                 <Button
                   style={{
                     background: "#FFB266",
@@ -161,6 +187,7 @@ function Users() {
                     borderRadius: "10px",
                   }}
                   icon={<EditOutlined />}
+                  onClick={() => setVisibleAdd(true)} icon={<PlusOutlined />}sssssssssssssssss
                 >
                   Chỉnh sửa
                 </Button>

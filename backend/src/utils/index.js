@@ -21,6 +21,7 @@ const sendVerificationEmail = require('./send_mail/send-verification-email');
 const sendResetPasswordEmail = require('./send_mail/send-reset-password');
 const createTokenUser = require('./token/create-token-data');
 const createHash = require('./create-hash');
+const cloudinary = require('./upload_file/cloudinary');
 
 module.exports = {
   createJWT,
@@ -42,4 +43,5 @@ module.exports = {
   createTokenUser,
   sendResetPasswordEmail,
   createHash,
+  cloudinary,
 };

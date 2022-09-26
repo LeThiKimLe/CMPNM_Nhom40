@@ -1,7 +1,28 @@
-import { createSelector, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { apiSlice } from '../../app/api/api-slice';
+//
 
-const usersAdapter = createEntityAdapter({});
+const initialState = {
+  users: [],
+  error: null,
+  message: '',
+  loading: false,
+  getLoading: false,
+  success: false,
+};
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    reset: (state) => {
+      state.message = '';
+      state.error = null;
+    },
+  },
+});
 
-const initialState = usersAdapter.getInitialState();
+export const userActions = userSlice.actions;
+
+const userReducer = userSlice.reducer;
+
+export default userReducer;
