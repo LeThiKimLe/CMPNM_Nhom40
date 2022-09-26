@@ -2106,3 +2106,5 @@
 20220926	09:44:10	7298263b-5a61-439b-a4fb-4a10ad7bbf9e	GET	http://localhost:3001	/api/category
 20220926	09:59:22	6d581ebe-afc8-4726-976a-98e19bb7ef47	OPTIONS	http://localhost:3001	/api/category
 20220926	09:59:22	b2a298fc-6627-40f0-ac82-51beac948002	GET	http://localhost:3001	/api/category
+20220926	13:09:45	a3d7a0fe-226e-4500-ae2d-d99c9b303e59	OPTIONS	http://localhost:3001	/api/admin/signin
+20220926	13:09:45	dc5084b3-e131-4c39-a469-88a34c7310b4	POST	http://localhost:3001	/api/admin/signin

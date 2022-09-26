@@ -1,8 +1,7 @@
-import { Row, Col, Collapse, Form, Input, Cascader, Typography } from 'antd';
-import React from 'react';
+import { Row, Col, Collapse, Form, Input, Cascader, Typography } from "antd";
+import React from "react";
 const { Panel } = Collapse;
 const { SHOW_CHILD } = Cascader;
-const { Title } = Typography;
 const text = `
   A dog is a type of domesticated animal.
   Known for its loyalty and faithfulness,
@@ -15,15 +14,44 @@ const MenuSearch = () => {
   };
   const options = [
     {
-      label: 'Light',
-      value: 'light',
+      label: "Quyền",
+      value: "quyền",
+      children: [
+        {
+          label: "Admin",
+          value: "admin",
+        },
+        {
+          label: "User",
+          value: "user",
+        },
+      ],
+    },
+    {
+      label: "Trạng thái",
+      value: "trạng thái",
+      children: [
+        {
+          label: "Hoạt động",
+          value: "hoạt động",
+        },
+        {
+          label: "Chưa hoạt động",
+          value: "chưa hoạt động",
+        },
+      ],
     },
   ];
+
   return (
-    <Collapse expandIconPosition="end" style={{ border: '1px solid #ccc', marginBottom: '10px' }}>
+    <Collapse
+      expandIconPosition="end"
+      style={{ marginBottom: "10px" }}
+      bordered={false}
+    >
       <Panel header="Thông tin tìm kiếm">
         <Row gutter={[24, 8]}>
-          <Col span={6}>
+          <Col span={12}>
             <Form
               layout="vertical"
               className="row-col"
@@ -32,23 +60,42 @@ const MenuSearch = () => {
                 remember: true,
               }}
             >
-              <Form.Item className="username" label="Tên, email, số điện thoại: " style={{ fontWeight: '' }} name="name">
-                {' '}
+              <Form.Item
+                //className="username"
+                label="Tên, email, số điện thoại: "
+                style={{ fontWeight: "" }}
+                name="name"
+              >
+                {" "}
                 <Input />
               </Form.Item>
             </Form>
           </Col>
-          <Col span={6}>
-            <Title level={5}>Bộ lọc</Title>
-            <Cascader
+          <Col span={12}>
+            <p
               style={{
-                width: '100%',
+                marginBottom: "8px",
+              }}
+            >
+              Bộ lọc
+            </p>
+            <Cascader
+              bordered="false"
+              size="large"
+              style={{
+                width: "100%",
+                borderRadius: "10px",
+                border: "1px solid #1111",
+              }}
+              dropdownMenuColumnStyle={{
+                borderRadius: "10px",
+                border: "1px solid #1111",
               }}
               options={options}
               onChange={onChange}
               multiple
               maxTagCount="responsive"
-              showCheckedStrategy={SHOW_CHILD}
+              placeholder="Vui lòng chọn bộ lọc"
             />
           </Col>
         </Row>
