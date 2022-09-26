@@ -2106,3 +2106,14 @@
 20220926	09:44:10	7298263b-5a61-439b-a4fb-4a10ad7bbf9e	GET	http://localhost:3001	/api/category
 20220926	09:59:22	6d581ebe-afc8-4726-976a-98e19bb7ef47	OPTIONS	http://localhost:3001	/api/category
 20220926	09:59:22	b2a298fc-6627-40f0-ac82-51beac948002	GET	http://localhost:3001	/api/category
+20220926	10:45:00	83385557-acc6-4f72-ad9f-480211ab23f1	OPTIONS	http://localhost:3001	/api/category
+20220926	10:45:00	0a5a1eb6-edaa-4355-9b63-7f7ae5023209	GET	http://localhost:3001	/api/category
+20220926	10:45:00	416911bb-c031-4f84-b6b3-02f0fb2c0b3e	OPTIONS	http://localhost:3001	/api/admin/refresh-token
+20220926	10:45:00	788e2f9d-7772-4224-876d-e1af2d26d2b2	POST	http://localhost:3001	/api/admin/refresh-token
+20220926	10:45:01	a46a3f1e-0dd7-4d44-ad6f-a8aa8255438f	GET	http://localhost:3001	/api/category
+20220926	12:55:02	879e9437-94cf-4dbf-9912-5b4fec733490	OPTIONS	http://localhost:3001	/api/admin/user/upload-image
+20220926	12:55:02	1631f8b1-2ce9-4eed-865b-b5503566cd89	POST	http://localhost:3001	/api/admin/user/upload-image
+20220926	12:55:02	ec6c9b5b-39ce-4567-8082-0a587a589238	OPTIONS	http://localhost:3001	/api/admin/user/upload-image
+20220926	12:55:02	99fdb7ef-09fb-48b9-92a0-716032c64614	OPTIONS	http://localhost:3001	/api/admin/user/upload-image
+20220926	12:55:02	8b2605e8-1589-4079-89c9-62a57dc7fdbf	POST	http://localhost:3001	/api/admin/user/upload-image
+20220926	12:55:02	e9de9412-a284-4a12-8591-8c02d35e77b6	POST	http://localhost:3001	/api/admin/user/upload-image

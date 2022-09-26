@@ -40,16 +40,7 @@ const MenuSearch = () => {
           </Col>
           <Col span={6}>
             <Title level={5}>Bộ lọc</Title>
-            <Cascader
-              style={{
-                width: '100%',
-              }}
-              options={options}
-              onChange={onChange}
-              multiple
-              maxTagCount="responsive"
-              showCheckedStrategy={SHOW_CHILD}
-            />
+            <Cascader options={options} onChange={onChange} multiple maxTagCount="responsive" showCheckedStrategy={SHOW_CHILD} />
           </Col>
         </Row>
       </Panel>
