@@ -5,7 +5,7 @@ import './assets/styles/responsive.less';
 import Main from './containers/layout';
 import Home from './pages/home';
 import Orders from './pages/orders';
-import ListCategories from './pages/categories/list-categories';
+import Categories from './pages/categories';
 import Profile from './pages/profile';
 import SignIn from './pages/sigin_in';
 import Users from './pages/users';
@@ -13,6 +13,7 @@ import { PrivateComponent } from './utils';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { authActions } from './features/auth/auth.slice';
+import Products from './pages/products';
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -39,7 +40,15 @@ function App() {
               path="/categories"
               element={
                 <PrivateComponent>
-                  <ListCategories />
+                  <Categories />
+                </PrivateComponent>
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <PrivateComponent>
+                  <Products />
                 </PrivateComponent>
               }
             />

@@ -2,7 +2,7 @@ import { Menu } from 'antd';
 import { NavLink, useLocation } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToolbox, faCircleUser, faPeopleGroup, faBoxesStacked, faBagShopping } from '@fortawesome/free-solid-svg-icons';
+import { faToolbox, faLayerGroup, faPeopleGroup, faBoxesStacked, faBagShopping } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
   // const { pathname } = useLocation();
   // const page = pathname.replace('/', '');
@@ -23,14 +23,6 @@ function Sidenav() {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="categories">
-          <NavLink to="/categories">
-            <span className="icon">
-              <FontAwesomeIcon icon={faBoxesStacked} className="fa-lg" />
-            </span>
-            <span className="label">Categories</span>
-          </NavLink>
-        </Menu.Item>
         <Menu.Item key="users">
           <NavLink to="/users">
             <span className="icon">
@@ -39,6 +31,23 @@ function Sidenav() {
             <span className="label">Users</span>
           </NavLink>
         </Menu.Item>
+        <Menu.Item key="categories">
+          <NavLink to="/categories">
+            <span className="icon">
+              <FontAwesomeIcon icon={faLayerGroup} className="fa-lg" />
+            </span>
+            <span className="label">Categories</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="products">
+          <NavLink to="/products">
+            <span className="icon">
+              <FontAwesomeIcon icon={faBoxesStacked} className="fa-lg" />
+            </span>
+            <span className="label">Products</span>
+          </NavLink>
+        </Menu.Item>
+
         <Menu.Item key="orders">
           <NavLink to="/orders">
             <span className="icon">

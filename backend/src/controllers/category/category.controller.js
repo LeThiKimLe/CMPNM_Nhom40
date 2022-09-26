@@ -9,6 +9,7 @@ const { Response, ServerError, Create, Delete } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 // create category
 // eslint-disable-next-line no-unused-vars
+
 const create = async (req, res) => {
   const { picture, name } = req.body.data;
   const uploadResponse = await cloudinary.uploader.upload(picture, {

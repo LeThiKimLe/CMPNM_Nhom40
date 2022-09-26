@@ -1,16 +1,14 @@
-/* eslint-disable array-callback-return */
-import { Row, Col, Card, Table, Switch, Image, Typography, Input, Button, notification, Form, Spin, Space } from 'antd';
+import { Row, Col, Card, Table, Switch, Image, Typography, Button, notification, Form, Spin, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import face2 from '../../assets/images/face-2.jpg';
 import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
 import ConfirmDeleteModal from './components/modal-delete';
-const { Search } = Input;
+
 const { Title } = Typography;
 
 // project table start
@@ -21,6 +19,7 @@ function ListCategories() {
   const category = useSelector((state) => state.category);
 
   const { loading, getLoading, success, get } = category;
+
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
@@ -46,8 +45,8 @@ function ListCategories() {
   };
   const renderDataInEdit = (editKey) => {
     let categoryEdit;
-    category.categories.map((category, index) => {
-      if (index === editKey) {
+    category.categories.map((category) => {
+      if (category._id === editKey) {
         categoryEdit = category;
       }
     });
@@ -99,13 +98,13 @@ function ListCategories() {
   // table code start
   const columns = [
     {
-      title: 'LOGO',
+      title: 'Logo',
       dataIndex: 'logo',
       key: 'logo',
-      width: '25%',
+      width: '20%',
     },
     {
-      title: 'NAME',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: '40%',
@@ -113,12 +112,12 @@ function ListCategories() {
       sortDirections: ['descend'],
     },
     {
-      title: 'STATUS',
+      title: 'Status',
       key: 'status',
       dataIndex: 'status',
     },
     {
-      title: 'ACTIONS',
+      title: 'Actions',
       key: 'action',
       render: (record) => (
         <>
@@ -129,7 +128,7 @@ function ListCategories() {
                 setKeySelected(record.key);
                 renderDataInEdit(record.key);
               }}
-              style={{ background: '#40E0D0', color: 'white' }}
+              style={{ background: '#40E0D0', color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }}
             >
               Edit
             </Button>
@@ -138,7 +137,7 @@ function ListCategories() {
                 setVisibleDelete(true);
                 setKeySelected(record.key);
               }}
-              style={{ background: '#FF6347', color: 'white' }}
+              style={{ background: '#FF6347', color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }}
             >
               Delete
             </Button>
@@ -188,18 +187,15 @@ function ListCategories() {
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
             <Card
-              bordered={false}
+              bordered={true}
               className="criclebox tablespace mb-24"
               title="List Categories"
               extra={
                 <Row>
                   <Col>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setVisibleAdd(true)}>
+                    <Button style={{ color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setVisibleAdd(true)}>
                       Add
                     </Button>
-                  </Col>
-                  <Col>
-                    <Search placeholder="Type here..." enterButton />
                   </Col>
                 </Row>
               }

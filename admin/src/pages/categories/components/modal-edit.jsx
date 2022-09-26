@@ -31,7 +31,7 @@ const EditCategoryModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input placeholder="Name" />
+            <Input placeholder="Name" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
           </Form.Item>
 
           <Form.Item name="checked" valuePropName="checked" className="username" label="Status" style={{ fontWeight: '600' }}>

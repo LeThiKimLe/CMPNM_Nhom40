@@ -63,6 +63,7 @@ const signup = (req, res) => {
     });
   });
 };
+
 const verifyEmail = (req, res) => {
   const { email, token } = req.query;
   User.findOne({ email }).exec(async (error, user) => {

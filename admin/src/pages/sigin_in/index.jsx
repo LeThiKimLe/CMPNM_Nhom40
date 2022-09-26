@@ -79,6 +79,10 @@ function SignIn() {
                 style={{ fontWeight: '600' }}
                 rules={[
                   {
+                    required: true,
+                    message: 'Please input your password!',
+                  },
+                  {
                     min: 6,
                     message: 'Password min required 6 character',
                   },

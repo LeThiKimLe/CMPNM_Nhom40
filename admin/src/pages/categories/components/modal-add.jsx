@@ -29,7 +29,7 @@ const AddCategoryModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input placeholder="Name" />
+            <Input placeholder="Name" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
           </Form.Item>
           <Form.Item
             className="username"
@@ -49,7 +49,9 @@ const AddCategoryModal = (props) => {
               }}
               accept=".png, .jpeg, .jpg"
             >
-              <Button icon={<UploadOutlined />}>Click to Upload</Button>
+              <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
+                Click to Upload
+              </Button>
             </Upload>
           </Form.Item>
           <Form.Item
@@ -61,11 +63,13 @@ const AddCategoryModal = (props) => {
           >
             {loading ? <Spin /> : null}
           </Form.Item>
+
           <Form.Item>
-            <Button htmlType="submit" style={{ background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
+            <Button htmlType="submit" style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
               Create
             </Button>
-            <Button onClick={handleCancel} style={{ background: '#FF6347', color: 'white', width: '30%' }}>
+
+            <Button onClick={handleCancel} style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#FF6347', color: 'white', width: '30%' }}>
               Cancel
             </Button>
           </Form.Item>
