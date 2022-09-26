@@ -13,7 +13,7 @@ const FooterComponent = () => {
             © 2022, made with
             {<HeartFilled />} by
             <a href="#pablo" className="font-weight-bold" target="_blank">
-              Bui Tiep
+              Nhóm 9
             </a>
             for a better web.
           </div>
@@ -23,7 +23,7 @@ const FooterComponent = () => {
             <ul>
               <li className="nav-item">
                 <a href="#pablo" className="nav-link text-muted" target="_blank">
-                  Bui Tiep
+                  Nhóm 9
                 </a>
               </li>
               <li className="nav-item">
