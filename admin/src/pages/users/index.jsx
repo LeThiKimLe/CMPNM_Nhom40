@@ -49,7 +49,7 @@ function Users() {
     },
 
     {
-      title: "Actions",
+      title: "Hành động",
       key: "action",
       render: (record) => (
         <>
