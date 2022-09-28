@@ -1,7 +1,21 @@
-import { Row, Col, Card, Table, Switch, Image, Typography, Button, notification, Form, Spin, Space } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Switch,
+  Image,
+  Typography,
+  Button,
+  notification,
+  Form,
+  Spin,
+  Space,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 
 import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
@@ -9,6 +23,7 @@ import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
 import ConfirmDeleteModal from './components/modal-delete';
 import { getBase64 } from '../../utils';
+
 const { Title } = Typography;
 
 // project table start
@@ -23,7 +38,7 @@ function ListCategories() {
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
-  const [keySelected, setKeySelected] = useState('');
+  const [keySelected, setKeySelected] = useState("");
   const [data, setData] = useState([]);
 
   const [formAdd] = Form.useForm();
@@ -60,7 +75,7 @@ function ListCategories() {
     };
     dispatch(categoryThunk.createAPI(categoryData))
       .then(() => {
-        notification.success({ message: 'Category created successfully' });
+        notification.success({ message: "Category created successfully" });
         formAdd.resetFields();
         dispatch(categoryActions.reset());
         setTimeout(() => {
@@ -69,14 +84,14 @@ function ListCategories() {
         }, 1000);
       })
       .catch(() => {
-        notification.success({ message: 'Create Category error' });
+        notification.success({ message: "Create Category error" });
       });
   };
   // todo handle delete event
   const handleDeleteCategory = () => {
     dispatch(categoryThunk.deleteCategoryAPI(keySelected))
       .then(() => {
-        notification.success({ message: 'Category delete successfully' });
+        notification.success({ message: "Category delete successfully" });
         dispatch(categoryActions.reset());
         setTimeout(() => {
           setVisibleDelete(false);
@@ -84,33 +99,33 @@ function ListCategories() {
         }, 1000);
       })
       .catch(() => {
-        notification.success({ message: 'Create Category error' });
+        notification.success({ message: "Create Category error" });
       });
   };
   // table code start
   const columns = [
     {
-      title: 'Logo',
-      dataIndex: 'logo',
-      key: 'logo',
-      width: '20%',
+      title: "Logo",
+      dataIndex: "logo",
+      key: "logo",
+      width: "20%",
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: '40%',
+      title: "Tên",
+      dataIndex: "name",
+      key: "name",
+      width: "40%",
       sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['descend'],
+      sortDirections: ["descend"],
     },
     {
-      title: 'Status',
-      key: 'status',
-      dataIndex: 'status',
+      title: "Trạng thái",
+      key: "status",
+      dataIndex: "status",
     },
     {
-      title: 'Actions',
-      key: 'action',
+      title: "Hành động",
+      key: "action",
       render: (record) => (
         <>
           <Space size="middle">
@@ -120,7 +135,12 @@ function ListCategories() {
                 setKeySelected(record.key);
                 renderDataInEdit(record.key);
               }}
-              style={{ background: '#40E0D0', color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              style={{
+                background: "#40E0D0",
+                color: "white",
+                border: "1px solid #C0C0C0",
+                borderRadius: "10px",
+              }}
             >
               Edit
             </Button>
@@ -129,7 +149,12 @@ function ListCategories() {
                 setVisibleDelete(true);
                 setKeySelected(record.key);
               }}
-              style={{ background: '#FF6347', color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              style={{
+                background: "#FF6347",
+                color: "white",
+                border: "1px solid #C0C0C0",
+                borderRadius: "10px",
+              }}
             >
               Delete
             </Button>
@@ -150,7 +175,14 @@ function ListCategories() {
         category.categories.map((category, index) => {
           return {
             key: category._id,
-            logo: <Image width={80} height={40} src={category.categoryImage} style={{ margin: '0 12px 0 0', paddingTop: 10, float: 'left' }} />,
+            logo: (
+              <Image
+                width={80}
+                height={40}
+                src={category.categoryImage}
+                style={{ margin: "0 12px 0 0", paddingTop: 10, float: "left" }}
+              />
+            ),
             name: (
               <>
                 <div className="avatar-info">
@@ -160,7 +192,9 @@ function ListCategories() {
             ),
             status: (
               <>
-                <div className="ant-employed">{category.isActive ? <Switch defaultChecked /> : <Switch />}</div>
+                <div className="ant-employed">
+                  {category.isActive ? <Switch defaultChecked /> : <Switch />}
+                </div>
               </>
             ),
           };
@@ -172,9 +206,28 @@ function ListCategories() {
   }, [category.categories]);
   return (
     <>
-      <AddCategoryModal handleCancel={handleCancel} form={formAdd} loading={loading} onFinish={handleAddCategory} visible={visibleAdd} onCancel={() => setVisibleAdd(false)} />
-      <EditCategoryModal handleCancel={handleCancel} form={formEdit} loading={loading} onFinish={onFinishEditHandle} visible={visibleEdit} onCancel={() => setVisibleEdit(false)} />
-      <ConfirmDeleteModal loading={loading} visible={visibleDelete} handleDelete={handleDeleteCategory} onCancel={() => setVisibleDelete(false)} />
+      <AddCategoryModal
+        handleCancel={handleCancel}
+        form={formAdd}
+        loading={loading}
+        onFinish={handleAddCategory}
+        visible={visibleAdd}
+        onCancel={() => setVisibleAdd(false)}
+      />
+      <EditCategoryModal
+        handleCancel={handleCancel}
+        form={formEdit}
+        loading={loading}
+        onFinish={onFinishEditHandle}
+        visible={visibleEdit}
+        onCancel={() => setVisibleEdit(false)}
+      />
+      <ConfirmDeleteModal
+        loading={loading}
+        visible={visibleDelete}
+        handleDelete={handleDeleteCategory}
+        onCancel={() => setVisibleDelete(false)}
+      />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -185,7 +238,16 @@ function ListCategories() {
               extra={
                 <Row>
                   <Col>
-                    <Button style={{ color: 'white', border: '1px solid #C0C0C0', borderRadius: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setVisibleAdd(true)}>
+                    <Button
+                      style={{
+                        color: "white",
+                        border: "1px solid #C0C0C0",
+                        borderRadius: "10px",
+                      }}
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => setVisibleAdd(true)}
+                    >
                       Add
                     </Button>
                   </Col>
@@ -196,16 +258,21 @@ function ListCategories() {
                 {getLoading ? (
                   <div
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: '20px',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "20px",
                     }}
                   >
                     <Spin size="large" />
                   </div>
                 ) : (
-                  <Table columns={columns} dataSource={data} pagination={true} className="ant-border-space" />
+                  <Table
+                    columns={columns}
+                    dataSource={data}
+                    pagination={true}
+                    className="ant-border-space"
+                  />
                 )}
               </div>
             </Card>
