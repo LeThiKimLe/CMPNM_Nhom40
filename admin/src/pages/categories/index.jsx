@@ -16,11 +16,13 @@ import { PlusOutlined } from "@ant-design/icons";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import AddCategoryModal from "./components/modal-add";
-import categoryThunk from "../../features/category/category.service";
-import { categoryActions } from "../../features/category/category.slice";
-import EditCategoryModal from "./components/modal-edit";
-import ConfirmDeleteModal from "./components/modal-delete";
+
+import AddCategoryModal from './components/modal-add';
+import categoryThunk from '../../features/category/category.service';
+import { categoryActions } from '../../features/category/category.slice';
+import EditCategoryModal from './components/modal-edit';
+import ConfirmDeleteModal from './components/modal-delete';
+import { getBase64 } from '../../utils';
 
 const { Title } = Typography;
 
@@ -41,14 +43,6 @@ function ListCategories() {
 
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
-
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
 
   const onFinishEditHandle = () => {};
 
