@@ -84,7 +84,7 @@ function ListCategories() {
         }, 1000);
       })
       .catch(() => {
-        notification.success({ message: "Create Category error" });
+        notification.error({ message: 'Create Category error' });
       });
   };
   // todo handle delete event

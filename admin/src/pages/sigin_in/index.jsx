@@ -70,7 +70,7 @@ function SignIn() {
                 ]}
                 hasFeedback
               >
-                <Input placeholder="Email" />
+                <Input placeholder="Email" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
               </Form.Item>
               <Form.Item
                 className="username"
@@ -89,7 +89,7 @@ function SignIn() {
                 ]}
                 hasFeedback
               >
-                <Input.Password placeholder="Password" />
+                <Input.Password placeholder="Password" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
               </Form.Item>
 
               <Form.Item name="remember" className="aligin-center" valuePropName="checked">

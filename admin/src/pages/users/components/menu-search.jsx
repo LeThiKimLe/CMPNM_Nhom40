@@ -1,12 +1,6 @@
-import { Row, Col, Collapse, Form, Input, Cascader, Typography } from "antd";
-import React from "react";
+import { Row, Col, Collapse, Form, Input, Cascader } from 'antd';
+import React from 'react';
 const { Panel } = Collapse;
-const { SHOW_CHILD } = Cascader;
-const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
 
 const MenuSearch = () => {
   const onChange = (value) => {
@@ -14,41 +8,41 @@ const MenuSearch = () => {
   };
   const options = [
     {
-      label: "Quyền",
-      value: "quyền",
+      label: 'Quyền',
+      value: 'quyền',
       children: [
         {
-          label: "Admin",
-          value: "admin",
+          label: 'Admin',
+          value: 'admin',
         },
         {
-          label: "User",
-          value: "user",
+          label: 'User',
+          value: 'user',
+        },
+        {
+          label: 'Shipper',
+          value: 'shipper',
         },
       ],
     },
     {
-      label: "Trạng thái",
-      value: "trạng thái",
+      label: 'Trạng thái',
+      value: 'status',
       children: [
         {
-          label: "Hoạt động",
-          value: "hoạt động",
+          label: 'Kích hoạt',
+          value: 'active',
         },
         {
-          label: "Chưa hoạt động",
-          value: "chưa hoạt động",
+          label: 'Chưa kích hoạt',
+          value: 'unactive',
         },
       ],
     },
   ];
 
   return (
-    <Collapse
-      expandIconPosition="end"
-      style={{ marginBottom: "10px" }}
-      bordered={false}
-    >
+    <Collapse expandIconPosition="end" bordered={false}>
       <Panel header="Thông tin tìm kiếm">
         <Row gutter={[24, 8]}>
           <Col span={12}>
@@ -60,13 +54,8 @@ const MenuSearch = () => {
                 remember: true,
               }}
             >
-              <Form.Item
-                //className="username"
-                label="Tên, email, số điện thoại: "
-                style={{ fontWeight: "" }}
-                name="name"
-              >
-                {" "}
+              <Form.Item className="username" label="Tên, email, số điện thoại: " style={{ fontWeight: '' }} name="name">
+                {' '}
                 <Input />
               </Form.Item>
             </Form>
@@ -75,7 +64,7 @@ const MenuSearch = () => {
           <Col span={12}>
             <p
               style={{
-                marginBottom: "8px",
+                marginBottom: '8px',
               }}
             >
               Bộ lọc
@@ -84,19 +73,12 @@ const MenuSearch = () => {
               bordered="false"
               size="large"
               style={{
-                width: "100%",
-                borderRadius: "10px",
-                border: "1px solid #1111",
-              }}
-              dropdownMenuColumnStyle={{
-                borderRadius: "10px",
-                border: "1px solid #1111",
+                width: '100%',
               }}
               options={options}
               onChange={onChange}
               multiple
               maxTagCount="responsive"
-              placeholder="Vui lòng chọn bộ lọc"
             />
           </Col>
         </Row>

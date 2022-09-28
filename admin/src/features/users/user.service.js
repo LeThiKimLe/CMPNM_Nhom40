@@ -1,9 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axios-client';
 
-const uploadImageAPI = createAsyncThunk('admin/user/upload-image', async (picture, thunkAPI) => {
+const createUserAPI = createAsyncThunk('admin/create-user', async (userData, thunkAPI) => {
   try {
-    const response = await axiosClient.post('/admin/user/upload-image', JSON.stringify({ data: picture }));
+    const response = await axiosClient.post('/admin/create-user', JSON.stringify({ data: userData }));
     return response.data;
   } catch (error) {
     const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
@@ -12,7 +12,7 @@ const uploadImageAPI = createAsyncThunk('admin/user/upload-image', async (pictur
 });
 
 const userThunk = {
-  uploadImageAPI,
+  createUserAPI,
 };
 
 export default userThunk;

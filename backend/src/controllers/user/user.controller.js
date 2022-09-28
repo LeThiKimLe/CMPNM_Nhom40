@@ -171,7 +171,8 @@ const showProfile = async (req, res) => {
 };
 
 const uploadImage = async (req, res) => {
-  const { picture } = req.body.data;
+  const picture = req.body.data;
+
   try {
     const uploadResponse = await cloudinary.uploader.upload(picture, {
       folder: 'Images/User',
