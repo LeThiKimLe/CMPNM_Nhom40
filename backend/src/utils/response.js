@@ -20,7 +20,7 @@ const Response = (res, data, httpStatus = StatusCodes.OK) =>
 const Get = (res, data) =>
   Response(res, { message: messages.GET, data }, StatusCodes.OK);
 
-const Create = (res, data) => Response(res, data, StatusCodes.CREATED);
+const Create = (res, message) => Response(res, message, StatusCodes.CREATED);
 const Update = (res, data) =>
   Response(res, {
     message: messages.UPDATE,
