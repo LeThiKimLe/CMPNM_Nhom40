@@ -2107,6 +2107,7 @@
 20220926	09:59:22	6d581ebe-afc8-4726-976a-98e19bb7ef47	OPTIONS	http://localhost:3001	/api/category
 20220926	09:59:22	b2a298fc-6627-40f0-ac82-51beac948002	GET	http://localhost:3001	/api/category
 
+
 20220926	10:45:00	83385557-acc6-4f72-ad9f-480211ab23f1	OPTIONS	http://localhost:3001	/api/category
 20220926	10:45:00	0a5a1eb6-edaa-4355-9b63-7f7ae5023209	GET	http://localhost:3001	/api/category
 20220926	10:45:00	416911bb-c031-4f84-b6b3-02f0fb2c0b3e	OPTIONS	http://localhost:3001	/api/admin/refresh-token

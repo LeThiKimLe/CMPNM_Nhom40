@@ -1,8 +1,14 @@
-import { Menu } from 'antd';
-import { NavLink, useLocation } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToolbox, faLayerGroup, faPeopleGroup, faBoxesStacked, faBagShopping } from '@fortawesome/free-solid-svg-icons';
+import { Menu } from "antd";
+import { NavLink, useLocation } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLayerGroup,
+  faPeopleGroup,
+  faBoxesStacked,
+  faBagShopping,
+  faTableColumns,
+} from "@fortawesome/free-solid-svg-icons";
 function Sidenav() {
   // const { pathname } = useLocation();
   // const page = pathname.replace('/', '');
@@ -11,16 +17,16 @@ function Sidenav() {
     <>
       <div className="brand">
         <img src={logo} alt="" />
-        <span>Admin Dashboard</span>
+        <span>Bảng điều khiển Admin</span>
       </div>
       <hr />
       <Menu theme="light" mode="inline">
         <Menu.Item key="dashboard">
           <NavLink to="/dashboard">
             <span className="icon">
-              <FontAwesomeIcon icon={faToolbox} className="fa-lg" />
+              <FontAwesomeIcon icon={faTableColumns} className="fa-lg" />
             </span>
-            <span className="label">Dashboard</span>
+            <span className="label">Trang chủ</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="users">
@@ -28,7 +34,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faPeopleGroup} className="fa-lg" />
             </span>
-            <span className="label">Users</span>
+            <span className="label">Người dùng</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="categories">
@@ -36,7 +42,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faLayerGroup} className="fa-lg" />
             </span>
-            <span className="label">Categories</span>
+            <span className="label">Danh mục</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="products">
@@ -44,7 +50,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faBoxesStacked} className="fa-lg" />
             </span>
-            <span className="label">Products</span>
+            <span className="label">Sản phẩm</span>
           </NavLink>
         </Menu.Item>
 
@@ -53,7 +59,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faBagShopping} className="fa-lg" />
             </span>
-            <span className="label">Orders</span>
+            <span className="label">Đơn hàng</span>
           </NavLink>
         </Menu.Item>
       </Menu>
