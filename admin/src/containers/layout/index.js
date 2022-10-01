@@ -9,7 +9,8 @@ const { Header, Sider, Content } = Layout;
 const Main = ({ children }) => {
   let { pathname } = useLocation();
   pathname = pathname.replace('/', '');
-  if (pathname === 'sign-in') {
+
+  if (pathname === 'sign-in' || pathname === 'verify-email' || pathname === 'resend-verify-email') {
     return <>{children}</>;
   } else {
     return (

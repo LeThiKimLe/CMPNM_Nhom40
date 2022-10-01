@@ -5,13 +5,23 @@
 /* eslint-disable consistent-return */
 const slugify = require('slugify');
 const { Category } = require('../../models');
-const { Response, ServerError, Create, Delete } = require('../../utils');
+const {
+  Response,
+  ServerError,
+  Create,
+  Delete,
+  BadRequest,
+} = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 // create category
 // eslint-disable-next-line no-unused-vars
 
 const create = async (req, res) => {
   const { picture, name } = req.body.data;
+  const categoryExists = await Category.find({ name }).exec();
+  if (categoryExists.length > 0) {
+    return BadRequest(res, 'Name already exists');
+  }
   const uploadResponse = await cloudinary.uploader.upload(picture, {
     folder: 'Images/Category',
     resource_type: 'auto',
@@ -39,7 +49,6 @@ const getAll = async (req, res) => {
 };
 const deleteCategory = async (req, res) => {
   const { id } = req.params;
-  console.log('id', id);
   const category = await Category.findOneAndDelete({ _id: id });
   if (category) {
     return Response(res, { message: 'Delete category successfully' });

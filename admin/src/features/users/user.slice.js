@@ -33,7 +33,26 @@ const userSlice = createSlice({
       .addCase(userThunk.createUserAPI.rejected, (state, action) => {
         state.error = true;
         state.loading = false;
-        state.message = action.payload.message;
+      })
+      .addCase(userThunk.getAllUserAPI.pending, (state) => {
+        state.getLoading = true;
+      })
+      .addCase(userThunk.getAllUserAPI.fulfilled, (state, action) => {
+        state.getLoading = false;
+        state.users = action.payload.list;
+      })
+      .addCase(userThunk.getAllUserAPI.rejected, (state, action) => {
+        state.error = true;
+        state.getLoading = false;
+      })
+      .addCase(userThunk.deleteUsersAPI.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(userThunk.deleteUsersAPI.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(userThunk.deleteUsersAPI.rejected, (state, action) => {
+        state.loading = false;
       });
   },
 });
