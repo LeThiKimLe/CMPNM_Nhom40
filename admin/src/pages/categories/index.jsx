@@ -1,21 +1,7 @@
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Switch,
-  Image,
-  Typography,
-  Button,
-  notification,
-  Form,
-  Spin,
-  Space,
-} from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
+import { Row, Col, Card, Image, Switch, Statistic, Typography, Button, notification, Form, Spin, Space } from 'antd';
+import { PlusOutlined, SettingOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
@@ -25,7 +11,7 @@ import ConfirmDeleteModal from './components/modal-delete';
 import { getBase64 } from '../../utils';
 
 const { Title } = Typography;
-
+const { Meta } = Card;
 // project table start
 
 function ListCategories() {
@@ -33,17 +19,17 @@ function ListCategories() {
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
 
-  const { loading, getLoading, success, get } = category;
+  const { loading, getLoading } = category;
 
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
-  const [keySelected, setKeySelected] = useState("");
-  const [data, setData] = useState([]);
+  const [keySelected, setKeySelected] = useState('');
+  const [categoryList, setCategoryList] = useState([]);
 
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
-
+  // TODO Handle after
   const onFinishEditHandle = () => {};
 
   const handleCancel = () => {
@@ -74,8 +60,9 @@ function ListCategories() {
       picture,
     };
     dispatch(categoryThunk.createAPI(categoryData))
+      .unwrap()
       .then(() => {
-        notification.success({ message: "Category created successfully" });
+        notification.success({ message: 'Category created successfully' });
         formAdd.resetFields();
         dispatch(categoryActions.reset());
         setTimeout(() => {
@@ -83,15 +70,20 @@ function ListCategories() {
           dispatch(categoryThunk.getAllAPI());
         }, 1000);
       })
-      .catch(() => {
-        notification.error({ message: 'Create Category error' });
+      .catch((error) => {
+        formAdd.setFields([
+          {
+            name: 'name',
+            errors: [error],
+          },
+        ]);
       });
   };
   // todo handle delete event
   const handleDeleteCategory = () => {
     dispatch(categoryThunk.deleteCategoryAPI(keySelected))
       .then(() => {
-        notification.success({ message: "Category delete successfully" });
+        notification.success({ message: 'Category delete successfully' });
         dispatch(categoryActions.reset());
         setTimeout(() => {
           setVisibleDelete(false);
@@ -99,183 +91,125 @@ function ListCategories() {
         }, 1000);
       })
       .catch(() => {
-        notification.success({ message: "Create Category error" });
+        notification.success({ message: 'Delete category error' });
       });
   };
-  // table code start
-  const columns = [
-    {
-      title: "Logo",
-      dataIndex: "logo",
-      key: "logo",
-      width: "20%",
-    },
-    {
-      title: "Tên",
-      dataIndex: "name",
-      key: "name",
-      width: "40%",
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ["descend"],
-    },
-    {
-      title: "Trạng thái",
-      key: "status",
-      dataIndex: "status",
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      render: (record) => (
-        <>
-          <Space size="middle">
-            <Button
-              onClick={() => {
-                setVisibleEdit(true);
-                setKeySelected(record.key);
-                renderDataInEdit(record.key);
-              }}
-              style={{
-                background: "#40E0D0",
-                color: "white",
-                border: "1px solid #C0C0C0",
-                borderRadius: "10px",
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={() => {
-                setVisibleDelete(true);
-                setKeySelected(record.key);
-              }}
-              style={{
-                background: "#FF6347",
-                color: "white",
-                border: "1px solid #C0C0C0",
-                borderRadius: "10px",
-              }}
-            >
-              Delete
-            </Button>
-          </Space>
-        </>
-      ),
-    },
-  ];
-  //* get all categories initial
   useEffect(() => {
     dispatch(categoryThunk.getAllAPI());
   }, [dispatch]);
-
   //* watch for changes to the category.categoryies after get all categories
   useEffect(() => {
     if (category.categories.length > 0) {
-      setData(
-        category.categories.map((category, index) => {
-          return {
-            key: category._id,
-            logo: (
-              <Image
-                width={80}
-                height={40}
-                src={category.categoryImage}
-                style={{ margin: "0 12px 0 0", paddingTop: 10, float: "left" }}
-              />
-            ),
-            name: (
-              <>
-                <div className="avatar-info">
-                  <Title level={4}>{category.name}</Title>
-                </div>
-              </>
-            ),
-            status: (
-              <>
-                <div className="ant-employed">
-                  {category.isActive ? <Switch defaultChecked /> : <Switch />}
-                </div>
-              </>
-            ),
-          };
-        })
-      );
+      setCategoryList(category.categories);
     } else {
-      setData([]);
+      setCategoryList([]);
     }
   }, [category.categories]);
   return (
     <>
-      <AddCategoryModal
-        handleCancel={handleCancel}
-        form={formAdd}
-        loading={loading}
-        onFinish={handleAddCategory}
-        visible={visibleAdd}
-        onCancel={() => setVisibleAdd(false)}
-      />
-      <EditCategoryModal
-        handleCancel={handleCancel}
-        form={formEdit}
-        loading={loading}
-        onFinish={onFinishEditHandle}
-        visible={visibleEdit}
-        onCancel={() => setVisibleEdit(false)}
-      />
-      <ConfirmDeleteModal
-        loading={loading}
-        visible={visibleDelete}
-        handleDelete={handleDeleteCategory}
-        onCancel={() => setVisibleDelete(false)}
-      />
+      <AddCategoryModal handleCancel={handleCancel} form={formAdd} loading={loading} onFinish={handleAddCategory} visible={visibleAdd} onCancel={() => setVisibleAdd(false)} />
+      <EditCategoryModal handleCancel={handleCancel} form={formEdit} loading={loading} onFinish={onFinishEditHandle} visible={visibleEdit} onCancel={() => setVisibleEdit(false)} />
+      <ConfirmDeleteModal loading={loading} visible={visibleDelete} handleDelete={handleDeleteCategory} onCancel={() => setVisibleDelete(false)} />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
-            <Card
-              bordered={true}
-              className="criclebox tablespace mb-24"
-              title="List Categories"
-              extra={
-                <Row>
-                  <Col>
-                    <Button
-                      style={{
-                        color: "white",
-                        border: "1px solid #C0C0C0",
-                        borderRadius: "10px",
-                      }}
-                      type="primary"
-                      icon={<PlusOutlined />}
-                      onClick={() => setVisibleAdd(true)}
-                    >
-                      Add
-                    </Button>
-                  </Col>
+            <Title level={3}>Danh sách Nhãn Hiệu</Title>
+          </Col>
+          <Col xs="24" xl={24}>
+            <Row>
+              <Col span={12}>
+                <p>Tiep</p>
+              </Col>
+            </Row>
+            <Row gutter={[32, 16]} style={{ marginLeft: '5px', marginBottom: '20px' }}>
+              <Col>
+                <Button
+                  style={{
+                    background: '#FFB266',
+                    color: 'white',
+                    borderRadius: '10px',
+                  }}
+                  icon={<SearchOutlined />}
+                >
+                  Tìm kiếm
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  style={{
+                    background: '#00994C',
+                    color: 'white',
+                    borderRadius: '10px',
+                  }}
+                  onClick={() => setVisibleAdd(true)}
+                  icon={<PlusOutlined />}
+                >
+                  Thêm
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  style={{
+                    background: '#0066CC',
+                    color: 'white',
+                    borderRadius: '10px',
+                  }}
+                  icon={<EditOutlined />}
+                >
+                  Chỉnh sửa
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  style={{
+                    background: '#FF3333',
+                    color: 'white',
+                    borderRadius: '10px',
+                  }}
+                  icon={<DeleteOutlined />}
+                >
+                  Xóa
+                </Button>
+              </Col>
+            </Row>
+            <div className="table-responsive">
+              {getLoading ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '20px',
+                  }}
+                >
+                  <Spin size="large" />
+                </div>
+              ) : (
+                <Row gutter={[8, 8]}>
+                  {category.categories.map((category, i) => {
+                    return (
+                      <Col span={4}>
+                        <Card
+                          style={{ borderRadius: '10px', padding: '20px 20px 0px', background: '#F0F8FF' }}
+                          cover={<Image src={category.categoryImage} height={80} alt={category.name} style={{ borderRadius: '10px' }} />}
+                          actions={[<EditOutlined key="edit" />, <DeleteOutlined key="delete" />]}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Title level={4}>{category.name}</Title>
+                          </div>
+                        </Card>
+                      </Col>
+                    );
+                  })}
                 </Row>
-              }
-            >
-              <div className="table-responsive">
-                {getLoading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "20px",
-                    }}
-                  >
-                    <Spin size="large" />
-                  </div>
-                ) : (
-                  <Table
-                    columns={columns}
-                    dataSource={data}
-                    pagination={true}
-                    className="ant-border-space"
-                  />
-                )}
-              </div>
-            </Card>
+              )}
+            </div>
           </Col>
         </Row>
       </div>

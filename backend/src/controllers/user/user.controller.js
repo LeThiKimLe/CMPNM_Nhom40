@@ -19,10 +19,11 @@ const {
   createTokenUser,
   createAccessToken,
   cloudinary,
+  createRefreshToken,
 } = require('../../utils');
 // time expire token send email
 const fiveMinutes = 60 * 60 * 5;
-const origin = `http://localhost:3000/api`;
+
 const signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
@@ -53,7 +54,6 @@ const signup = (req, res) => {
           firstName,
           email,
           verificationToken,
-          origin,
         });
         // nhận toàn bộ dư liệu của user
         return Create(res, {
@@ -66,12 +66,16 @@ const signup = (req, res) => {
 };
 
 const verifyEmail = (req, res) => {
-  const { email, token } = req.query;
+  const { email, token } = req.body.data;
+
   User.findOne({ email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
     if (!user) return NotFound(res, 'User');
     if (user.verificationToken === token) {
-      if (user.verifyDate > Date.now()) {
+      const now = new Date(Date.now());
+      console.log(now);
+      console.log(user.verifyDate);
+      if (user.verifyDate < now) {
         return BadRequest(res, 'Link has expired email verification time');
       }
       user.isVerified = true;
@@ -80,11 +84,11 @@ const verifyEmail = (req, res) => {
       user.save(async (error, data) => {
         if (error) return ServerError(res, error.message);
         if (data) {
-          return Response(res, { message: 'Success! Account is active' });
+          return Response(res, 'Success! Account is active');
         }
       });
     } else {
-      return BadRequest(res, 'Token does not match verification token');
+      return BadRequest(res, 'Link is error');
     }
   });
 };
@@ -94,7 +98,7 @@ const verifyEmail = (req, res) => {
  * * link ex: http://localhost:3000/api/resend-verify-email?firstName=buitiep&email=buitiep379@gmail.com
  */
 const reSendVerifyEmail = async (req, res) => {
-  const { email, firstName } = req.query;
+  const email = req.body.data;
   const verificationToken = crypto.randomBytes(40).toString('hex');
   const user = await User.findOne({ email });
   user.verifyDate = new Date(Date.now() + fiveMinutes);
@@ -103,14 +107,11 @@ const reSendVerifyEmail = async (req, res) => {
     if (error) return ServerError(res, error.message);
     if (data) {
       await sendVerificationEmail({
-        firstName,
+        firstName: user.firstName,
         email,
         verificationToken,
-        origin,
       });
-      return Response(res, {
-        message: 'Success! check email to verify account',
-      });
+      return Response(res, 'Success! check email to verify account');
     }
   });
 };
@@ -185,7 +186,6 @@ const uploadImage = async (req, res) => {
 };
 const reSendRefreshToken = async (req, res) => {
   const { userId } = req.body;
-  console.log('userId', userId);
   const foundUser = await User.findById(userId);
   console.log('foundUser', foundUser);
   if (foundUser) {
@@ -198,9 +198,16 @@ const reSendRefreshToken = async (req, res) => {
         // return new access-token
         const adminData = createTokenUser(foundUser);
         const accessToken = createAccessToken(adminData);
-        return Response(res, {
-          adminData,
-          accessToken,
+        const refreshToken = createRefreshToken(adminData);
+        foundUser.refreshToken = refreshToken;
+        foundUser.save(async (error, data) => {
+          if (error) return ServerError(res, error.message);
+          if (data) {
+            return Response(res, {
+              adminData,
+              accessToken,
+            });
+          }
         });
       }
     );

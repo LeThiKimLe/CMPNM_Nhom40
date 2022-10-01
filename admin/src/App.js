@@ -14,6 +14,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { authActions } from './features/auth/auth.slice';
 import Products from './pages/products';
+import VerifyAccount from './pages/verify_email';
+import ReSendEmail from './pages/resend-email';
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -77,7 +79,8 @@ function App() {
               }
             />
             <Route exact path="/sign-in" element={<SignIn />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/verify-email" element={<VerifyAccount />} />
+            <Route path="/resend-verify-email" element={<ReSendEmail />} />
           </Routes>
         </Main>
       </div>

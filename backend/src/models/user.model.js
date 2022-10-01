@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
-    contactNumner: { type: String },
+    contactNumber: { type: String },
     profilePicture: { type: String },
   },
   { timestamps: true }

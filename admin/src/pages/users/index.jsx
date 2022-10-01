@@ -1,25 +1,30 @@
-import React, { useState } from 'react';
+/* eslint-disable array-callback-return */
+import React, { useState, useEffect } from 'react';
 import { Row, Col, notification, Button, message, Form, Avatar, Table, Typography, Space } from 'antd';
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import face2 from '../../assets/images/face-2.jpg';
+import avatar from '../../assets/images/avatar.jpg';
 import AddUserModal from './components/modal-add';
 import MenuSearch from './components/menu-search';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBase64 } from '../../utils';
 import userThunk from '../../features/users/user.service';
 import { userActions } from '../../features/users/user.slice';
+import ConfirmDelete from '../../components/ui/modal/confirm-delete';
+import EditUserModel from './components/modal-edit';
 
 const { Title } = Typography;
 function Users() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { users, message, getLoading, loading, success } = user;
+  const { users, getLoading, loading, success } = user;
   const [visibleAdd, setVisibleAdd] = useState(false);
+  const [visibleDelete, setVisibleDelete] = useState(false);
+  const [visibleEdit, setVisibleEdit] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [disableButton, setDisableButton] = useState(false);
-
+  const [data, setData] = useState([]);
   // form
   const [formAdd] = Form.useForm();
+  const [formEdit] = Form.useForm();
 
   // table code start
   const columns = [
@@ -41,59 +46,73 @@ function Users() {
     },
 
     {
-
       title: 'Trạng thái',
       key: 'status',
       dataIndex: 'status',
     },
-  ];
-
-  const data = [
     {
-      key: '1',
-      name: (
-        <>
-          <Avatar.Group>
-            <Avatar className="shape-avatar" shape="square" size={50} src={face2}></Avatar>
-            <div className="avatar-info">
-              <Typography.Title level={5}>Nguyen Bui Tiep</Typography.Title>
-              <p>michael@mail.com</p>
-            </div>
-          </Avatar.Group>{' '}
-        </>
-      ),
-      contactNumber: (
-        <>
-          <div className="ant-employed">
-            <Typography.Title level={5}>0334943334</Typography.Title>
-          </div>
-        </>
-      ),
-      role: (
-        <>
-          <div className="author-info">
-            <Typography.Title level={5}>Admin</Typography.Title>
-          </div>
-        </>
-      ),
-
-      status: (
-        <>
-          <Button type="primary" className="tag-primary">
-            Đã kích hoạt
-          </Button>
-        </>
-      ),
+      title: 'Ngày tạo',
+      key: 'created',
+      dataIndex: 'created',
     },
   ];
+
   const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
-    if (newSelectedRowKeys.length === 0) setDisableButton(false);
-    else {
-      setDisableButton(true);
+  };
+  // *delete button handle
+  const handleConfirmDelete = () => {
+    dispatch(userThunk.deleteUsersAPI(selectedRowKeys))
+      .unwrap()
+      .then(() => {
+        notification.success({ message: 'Delete succesfully', placement: 'top' });
+        setTimeout(() => {
+          setVisibleDelete(false);
+          dispatch(userThunk.getAllUserAPI());
+        }, 1000);
+      })
+      .catch((error) => {
+        notification.error({ message: error, placement: 'top' });
+      });
+  };
+  const onClickBtnDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một đối tượng để xóa',
+        placement: 'top',
+      });
+    } else {
+      setVisibleDelete(true);
     }
   };
+  const onClickBtnEdit = () => {
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một đối tượng để chỉnh sửa',
+        placement: 'top',
+      });
+    } else if (selectedRowKeys.length > 1) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một đối tượng để chỉnh sửa',
+        placement: 'top',
+      });
+    } else {
+      setVisibleEdit(true);
+      renderDataInEdit();
+    }
+  };
+  const renderDataInEdit = () => {
+    let userEdit;
+    user.users.map((user) => {
+      if (user._id === selectedRowKeys[0]) {
+        userEdit = user;
+      }
+    });
+    formEdit.setFieldsValue({
+      ...userEdit,
+    });
+  };
+  const onFinishEditHandle = () => {};
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -112,29 +131,103 @@ function Users() {
 
   // todo create new User
   const handleAddUser = async (values) => {
-    const { image } = values;
-
-    const picture = await getBase64(image.file);
+    let userData = {};
     delete values.confirmPassword;
-    delete values.image;
-    const userData = {
-      picture,
-      ...values,
-    };
+    if (values.image) {
+      const picture = await getBase64(values.image.file);
+      delete values.image;
+      userData = {
+        ...values,
+        picture,
+      };
+    } else {
+      delete values.image;
+      userData = { ...values };
+    }
+    console.log(userData);
     dispatch(userThunk.createUserAPI(userData))
+      .unwrap()
       .then(() => {
-        notification.success({ message: 'Category created successfully' });
+        notification.success({ message: 'User created successfully' });
         // formAdd.resetFields();
         dispatch(userActions.reset());
         setTimeout(() => {
           setVisibleAdd(false);
-          // dispatch(userThunk.getAllAPI());
+          dispatch(userThunk.getAllUserAPI());
         }, 1000);
       })
-      .catch(() => {
-        notification.error({ message: 'Create category error' });
+      .catch((error) => {
+        notification.error({
+          message: error,
+          placement: 'top',
+        });
+        formAdd.setFields([
+          {
+            name: 'email',
+            errors: [error],
+          },
+        ]);
+        // formAdd.resetFields();
+        dispatch(userActions.reset());
       });
   };
+  //* get all users initial
+  useEffect(() => {
+    dispatch(userThunk.getAllUserAPI());
+  }, [dispatch]);
+  useEffect(() => {
+    if (user.users.length > 0) {
+      setData(
+        user.users.map((user) => {
+          return {
+            key: user._id,
+            name: (
+              <>
+                <Avatar.Group>
+                  <Avatar className="shape-avatar" shape="square" size={50} src={user.profilePicture ? user.profilePicture : avatar}></Avatar>
+                  <div className="avatar-info">
+                    <Typography.Title level={5}>{user.lastName + user.firstName}</Typography.Title>
+                    <p>{user.email}</p>
+                  </div>
+                </Avatar.Group>{' '}
+              </>
+            ),
+            contactNumber: (
+              <>
+                <div className="ant-employed">
+                  <Typography.Title level={5}>{user.contactNumber}</Typography.Title>
+                </div>
+              </>
+            ),
+            role: (
+              <>
+                <div className="author-info">
+                  <Typography.Title level={5}>{user.roles}</Typography.Title>
+                </div>
+              </>
+            ),
+
+            status: (
+              <>
+                <Button type="primary" className="tag-primary">
+                  {user.isVerified ? 'Đã kích hoạt' : 'Chưa kích hoạt'}
+                </Button>
+              </>
+            ),
+            created: (
+              <>
+                <div className="ant-employed">
+                  <Typography.Title level={5}>{new Date(user.createdAt).toLocaleDateString()}</Typography.Title>
+                </div>
+              </>
+            ),
+          };
+        })
+      );
+    } else {
+      setData([]);
+    }
+  }, [user.users]);
   return (
     <>
       <AddUserModal
@@ -146,6 +239,8 @@ function Users() {
         onCancel={() => setVisibleAdd(false)}
         beforeUpload={beforeUploadHandler}
       />
+      <EditUserModel visible={visibleEdit} form={formEdit} onCancel={() => setVisibleEdit(false)} />
+      <ConfirmDelete visible={visibleDelete} onFinish={onFinishEditHandle} onCancel={() => setVisibleDelete(false)} loading={loading} handleDelete={handleConfirmDelete} />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -165,7 +260,6 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
-                  disabled={disableButton}
                   icon={<SearchOutlined />}
                 >
                   Tìm kiếm
@@ -178,7 +272,6 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
-                  disabled={disableButton}
                   onClick={() => setVisibleAdd(true)}
                   icon={<PlusOutlined />}
                 >
@@ -192,6 +285,7 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
+                  onClick={onClickBtnEdit}
                   icon={<EditOutlined />}
                 >
                   Chỉnh sửa
@@ -204,6 +298,7 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
+                  onClick={onClickBtnDelete}
                   icon={<DeleteOutlined />}
                 >
                   Xóa

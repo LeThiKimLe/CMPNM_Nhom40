@@ -6,7 +6,6 @@ const initialState = {
   getLoading: false,
   error: null,
   message: '',
-  success: false,
 };
 
 const categorySlice = createSlice({
@@ -27,12 +26,11 @@ const categorySlice = createSlice({
       .addCase(categoryThunk.createAPI.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
-        state.success = true;
       })
       .addCase(categoryThunk.createAPI.rejected, (state, action) => {
         state.error = true;
         state.loading = false;
-        state.message = action.payload.message;
+        state.message = action.payload;
       })
       .addCase(categoryThunk.getAllAPI.pending, (state) => {
         state.getLoading = true;
@@ -50,7 +48,6 @@ const categorySlice = createSlice({
       })
       .addCase(categoryThunk.deleteCategoryAPI.fulfilled, (state) => {
         state.loading = false;
-        state.success = true;
       })
       .addCase(categoryThunk.deleteCategoryAPI.rejected, (state) => {
         state.error = true;
