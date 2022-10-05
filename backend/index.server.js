@@ -20,6 +20,7 @@ const urlMongoose = process.env.MONGO_CONNECTION;
 const userRouter = require('./src/routes/user.routes');
 const adminRouter = require('./src/routes/admin/admin.routes');
 const categoryRouter = require('./src/routes/category.routes');
+const colorRouter = require('./src/routes/color.routes');
 
 app.use(cookieParser());
 app.use(helmet());
@@ -36,6 +37,7 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api/category', categoryRouter);
+app.use('/api/color', colorRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', userRouter);
 

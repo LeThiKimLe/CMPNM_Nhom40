@@ -19,7 +19,8 @@ const setUser = (user) => {
   localStorage.setItem('user', JSON.stringify(user));
 };
 
-const removeUser = () => {
+const removeData = () => {
+  localStorage.removeItem('accesstoken');
   localStorage.removeItem('user');
 };
 
@@ -29,7 +30,7 @@ const TokenService = {
   updateLocalAccessToken,
   getUser,
   setUser,
-  removeUser,
+  removeData,
 };
 
 export default TokenService;
