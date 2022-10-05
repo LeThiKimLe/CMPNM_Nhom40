@@ -24,7 +24,7 @@ function App() {
     if (!auth.isLoggedIn) {
       dispatch(authActions.isUserLoggedIn());
     }
-  }, [auth.isLoggedIn]);
+  }, [auth.isLoggedIn, dispatch]);
   return (
     <BrowserRouter>
       <div className="App">
