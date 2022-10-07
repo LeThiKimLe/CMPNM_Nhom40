@@ -12,12 +12,12 @@ const getAllColorByCategory = async (req, res) => {
 const addColor = async (req, res) => {
   const { name, value, category } = req.body.data;
   const colorExits = await Color.find({
-    $and: [
+    $or: [
       {
-        $or: [{ name }, { category }],
+        $and: [{ name }, { category }],
       },
       {
-        $or: [{ value }, { category }],
+        $and: [{ value }, { category }],
       },
     ],
   });
@@ -28,7 +28,7 @@ const addColor = async (req, res) => {
   const newColor = new Color({ name, value, category });
   newColor.save((error, color) => {
     if (error) return ServerError(res, error.message);
-    return Response(res, 'Add Color Successfully!');
+    return Response(res, { message: 'Add Color Successfully!' });
   });
 };
 module.exports = {

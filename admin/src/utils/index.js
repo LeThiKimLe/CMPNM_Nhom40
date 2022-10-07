@@ -5,4 +5,7 @@ export const getBase64 = (file) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+export const formatThousand = (num) => {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+};
 export * from './private-component';

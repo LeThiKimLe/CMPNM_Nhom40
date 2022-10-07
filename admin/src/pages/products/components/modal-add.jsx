@@ -1,28 +1,76 @@
-import { Modal, Tabs, Form, Row, Col, Select, Input, InputNumber, Slider, Button, Upload, Radio } from 'antd';
+import {
+  Modal,
+  Tabs,
+  Form,
+  Row,
+  Col,
+  Select,
+  Input,
+  InputNumber,
+  Slider,
+  Button,
+  Upload,
+  Radio,
+} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ColorInput from '../components/color-input';
+import { useSelector, useDispatch } from 'react-redux';
+import categoryThunk from '../../../features/category/category.service';
+import colorThunk from '../../../features/color/color.service';
 const { Option } = Select;
 const AddProductModal = (props) => {
+  const dispatch = useDispatch();
   const { visible, onCancel, form, loading, onFinish, beforeUpload } = props;
+  const category = useSelector((state) => state.category);
+  const [categorySelect, setCategorySelect] = useState('');
   const [saleValue, setSaleValue] = useState(0);
+  const [regularPrice, setRegularPrice] = useState(0);
+  const [salePrice, setSalePrice] = useState(regularPrice);
   const [btnAddCheck, setBtnAddCheck] = useState(false);
+  const [btnRemoveCheck, setBtnRemoveCheck] = useState(false);
   // * color
-  const [colorList, setColorList] = useState(['#FFFF00']);
-  const onChange = (value) => {
+  const [colorList, setColorList] = useState([]);
+
+  const onChangeSalePrice = (value) => {
     if (isNaN(value)) {
       return;
     }
-
     setSaleValue(value);
+    const salePrice =
+      Number(regularPrice) - (Number(regularPrice) * Number(value)) / 100;
+    form.setFieldValue('salePrice', salePrice.toString());
+  };
+  const onChangeRegularPrice = (e) => {
+    setRegularPrice(e.target.value);
+
+    if (saleValue !== 0) {
+      const salePrice =
+        Number(e.target.value) -
+        (Number(e.target.value) * Number(saleValue)) / 100;
+      form.setFieldValue('salePrice', salePrice.toString());
+    } else {
+      form.setFieldValue('salePrice', e.target.value);
+    }
   };
   const onChangeSelect = (value) => {
-    console.log(`selected ${value}`);
+    setCategorySelect(value);
+    dispatch(colorThunk.getColorAllByCategoryAPI(value))
+      .unwrap()
+      .then((res) => {
+        setColorList(res.list);
+      });
   };
 
   const onSearch = (value) => {
     console.log('search:', value);
   };
+  useEffect(() => {
+    if (category.categories.length === 0) {
+      dispatch(categoryThunk.getAllAPI());
+    }
+  }, [category.categories, dispatch]);
+
   return (
     <div
       style={{
@@ -31,10 +79,27 @@ const AddProductModal = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal bodyStyle={{ marginLeft: '30px', marginRight: '30px' }} width={700} footer={null} visible={visible} title="Create New Product" onCancel={onCancel}>
+      <Modal
+        bodyStyle={{ marginLeft: '30px', marginRight: '30px' }}
+        width={800}
+        footer={null}
+        visible={visible}
+        title="Thêm sản phẩm mới"
+        onCancel={onCancel}
+      >
         <Tabs defaultActiveKey="1" size="large">
           <Tabs.TabPane tab="Thông tin sản phẩm" key="1">
-            <Form form={form} onFinish={onFinish} layout="vertical" className="row-col" autoComplete="off">
+            <Form
+              form={form}
+              onFinish={onFinish}
+              labelCol={{
+                span: 6,
+              }}
+              wrapperCol={{
+                span: 18,
+              }}
+              autoComplete="off"
+            >
               <Form.Item
                 style={{ fontWeight: '600' }}
                 className="username"
@@ -47,20 +112,51 @@ const AddProductModal = (props) => {
                   },
                 ]}
               >
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Tên sản phẩm" />
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Tên sản phẩm"
+                />
               </Form.Item>
-              <Form.Item className="username" label="Giá gốc (đ)" style={{ fontWeight: '600' }} name="regularPrice">
-                <Input type="number" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Giá gốc" />
+              <Form.Item
+                className="username"
+                label="Giá gốc (đ)"
+                style={{ fontWeight: '600' }}
+                name="regularPrice"
+              >
+                <Input
+                  style={{
+                    border: '1px solid #C0C0C0',
+                    borderRadius: '10px',
+                    width: '100%',
+                    height: '40px',
+                  }}
+                  size="large"
+                  value={regularPrice}
+                  placeholder="Giá gốc"
+                  onChange={(e) => onChangeRegularPrice(e)}
+                />
               </Form.Item>
               <Row gutter={[16, 8]}>
-                <Col span={12}>
+                <Col span={24}>
                   {' '}
-                  <Form.Item className="username" label="Phần trăm giảm giá (%)" style={{ fontWeight: '600' }} name="sale" hasFeedback>
+                  <Form.Item
+                    className="username"
+                    label="Phần trăm giảm giá (%)"
+                    style={{ fontWeight: '600' }}
+                    name="sale"
+                    hasFeedback
+                  >
                     <Row>
                       <Col span={12}>
-                        <Slider min={0} max={30} onChange={onChange} value={typeof saleValue === 'number' ? saleValue : 0} step={1} />
+                        <Slider
+                          min={0}
+                          max={30}
+                          onChange={onChangeSalePrice}
+                          value={typeof saleValue === 'number' ? saleValue : 0}
+                          step={1}
+                        />
                       </Col>
-                      <Col span={4}>
+                      <Col span={12}>
                         <InputNumber
                           min={0}
                           max={30}
@@ -71,15 +167,22 @@ const AddProductModal = (props) => {
                           size="middle"
                           step={1}
                           value={saleValue}
-                          onChange={onChange}
                         />
                       </Col>
                     </Row>
                   </Form.Item>
                 </Col>
               </Row>
-              <Form.Item className="username" label="Giá đã giảm (đ)" style={{ fontWeight: '600' }} name="salePrice">
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
+              <Form.Item
+                className="username"
+                label="Giá đã giảm (đ)"
+                style={{ fontWeight: '600' }}
+                name="salePrice"
+              >
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  value={salePrice}
+                />
               </Form.Item>
               <Form.Item
                 className="username"
@@ -95,17 +198,23 @@ const AddProductModal = (props) => {
               >
                 <Select
                   showSearch
-                  placeholder="Select a person"
+                  placeholder="Chọn nhãn hiệu"
                   optionFilterProp="children"
                   onChange={onChangeSelect}
                   size="large"
                   onSearch={onSearch}
                   style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                  filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
                 >
-                  <Option value="jack">Jack</Option>
-                  <Option value="lucy">Lucy</Option>
-                  <Option value="tom">Tom</Option>
+                  {category.categories.map((category) => {
+                    return (
+                      <Option key={category._id} value={category._id}>
+                        {category.name}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
               {/* color */}
@@ -121,7 +230,17 @@ const AddProductModal = (props) => {
                   },
                 ]}
               >
-                <ColorInput colorList={colorList} addButton={btnAddCheck} addButtonOpen={() => setBtnAddCheck(true)} handleClose={() => setBtnAddCheck(false)} />
+                <ColorInput
+                  setColorList={setColorList}
+                  category={categorySelect}
+                  colorList={colorList}
+                  addBtn={btnAddCheck}
+                  removeBtn={btnRemoveCheck}
+                  removeBtnOpen={() => setBtnRemoveCheck(true)}
+                  addBtnOpen={() => setBtnAddCheck(true)}
+                  handleCloseAdd={() => setBtnAddCheck(false)}
+                  handleCloseRemove={() => setBtnRemoveCheck(false)}
+                />
               </Form.Item>
               <Form.Item
                 className="username"
@@ -135,7 +254,11 @@ const AddProductModal = (props) => {
                   },
                 ]}
               >
-                <Input type="number" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Số lượng sản phẩm" />
+                <Input
+                  type="number"
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Số lượng sản phẩm"
+                />
               </Form.Item>
               <Form.Item
                 className="username"
@@ -155,7 +278,13 @@ const AddProductModal = (props) => {
                   }}
                   accept=".png, .jpeg, .jpg"
                 >
-                  <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
+                  <Button
+                    style={{
+                      border: '1px solid #C0C0C0',
+                      borderRadius: '10px',
+                    }}
+                    icon={<UploadOutlined />}
+                  >
                     Click to Upload
                   </Button>
                 </Upload>
@@ -176,7 +305,11 @@ const AddProductModal = (props) => {
                   },
                 ]}
               >
-                <Input type="number" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Số lượng sản phẩm" />
+                <Input
+                  type="number"
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Số lượng sản phẩm"
+                />
               </Form.Item>
             </Form>
           </Tabs.TabPane>
