@@ -190,6 +190,7 @@ function ListCategories() {
                     return (
                       <Col span={4}>
                         <Card
+                          key={i}
                           style={{ borderRadius: '10px', padding: '20px 20px 0px', background: '#F0F8FF' }}
                           cover={<Image src={category.categoryImage} height={80} alt={category.name} style={{ borderRadius: '10px' }} />}
                           actions={[<EditOutlined key="edit" />, <DeleteOutlined key="delete" />]}

@@ -1,22 +1,28 @@
 const mongoose = require('mongoose');
 
 const detailsProduct = mongoose.Schema({
-  generalInformation: [String],
-  screen: [String],
-  backCamera: [String],
-  frontCamera: [String],
+  screen: {
+    type: String,
+    required: true,
+  },
   OS: {
     type: String,
     required: true,
   },
+  backCamera: {
+    type: String,
+    required: true,
+  },
+  frontCamera: {
+    type: String,
+    required: true,
+  },
+
   cpu: {
     type: String,
     required: true,
   },
-  gpu: {
-    type: String,
-    required: true,
-  },
+
   ram: {
     type: String,
     required: true,
@@ -25,9 +31,14 @@ const detailsProduct = mongoose.Schema({
     type: String,
     required: true,
   },
-  connection: [String],
-  batteryPowerAndCharger: [String],
-  utilities: [String],
+  sim: {
+    type: String,
+    required: true,
+  },
+  batteryPowerAndCharger: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('DetailsProduct', detailsProduct);
