@@ -23224,3 +23224,12 @@
 20221007	22:28:52	9931b65f-0464-42bd-a8de-a7902507ce1b	GET	http://localhost:3001	/api/category
 20221007	22:28:58	c6e776f7-4bc3-4761-87d8-a99d532a0e05	OPTIONS	http://localhost:3001	/api/color/get-colors/633da75b057a14df719f0cb4
 20221007	22:28:58	c5b84b78-1fe0-4b14-9c03-4e5d18099619	GET	http://localhost:3001	/api/color/get-colors/633da75b057a14df719f0cb4
+20221008	15:45:51	57d42d68-5460-4d09-8bec-1620d6e64106	OPTIONS	http://localhost:3001	/api/admin/get-users
+20221008	15:45:51	8f29f8a8-ff40-446f-99fb-a7a741a923a6	GET	http://localhost:3001	/api/admin/get-users
+20221008	15:48:20	9491c773-f38c-4c96-a886-fe7891832e70	OPTIONS	http://localhost:3001	/api/admin/get-users
+20221008	15:48:20	43376dcb-98c4-4d50-8f4e-fa7c8b9e2ae5	GET	http://localhost:3001	/api/admin/get-users
+20221008	15:48:21	8ba6aeaa-a63c-4d87-9413-77d86e5e662c	OPTIONS	http://localhost:3001	/api/category
+20221008	15:48:21	6f856c37-3e7b-46cc-bc87-202f0541bea1	GET	http://localhost:3001	/api/category
+20221008	15:48:25	e05f8ba5-9ea5-40f8-923c-b34b37e491b4	GET	http://localhost:3001	/api/category
+20221008	15:48:26	55540001-9cc0-4ef1-a473-f00c3c943a3f	OPTIONS	http://localhost:3001	/api/admin/get-users
+20221008	15:48:26	db175de8-c464-4d2b-9be0-5d678f5237c9	GET	http://localhost:3001	/api/admin/get-users
