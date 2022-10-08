@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import {
-  PlusOutlined,
-  MinusOutlined,
-  ExclamationOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { Tag, Input, notification, Row, Col, Button, List } from 'antd';
 import { SketchPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
 import colorThunk from '../../../features/color/color.service';
+
 const deletebtn = [
   <svg
     width="16"
@@ -37,10 +34,21 @@ const ColorInput = (props) => {
     category,
     setColorList,
     handleCloseRemove,
+    setColorSubmit,
+    colorSubmit,
   } = props;
   const dispatch = useDispatch();
   const [color, setColor] = useState('');
   const [colorName, setColorName] = useState('');
+
+  const handleSelectColor = (e, value) => {
+    if (value === colorSubmit) {
+      return;
+    } else {
+      setColorSubmit(value);
+    }
+  };
+
   const handleAddColor = () => {
     const colorData = {
       name: colorName,
@@ -96,20 +104,27 @@ const ColorInput = (props) => {
                     column: 8,
                   }}
                   dataSource={data}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <Button
-                        style={{
-                          background: item.color,
-                          borderRadius: '50%',
-                          width: '40px',
-                          height: '40px',
-                        }}
-                      >
-                        {' '}
-                      </Button>
-                    </List.Item>
-                  )}
+                  renderItem={(item) => {
+                    return (
+                      <List.Item key={item.color}>
+                        <Button
+                          style={{
+                            background: item.color,
+                            borderRadius: '50%',
+                            width: '40px',
+                            height: '40px',
+                            border:
+                              colorSubmit === item.color
+                                ? '2px solid #000000'
+                                : '',
+                          }}
+                          onClick={(e) => handleSelectColor(e, item.color)}
+                        >
+                          {' '}
+                        </Button>
+                      </List.Item>
+                    );
+                  }}
                 />
               ) : (
                 <List
@@ -120,7 +135,7 @@ const ColorInput = (props) => {
                   }}
                   renderItem={(item) => (
                     <div>
-                      <List.Item>
+                      <List.Item key={item.color}>
                         <Row
                           style={{
                             display: 'flex',
