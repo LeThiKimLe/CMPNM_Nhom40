@@ -7,7 +7,7 @@ import {
   faCartShopping,
 } from '@fortawesome/free-solid-svg-icons';
 
-const Search = () => {
+const Search = ({ cartItem }) => {
   window.addEventListener('scroll', function () {
     const search = document.querySelector('.search');
     search.classList.toggle('active', window.scrollY > 100);
@@ -27,7 +27,7 @@ const Search = () => {
             <div className="cart">
               <Link to="/cart">
                 <FontAwesomeIcon icon={faCartShopping} />
-                <span>0</span>
+                <span>{cartItem.lenght === 0 ? '' : cartItem.lenght}</span>
               </Link>
             </div>
           </div>
