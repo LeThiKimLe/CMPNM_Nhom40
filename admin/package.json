@@ -16,8 +16,10 @@
     "antd": "^4.22.7",
     "antd-img-crop": "^4.2.4",
     "axios": "^0.27.2",
+    "ckeditor4-react": "^4.1.0",
     "connected-react-router": "^6.9.3",
     "craco-less": "^2.0.0",
+    "draft-js": "^0.11.7",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "formik": "^2.2.9",
@@ -34,7 +36,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "cross-env PORT=3001 && craco start",
+    "start": "set PORT=3001 && craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
