@@ -18,7 +18,8 @@ import categoryThunk from '../../../features/category/category.service';
 import colorThunk from '../../../features/color/color.service';
 const { Option } = Select;
 const TabInfo = (props) => {
-  const { form, setColorSubmit, colorSubmit } = props;
+  const { form, setColorSubmit, colorSubmit, fileList, handleChangeUpload } =
+    props;
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
   const [categorySelect, setCategorySelect] = useState('');
@@ -103,7 +104,6 @@ const TabInfo = (props) => {
         wrapperCol={{
           span: 18,
         }}
-        autoComplete="off"
       >
         <Form.Item
           style={{ fontWeight: '600' }}
@@ -284,6 +284,8 @@ const TabInfo = (props) => {
               return false;
             }}
             accept=".png, .jpeg, .jpg"
+            fileList={fileList}
+            onChange={handleChangeUpload}
           >
             <Button
               style={{

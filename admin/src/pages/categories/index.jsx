@@ -1,5 +1,25 @@
-import { Row, Col, Card, Image, Switch, Statistic, Typography, Button, notification, Form, Spin, Space } from 'antd';
-import { PlusOutlined, SettingOutlined, EditOutlined, EllipsisOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  Card,
+  Image,
+  Switch,
+  Statistic,
+  Typography,
+  Button,
+  notification,
+  Form,
+  Spin,
+  Space,
+} from 'antd';
+import {
+  PlusOutlined,
+  SettingOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  SearchOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -107,9 +127,28 @@ function ListCategories() {
   }, [category.categories]);
   return (
     <>
-      <AddCategoryModal handleCancel={handleCancel} form={formAdd} loading={loading} onFinish={handleAddCategory} visible={visibleAdd} onCancel={() => setVisibleAdd(false)} />
-      <EditCategoryModal handleCancel={handleCancel} form={formEdit} loading={loading} onFinish={onFinishEditHandle} visible={visibleEdit} onCancel={() => setVisibleEdit(false)} />
-      <ConfirmDeleteModal loading={loading} visible={visibleDelete} handleDelete={handleDeleteCategory} onCancel={() => setVisibleDelete(false)} />
+      <AddCategoryModal
+        handleCancel={handleCancel}
+        form={formAdd}
+        loading={loading}
+        onFinish={handleAddCategory}
+        visible={visibleAdd}
+        onCancel={() => setVisibleAdd(false)}
+      />
+      <EditCategoryModal
+        handleCancel={handleCancel}
+        form={formEdit}
+        loading={loading}
+        onFinish={onFinishEditHandle}
+        visible={visibleEdit}
+        onCancel={() => setVisibleEdit(false)}
+      />
+      <ConfirmDeleteModal
+        loading={loading}
+        visible={visibleDelete}
+        handleDelete={handleDeleteCategory}
+        onCancel={() => setVisibleDelete(false)}
+      />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -121,7 +160,10 @@ function ListCategories() {
                 <p>Tiep</p>
               </Col>
             </Row>
-            <Row gutter={[32, 16]} style={{ marginLeft: '5px', marginBottom: '20px' }}>
+            <Row
+              gutter={[32, 16]}
+              style={{ marginLeft: '5px', marginBottom: '20px' }}
+            >
               <Col>
                 <Button
                   style={{
@@ -190,10 +232,24 @@ function ListCategories() {
                     return (
                       <Col span={4}>
                         <Card
-                          key={i}
-                          style={{ borderRadius: '10px', padding: '20px 20px 0px', background: '#F0F8FF' }}
-                          cover={<Image src={category.categoryImage} height={80} alt={category.name} style={{ borderRadius: '10px' }} />}
-                          actions={[<EditOutlined key="edit" />, <DeleteOutlined key="delete" />]}
+                          key={category._id}
+                          style={{
+                            borderRadius: '10px',
+                            padding: '20px 20px 0px',
+                            background: '#F0F8FF',
+                          }}
+                          cover={
+                            <Image
+                              src={category.categoryImage}
+                              height={80}
+                              alt={category.name}
+                              style={{ borderRadius: '10px' }}
+                            />
+                          }
+                          actions={[
+                            <EditOutlined key="edit" />,
+                            <DeleteOutlined key="delete" />,
+                          ]}
                         >
                           <div
                             style={{

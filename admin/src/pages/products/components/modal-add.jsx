@@ -1,30 +1,26 @@
-import { Modal, Tabs, Form, Select, Input, Button } from 'antd';
+import { Modal, Tabs, Button } from 'antd';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import TabDescription from './tab-description';
 import TabDigital from './tab-digital';
 import TabInfo from './tab-info';
 
 const AddProductModal = (props) => {
-  const { handleCancel } = props;
-  // *tab mô tả
-  const [description, setDescription] = useState('');
+  const {
+    visible,
+    onCancel,
+    handleCancel,
+    handleChangeUpload,
+    handleAddProduct,
+    formTabInfo,
+    formTabDigital,
+    setColorSubmit,
+    colorSubmit,
+    fileList,
+    description,
+    setDescription,
+  } = props;
 
-  const [colorSubmit, setColorSubmit] = useState('');
-  const [formTabInfo] = Form.useForm();
-  const [formTabDigital] = Form.useForm();
-  const { visible, onCancel } = props;
-  const handleAddProduct = () => {
-    formTabInfo
-      .validateFields()
-      .then((values) => {
-        console.log(colorSubmit);
-      })
-      .catch((errorInfo) => {
-        console.log(colorSubmit);
-        console.log(errorInfo);
-      });
-  };
   return (
     <div
       style={{
@@ -47,13 +43,18 @@ const AddProductModal = (props) => {
               form={formTabInfo}
               setColorSubmit={setColorSubmit}
               colorSubmit={colorSubmit}
+              handleChangeUpload={handleChangeUpload}
+              fileList={fileList}
             />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Thông số kỹ thuật" key="2">
             <TabDigital form={formTabDigital} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Mô tả sản phẩm" key="3">
-            <TabDescription />
+            <TabDescription
+              setDescription={setDescription}
+              description={description}
+            />
           </Tabs.TabPane>
         </Tabs>
         <div

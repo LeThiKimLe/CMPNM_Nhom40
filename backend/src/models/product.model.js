@@ -12,15 +12,17 @@ const productSchema = new mongoose.Schema(
       unique: true,
     },
     regularPrice: {
-      type: Number,
+      type: String,
       required: true,
     },
     sale: {
-      type: Number,
+      type: String,
+    },
+    salePrice: {
+      type: String,
     },
     description: {
       type: String,
-      required: true,
       trim: true,
     },
     detailsProduct: {
@@ -29,18 +31,14 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     color: { type: String, required: true },
-    quantity: {
-      type: Number,
-      required: true,
-    },
     quantitySold: {
-      type: Number,
+      type: String,
       default: 0,
     },
     stock: {
-      type: Number,
+      type: String,
     },
-    productPictures: [{ image: { type: String } }],
+    productPictures: [String],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',

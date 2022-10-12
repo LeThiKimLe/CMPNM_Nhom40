@@ -15,7 +15,6 @@ const detailsProduct = mongoose.Schema({
   },
   frontCamera: {
     type: String,
-    required: true,
   },
 
   cpu: {
