@@ -7,6 +7,40 @@ import productThunk from '../../features/product/product.service';
 
 import { getBase64 } from '../../utils';
 function Products() {
+  const columns = [
+    {
+      title: 'Tên sản phẩm',
+      dataIndex: 'name',
+      key: 'name',
+      width: '32%',
+    },
+    {
+      title: 'Giá gốc',
+      key: 'originalPrice',
+      dataIndex: 'originalPrice',
+    },
+    {
+      title: 'Thương hiệu',
+      dataIndex: 'brand',
+      key: 'brand',
+    },
+
+    {
+      title: 'Màu sắc',
+      key: 'color',
+      dataIndex: 'color',
+    },
+    {
+      title: 'Số lượng',
+      key: 'amount',
+      dataIndex: 'amount',
+    },
+    {
+      title: 'Hình ảnh',
+      key: 'image',
+      dataIndex: 'image',
+    },
+  ];
   // * useDispatch
   const dispatch = useDispatch();
 
