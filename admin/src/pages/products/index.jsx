@@ -68,6 +68,7 @@ function Products() {
           description,
         };
         delete infoValues.image;
+        console.log(productData);
         return new Promise((resolve, reject) => {
           resolve(productData);
         });

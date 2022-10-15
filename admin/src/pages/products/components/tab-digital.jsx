@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input } from 'antd';
+
 const TabDigital = (props) => {
   const { form } = props;
   return (
