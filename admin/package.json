@@ -17,12 +17,10 @@
     "antd-img-crop": "^4.2.4",
     "axios": "^0.27.2",
     "ckeditor4-react": "^4.1.0",
-    "connected-react-router": "^6.9.3",
     "craco-less": "^2.0.0",
     "draft-js": "^0.11.7",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "formik": "^2.2.9",
     "history": "4.10.1",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
@@ -32,8 +30,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
+    "web-vitals": "^2.1.0"
   },
   "scripts": {
     "start": "set PORT=3001 && craco start",
