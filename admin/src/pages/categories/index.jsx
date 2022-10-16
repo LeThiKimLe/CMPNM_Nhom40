@@ -58,6 +58,7 @@ function ListCategories() {
   };
   const renderDataInEdit = (editKey) => {
     let categoryEdit;
+
     category.categories.map((category) => {
       if (category._id === editKey) {
         categoryEdit = category;

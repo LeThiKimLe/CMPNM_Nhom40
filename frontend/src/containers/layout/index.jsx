@@ -1,16 +1,28 @@
-import { Grid } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import React from 'react';
+import MenuCategories from '../side-navigation';
 import Header from '../header';
-import Container from '@mui/material/Container';
-const MainLayout = ({ children }) => {
-  return (
-    <Container>
-      <Grid>
+import Navbar from '../navbar';
+function Layout({ children }) {
+  let { pathname } = useLocation();
+  pathname = pathname.replace('/', '');
+  if (
+    pathname === 'sign-in' ||
+    pathname === 'sign-up' ||
+    pathname === 'verify-email' ||
+    pathname === 'resend-verify-email'
+  ) {
+    return <>{children}</>;
+  } else {
+    return (
+      <>
         <Header />
-      </Grid>
-      {children}
-    </Container>
-  );
-};
+        <Navbar />
+        <MenuCategories />
+        {children}
+      </>
+    );
+  }
+}
 
-export default MainLayout;
+export default Layout;
