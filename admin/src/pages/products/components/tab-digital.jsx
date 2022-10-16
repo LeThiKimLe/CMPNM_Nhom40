@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input } from 'antd';
-<<<<<<< HEAD
+
 import { Select } from 'antd';
 
 const { Option } = Select;
@@ -84,8 +84,6 @@ const storage = [
     amount: '1TB',
   },
 ];
-=======
->>>>>>> eab6105 (finish home signin signup form client frontend)
 
 const TabDigital = (props) => {
   const { form } = props;
