@@ -23,7 +23,7 @@ const createProduct = async (req, res) => {
   Promise.all([...productPicturesUpload])
     .then((values) => {
       for (let i = 0; i < info.productPictures.length; i++) {
-        productPictures.push({ image: values[i].url });
+        productPictures.push(values[i].url);
       }
 
       const detailsProduct = new ProductDetails({
@@ -48,6 +48,14 @@ const createProduct = async (req, res) => {
     .then(() => Create(res, 'Create product successfully!'))
     .catch((error) => ServerError(res, error.message));
 };
+
+const getAll = async (req, res) => {
+  const products = await Product.find({}).select(
+    '_id name slug regularPrice color stock productPictures category active createdAt'
+  );
+  return Response(res, { list: products });
+};
 module.exports = {
   createProduct,
+  getAll,
 };

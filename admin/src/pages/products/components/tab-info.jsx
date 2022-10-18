@@ -286,6 +286,7 @@ const TabInfo = (props) => {
             accept=".png, .jpeg, .jpg"
             fileList={fileList}
             onChange={handleChangeUpload}
+            multiple={true}
           >
             <Button
               style={{

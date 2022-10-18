@@ -1,4 +1,4 @@
-import { Modal, Tabs, Button } from 'antd';
+import { Modal, Tabs, Button, Spin } from 'antd';
 
 import React from 'react';
 import TabDescription from './tab-description';
@@ -19,6 +19,7 @@ const AddProductModal = (props) => {
     fileList,
     description,
     setDescription,
+    loading,
   } = props;
 
   return (
@@ -57,6 +58,17 @@ const AddProductModal = (props) => {
             />
           </Tabs.TabPane>
         </Tabs>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '20px',
+          }}
+        >
+          {loading ? <Spin /> : null}
+        </div>
+
         <div
           style={{
             display: 'flex',

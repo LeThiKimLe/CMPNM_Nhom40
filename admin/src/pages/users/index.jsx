@@ -1,15 +1,30 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react';
-import { Row, Col, notification, Button, message, Form, Avatar, Table, Typography, Space } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  Row,
+  Col,
+  notification,
+  Button,
+  message,
+  Form,
+  Avatar,
+  Table,
+  Typography,
+} from 'antd';
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import avatar from '../../assets/images/avatar.jpg';
 import AddUserModal from './components/modal-add';
-import MenuSearch from './components/menu-search';
+import ConfirmDelete from '../../components/ui/modal/confirm-delete';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBase64 } from '../../utils';
 import userThunk from '../../features/users/user.service';
 import { userActions } from '../../features/users/user.slice';
-import ConfirmDelete from '../../components/ui/modal/confirm-delete';
+import MenuSearch from './components/menu-search';
 import EditUserModel from './components/modal-edit';
 
 const { Title } = Typography;
@@ -65,7 +80,10 @@ function Users() {
     dispatch(userThunk.deleteUsersAPI(selectedRowKeys))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Delete succesfully', placement: 'top' });
+        notification.success({
+          message: 'Delete succesfully',
+          placement: 'top',
+        });
         setTimeout(() => {
           setVisibleDelete(false);
           dispatch(userThunk.getAllUserAPI());
@@ -122,7 +140,10 @@ function Users() {
     setVisibleAdd(false);
   };
   const beforeUploadHandler = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+    const isJpgOrPng =
+      file.type === 'image/jpeg' ||
+      file.type === 'image/png' ||
+      file.type === 'image/jpg';
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');
     }
@@ -184,9 +205,16 @@ function Users() {
             name: (
               <>
                 <Avatar.Group>
-                  <Avatar className="shape-avatar" shape="square" size={50} src={user.profilePicture ? user.profilePicture : avatar}></Avatar>
+                  <Avatar
+                    className="shape-avatar"
+                    shape="square"
+                    size={50}
+                    src={user.profilePicture ? user.profilePicture : avatar}
+                  ></Avatar>
                   <div className="avatar-info">
-                    <Typography.Title level={5}>{user.lastName + user.firstName}</Typography.Title>
+                    <Typography.Title level={5}>
+                      {user.lastName + user.firstName}
+                    </Typography.Title>
                     <p>{user.email}</p>
                   </div>
                 </Avatar.Group>{' '}
@@ -195,7 +223,9 @@ function Users() {
             contactNumber: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>{user.contactNumber}</Typography.Title>
+                  <Typography.Title level={5}>
+                    {user.contactNumber}
+                  </Typography.Title>
                 </div>
               </>
             ),
@@ -217,7 +247,9 @@ function Users() {
             created: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>{new Date(user.createdAt).toLocaleDateString()}</Typography.Title>
+                  <Typography.Title level={5}>
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </Typography.Title>
                 </div>
               </>
             ),
@@ -239,8 +271,18 @@ function Users() {
         onCancel={() => setVisibleAdd(false)}
         beforeUpload={beforeUploadHandler}
       />
-      <EditUserModel visible={visibleEdit} form={formEdit} onCancel={() => setVisibleEdit(false)} />
-      <ConfirmDelete visible={visibleDelete} onFinish={onFinishEditHandle} onCancel={() => setVisibleDelete(false)} loading={loading} handleDelete={handleConfirmDelete} />
+      <EditUserModel
+        visible={visibleEdit}
+        form={formEdit}
+        onCancel={() => setVisibleEdit(false)}
+      />
+      <ConfirmDelete
+        visible={visibleDelete}
+        onFinish={onFinishEditHandle}
+        onCancel={() => setVisibleDelete(false)}
+        loading={loading}
+        handleDelete={handleConfirmDelete}
+      />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -252,7 +294,10 @@ function Users() {
                 <MenuSearch />
               </Col>
             </Row>
-            <Row gutter={[32, 16]} style={{ marginLeft: '5px', marginBottom: '20px' }}>
+            <Row
+              gutter={[32, 16]}
+              style={{ marginLeft: '5px', marginBottom: '20px' }}
+            >
               <Col>
                 <Button
                   style={{
@@ -306,7 +351,13 @@ function Users() {
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              <Table rowSelection={rowSelection} columns={columns} dataSource={data} pagination={true} className="ant-border-space" />
+              <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={data}
+                pagination={true}
+                className="ant-border-space"
+              />
             </div>
           </Col>
         </Row>

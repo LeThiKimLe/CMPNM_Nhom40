@@ -5,6 +5,8 @@ import {
   IconButton,
   InputBase,
   Menu,
+  MenuItem,
+  Button,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import React, { useState } from 'react';
@@ -17,36 +19,22 @@ import MDButton from '../../components/MDButton';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MuiLink from '@mui/material/Link';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
 import NotificationItem from '../../components/NotificationItem';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
 const Navbar = () => {
   const dispatch = useDispatch();
 
-  const [openMenu, setOpenMenu] = useState(false);
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const handleSignOut = () => {
     dispatch(userActions.signout());
   };
 
-  const handleCloseMenu = (e) => setOpenMenu(false);
-  const handleOpenMenu = (event) => {
-    setOpenMenu(event.currentTarget);
-  };
-
-  const renderMenu = () => (
-    <Menu
-      anchorEl={openMenu}
-      sx={{ marginTop: '10px' }}
-      open={Boolean(openMenu)}
-    >
-      <NotificationItem title="Tài khoản" />
-      <NotificationItem title="Đơn mua" />
-      <NotificationItem title="Đăng xuất" />
-    </Menu>
-  );
   return (
     <MDBox
       color="white"
@@ -56,19 +44,20 @@ const Navbar = () => {
       opacity={1}
       p={2}
       display="flex"
-      alignItems="center"
       justifyContent="space-between"
+      alignItems="flex-end"
     >
       <Container>
         <Stack direction="row">
           <Grid container item xs={12} spacing={7}>
-            <Grid item xs={2} justifyContent="flex-start">
-              <Stack
-                direction="row"
-                spacing={2}
-                display="flex"
-                alignItems="center"
-              >
+            <Grid
+              item
+              xs={2}
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Stack direction="row" spacing={2}>
                 <MDTypography
                   component={MuiLink}
                   href="/"
@@ -100,22 +89,43 @@ const Navbar = () => {
                 </IconButton>
               </Paper>
             </Grid>
-            <Grid item xs={2} alignItems="center" justifyContent="flex-end">
+            <Grid
+              item
+              xs={2}
+              direction="row"
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="flex-end"
+            >
               <Stack direction="row" spacing={3}>
                 <MDButton variant="outlined" component={Link} to="/cart">
                   <ShoppingCartIcon />
                 </MDButton>
                 {isLoggedIn ? (
-                  <MDButton
-                    variant="outlined"
-                    onMouseOver={(e) => handleOpenMenu(e)}
-                  >
-                    <AccountCircleIcon />
-                    {renderMenu()}
-                  </MDButton>
+                  <PopupState variant="popover" popupId="demo-popup-menu">
+                    {(popupState) => (
+                      <React.Fragment>
+                        <MDButton
+                          variant="outlined"
+                          {...bindTrigger(popupState)}
+                        >
+                          <AccountCircleIcon />
+                        </MDButton>
+                        <Menu {...bindMenu(popupState)}>
+                          <MenuItem onClick={popupState.close}>
+                            Tài khoản
+                          </MenuItem>
+                          <MenuItem onClick={popupState.close}>
+                            Đơn mua
+                          </MenuItem>
+                          <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
+                        </Menu>
+                      </React.Fragment>
+                    )}
+                  </PopupState>
                 ) : (
                   <MDButton variant="outlined" component={Link} to="/sign-in">
-                    <ArrowForwardIcon />
+                    <ArrowBackIcon />
                   </MDButton>
                 )}
               </Stack>
