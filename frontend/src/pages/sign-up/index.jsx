@@ -1,14 +1,16 @@
-import { useState } from 'react';
-
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // react-router-dom components
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 // @mui material components
 import Card from '@mui/material/Card';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 import MuiLink from '@mui/material/Link';
-
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -22,16 +24,61 @@ import MDButton from '../../components/MDButton';
 import Footer from '../sign_in/components/footer';
 // Authentication layout components
 // Images
-import bgImage from '../../assets/images/bg-sign-in-basic.jpeg';
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
 import { Stack } from '@mui/material';
 
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import userThunk from '../../features/user/user.service';
+import { userActions } from '../../features/user/user.slice';
 function SignUp() {
-  const [rememberMe, setRememberMe] = useState(false);
-  const image = bgImage;
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const [open, setOpen] = useState(false);
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
+    setOpen(false);
+  };
+  // * validation shema
+  const signupValidationSchema = Yup.object().shape({
+    firstName: Yup.string().required('Vui lòng nhập tên!'),
+    lastName: Yup.string().required('Vui lòng nhập họ!'),
+    email: Yup.string()
+      .required('Vui lòng nhập địa chỉ email!')
+      .email('Địa chỉ email không đúng!'),
+    password: Yup.string()
+      .required('Vui lòng nhập mật khẩu!')
+      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
+      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+    confirmPassword: Yup.string()
+      .required('Vui lòng nhập lại mật khẩu')
+      .oneOf([Yup.ref('password'), null], 'Xác nhập mật khẩu không trùng khớp'),
+  });
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  // todo useForm
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(signupValidationSchema) });
+  const onSubmit = (data) => {
+    delete data.confirmPassword;
+    dispatch(userThunk.signupAPI(data))
+      .unwrap()
+      .then((value) => {
+        const { firstName, email } = value;
+        navigate('/finish-signup', { state: { firstName, email } });
+        dispatch(userActions.reset());
+      })
+      .catch((error) => {
+        setOpen(true);
+      });
+  };
   return (
     <MDBox
       width="100vw"
@@ -39,26 +86,8 @@ function SignUp() {
       minHeight="100vh"
       sx={{ overflowX: 'hidden' }}
     >
-      <MDBox
-        position="absolute"
-        width="100%"
-        minHeight="100vh"
-        sx={{
-          backgroundImage: ({
-            functions: { linearGradient, rgba },
-            palette: { gradients },
-          }) =>
-            image &&
-            `${linearGradient(
-              rgba(gradients.dark.main, 0.6),
-              rgba(gradients.dark.state, 0.6)
-            )}, url(${image})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <MDBox px={1} width="100%" height="100vh" mx="auto">
+      <MDBox position="absolute" width="100%" minHeight="100vh" />
+      <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
         <Grid
@@ -68,6 +97,20 @@ function SignUp() {
           alignItems="center"
           height="80%"
         >
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: '100%' }}
+            >
+              {user.message}
+            </Alert>
+          </Snackbar>
           <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
             <Card>
               <MDBox
@@ -82,7 +125,7 @@ function SignUp() {
                 textAlign="center"
               >
                 <MDTypography
-                  variant="h4"
+                  variant="h5"
                   fontWeight="medium"
                   color="white"
                   mt={1}
@@ -135,27 +178,120 @@ function SignUp() {
                 >
                   <Stack direction="row" spacing={3}>
                     <MDBox mb={2}>
-                      <MDInput type="text" label="Tên" fullWidth />
+                      <MDInput
+                        required
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        {...register('firstName')}
+                        error={errors.firstName ? true : false}
+                        label="Tên"
+                        fullWidth
+                      />
+                      <Typography
+                        fontSize="14px"
+                        variant="inherit"
+                        color="primary"
+                      >
+                        {errors.firstName?.message}
+                      </Typography>
                     </MDBox>
                     <MDBox mb={2}>
-                      <MDInput type="text" label="Họ" fullWidth />
+                      <MDInput
+                        required
+                        id="lastName"
+                        name="lastName"
+                        {...register('lastName')}
+                        error={errors.lastName ? true : false}
+                        type="text"
+                        label="Họ"
+                        fullWidth
+                      />
+                      <Typography
+                        variant="inherit"
+                        fontSize="14px"
+                        color="primary"
+                      >
+                        {errors.lastName?.message}
+                      </Typography>
                     </MDBox>
                   </Stack>
                   <MDBox mb={2}>
-                    <MDInput type="email" label="Email" fullWidth />
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <MDInput type="password" label="Mật khẩu" fullWidth />
+                    <MDInput
+                      required
+                      id="email"
+                      name="email"
+                      {...register('email')}
+                      error={errors.email ? true : false}
+                      type="email"
+                      label="Email"
+                      fullWidth
+                    />
+                    <Typography
+                      fontSize="14px"
+                      variant="inherit"
+                      color="primary"
+                    >
+                      {errors.email?.message}
+                    </Typography>
                   </MDBox>
                   <MDBox mb={2}>
                     <MDInput
+                      required
+                      id="password"
+                      name="password"
+                      {...register('password')}
+                      error={errors.password ? true : false}
+                      type="password"
+                      label="Mật khẩu"
+                      fullWidth
+                    />
+                    <Typography
+                      fontSize="14px"
+                      variant="inherit"
+                      color="primary"
+                    >
+                      {errors.password?.message}
+                    </Typography>
+                  </MDBox>
+                  <MDBox mb={2}>
+                    <MDInput
+                      required
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      {...register('confirmPassword')}
+                      error={errors.confirmPassword ? true : false}
                       type="password"
                       label="Nhập lại mật khẩu"
                       fullWidth
                     />
+                    <Typography
+                      fontSize="14px"
+                      variant="inherit"
+                      color="primary"
+                    >
+                      {errors.confirmPassword?.message}
+                    </Typography>
                   </MDBox>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {user.loading ? (
+                      <CircularProgress color={'success'} />
+                    ) : null}
+                  </Box>
+
                   <MDBox mt={4} mb={1}>
-                    <MDButton variant="gradient" color="info" fullWidth>
+                    <MDButton
+                      variant="gradient"
+                      color="info"
+                      fullWidth
+                      onClick={handleSubmit(onSubmit)}
+                    >
                       Đăng ký
                     </MDButton>
                   </MDBox>
@@ -180,7 +316,7 @@ function SignUp() {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer light />
+      <Footer dark />
     </MDBox>
   );
 }

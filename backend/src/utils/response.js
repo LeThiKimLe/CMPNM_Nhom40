@@ -45,7 +45,7 @@ const BadRequest = (res, message) =>
   Response(res, { message }, StatusCodes.BAD_REQUEST);
 
 const NotFound = (res, input) =>
-  Response(res, { message: `${input} not found` }, StatusCodes.NOT_FOUND);
+  Response(res, { message: `${input} không tìm thấy` }, StatusCodes.NOT_FOUND);
 const JWTExpiredError = (res) => {
   Response(
     res,

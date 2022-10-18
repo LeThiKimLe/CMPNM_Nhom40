@@ -9,6 +9,7 @@ function Layout({ children }) {
   if (
     pathname === 'sign-in' ||
     pathname === 'sign-up' ||
+    pathname === 'finish-signup' ||
     pathname === 'verify-email' ||
     pathname === 'resend-verify-email'
   ) {

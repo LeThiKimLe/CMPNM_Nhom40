@@ -1,4 +1,15 @@
-import { Layout, Button, Row, Col, Typography, Form, Switch, Input, Spin, Alert } from 'antd';
+import {
+  Layout,
+  Button,
+  Row,
+  Col,
+  Typography,
+  Form,
+  Switch,
+  Input,
+  Spin,
+  Alert,
+} from 'antd';
 import signinbg from '../../assets/images/img-signin.jpg';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -30,15 +41,18 @@ function SignIn() {
     if (isLoggedIn || user) {
       navigate('/');
     }
-    dispatch(authActions.reset());
-  }, [user, isLoggedIn, navigate, dispatch]);
+  }, [user, isLoggedIn, navigate]);
 
   return (
     <Layout className="layout-default layout-signin">
       <HeaderSignIn />
       <Content className="signin">
         <Row gutter={[24, 0]} justify="space-around">
-          <Col xs={{ span: 24, offset: 0 }} lg={{ span: 6, offset: 2 }} md={{ span: 12 }}>
+          <Col
+            xs={{ span: 24, offset: 0 }}
+            lg={{ span: 6, offset: 2 }}
+            md={{ span: 12 }}
+          >
             <Title className="mb-15">Sign In</Title>
             <Title className="font-regular text-muted" level={5}>
               Enter your email and password to sign in
@@ -70,7 +84,10 @@ function SignIn() {
                 ]}
                 hasFeedback
               >
-                <Input placeholder="Email" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
+                <Input
+                  placeholder="Email"
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                />
               </Form.Item>
               <Form.Item
                 className="username"
@@ -89,10 +106,17 @@ function SignIn() {
                 ]}
                 hasFeedback
               >
-                <Input.Password placeholder="Password" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
+                <Input.Password
+                  placeholder="Password"
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                />
               </Form.Item>
 
-              <Form.Item name="remember" className="aligin-center" valuePropName="checked">
+              <Form.Item
+                name="remember"
+                className="aligin-center"
+                valuePropName="checked"
+              >
                 {rememberMe ? <Switch defaultChecked /> : <Switch />}
                 Remember me
               </Form.Item>
@@ -106,13 +130,23 @@ function SignIn() {
                 {logging ? <Spin /> : null}
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: '100%' }}
+                >
                   SIGN IN
                 </Button>
               </Form.Item>
             </Form>
           </Col>
-          <Col className="sign-img" style={{ padding: 12 }} xs={{ span: 24 }} lg={{ span: 12 }} md={{ span: 12 }}>
+          <Col
+            className="sign-img"
+            style={{ padding: 12 }}
+            xs={{ span: 24 }}
+            lg={{ span: 12 }}
+            md={{ span: 12 }}
+          >
             <img src={signinbg} alt="" />
           </Col>
         </Row>

@@ -62,7 +62,10 @@ function VerifyAccount() {
               <Row style={{ marginBottom: '10px' }}>
                 <Col span={24}>
                   {' '}
-                  <Input placeholder="Email" onChange={(e) => setEmailValue(e.target.value)} />
+                  <Input
+                    placeholder="Email"
+                    onChange={(e) => setEmailValue(e.target.value)}
+                  />
                 </Col>
               </Row>
               <Row>
@@ -90,7 +93,11 @@ function VerifyAccount() {
           title="Email has been verified successfully!!!"
           subTitle="You can now sign in"
           extra={
-            <Button type="primary" key="console" onClick={() => navigate('/sign-in')}>
+            <Button
+              type="primary"
+              key="console"
+              onClick={() => navigate('/sign-in')}
+            >
               Go Sign In Page
             </Button>
           }

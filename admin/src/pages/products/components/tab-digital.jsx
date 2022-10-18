@@ -11,76 +11,76 @@ const handleChange = (value) => {
 const mobileOS = [
   {
     key: '1',
-    value: '1',
+    value: 'iOS',
     name: 'iOS',
   },
   {
     key: '2',
-    value: '2',
+    value: 'Android',
     name: 'Android',
   },
 ];
 const ram = [
   {
     key: '1',
-    value: '1',
+    value: '2GB',
     amount: '2GB',
   },
   {
     key: '2',
-    value: '2',
+    value: '3GB',
     amount: '3GB',
   },
   {
     key: '3',
-    value: '3',
+    value: '4GB',
     amount: '4GB',
   },
   {
     key: '4',
-    value: '4',
+    value: '6GB',
     amount: '6GB',
   },
   {
     key: '5',
-    value: '5',
+    value: '8GB',
     amount: '8GB',
   },
   {
     key: '6',
-    value: '6',
+    value: '12GB',
     amount: '12GB',
   },
 ];
 const storage = [
   {
     key: '1',
-    value: '1',
+    value: '32GB',
     amount: '32GB',
   },
   {
     key: '2',
-    value: '2',
+    value: '64GB',
     amount: '64GB',
   },
   {
     key: '3',
-    value: '3',
+    value: '128GB',
     amount: '128GB',
   },
   {
     key: '4',
-    value: '4',
+    value: '256GB',
     amount: '256GB',
   },
   {
     key: '5',
-    value: '5',
+    value: '512GB',
     amount: '512GB',
   },
   {
     key: '6',
-    value: '6',
+    value: '1TB',
     amount: '1TB',
   },
 ];
