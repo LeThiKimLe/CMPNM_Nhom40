@@ -198,7 +198,7 @@ function SignIn() {
                       justifyContent: 'center',
                     }}
                   >
-                    {userState.loading ? (
+                    {userState.logging ? (
                       <CircularProgress color={'success'} />
                     ) : null}
                   </Box>

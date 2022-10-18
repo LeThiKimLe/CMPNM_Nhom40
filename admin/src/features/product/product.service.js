@@ -23,8 +23,20 @@ const createAPI = createAsyncThunk(
     }
   }
 );
-
+const getAllAPI = createAsyncThunk('/products/get-all', async (thunkAPI) => {
+  try {
+    const response = await axiosClient.get('/product');
+    return response.data;
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
 const productThunk = {
   createAPI,
+  getAllAPI,
 };
 export default productThunk;
