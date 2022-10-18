@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import React from 'react';
 import MDBox from '../../components/MDBox';
+import FadeMenu from '../categories';
 
 const MenuCategories = () => {
   return (
