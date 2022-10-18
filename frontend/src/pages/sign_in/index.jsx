@@ -1,29 +1,17 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 // react-router-dom components
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // @mui material components
 import Card from '@mui/material/Card';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 import MuiLink from '@mui/material/Link';
-
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -37,14 +25,58 @@ import MDButton from '../../components/MDButton';
 import Footer from './components/footer';
 // Authentication layout components
 // Images
-import bgImage from '../../assets/images/bg-sign-in-basic.jpeg';
+
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
-
+//
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import userThunk from '../../features/user/user.service';
+import { userActions } from '../../features/user/user.slice';
 function SignIn() {
-  const [rememberMe, setRememberMe] = useState(false);
-  const image = bgImage;
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const signinValidationSchema = Yup.object().shape({
+    email: Yup.string()
+      .required('Vui lòng nhập địa chỉ email!')
+      .email('Địa chỉ email không đúng!'),
+    password: Yup.string()
+      .required('Vui lòng nhập mật khẩu!')
+      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
+      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+  });
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const userState = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const { isLoggedIn, user, token } = userState;
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(signinValidationSchema) });
+  const onSubmit = (data) => {
+    dispatch(userThunk.signinAPI(data))
+      .unwrap()
+      .then((value) => {
+        navigate('/');
+        dispatch(userActions.reset());
+      })
+      .catch((error) => {
+        setOpen(true);
+      });
+  };
+  useEffect(() => {
+    if (isLoggedIn || user) {
+      navigate('/');
+    }
+  }, [user, isLoggedIn, navigate]);
 
   return (
     <MDBox
@@ -53,26 +85,18 @@ function SignIn() {
       minHeight="100vh"
       sx={{ overflowX: 'hidden' }}
     >
-      <MDBox
-        position="absolute"
-        width="100%"
-        minHeight="100vh"
-        sx={{
-          backgroundImage: ({
-            functions: { linearGradient, rgba },
-            palette: { gradients },
-          }) =>
-            image &&
-            `${linearGradient(
-              rgba(gradients.dark.main, 0.6),
-              rgba(gradients.dark.state, 0.6)
-            )}, url(${image})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <MDBox px={1} width="100%" height="100vh" mx="auto">
+      <MDBox position="absolute" width="100%" minHeight="100vh" />
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {userState.message}
+        </Alert>
+      </Snackbar>
+      <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
         <Grid
@@ -144,14 +168,47 @@ function SignIn() {
               <MDBox pt={4} pb={3} px={3}>
                 <MDBox component="form" role="form">
                   <MDBox mb={2}>
-                    <MDInput type="email" label="Email" fullWidth />
+                    <MDInput
+                      required
+                      id="email"
+                      name="email"
+                      {...register('email')}
+                      error={errors.email ? true : false}
+                      type="email"
+                      label="Email"
+                      fullWidth
+                    />
                   </MDBox>
                   <MDBox mb={2}>
-                    <MDInput type="password" label="Mật khẩu" fullWidth />
+                    <MDInput
+                      required
+                      id="password"
+                      name="password"
+                      {...register('password')}
+                      error={errors.password ? true : false}
+                      type="password"
+                      label="Mật khẩu"
+                      fullWidth
+                    />
                   </MDBox>
-
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {userState.loading ? (
+                      <CircularProgress color={'success'} />
+                    ) : null}
+                  </Box>
                   <MDBox mt={4} mb={1}>
-                    <MDButton variant="gradient" color="info" fullWidth>
+                    <MDButton
+                      variant="gradient"
+                      color="info"
+                      fullWidth
+                      onClick={handleSubmit(onSubmit)}
+                    >
                       Đăng nhập
                     </MDButton>
                   </MDBox>
@@ -176,7 +233,7 @@ function SignIn() {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer light />
+      <Footer dark />
     </MDBox>
   );
 }

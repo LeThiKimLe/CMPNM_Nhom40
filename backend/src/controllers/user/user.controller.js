@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable no-shadow */
@@ -20,19 +21,21 @@ const {
   createAccessToken,
   cloudinary,
   createRefreshToken,
+  Unauthenticated,
 } = require('../../utils');
 // time expire token send email
-const fiveMinutes = 60 * 60 * 5;
+const oneDay = 60 * 60 * 24;
 
 const signup = (req, res) => {
+  console.log(req.body);
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (user) return BadRequest(res, 'User already registered');
+    if (user) return BadRequest(res, 'Email đã được đăng ký tài khoản');
     const userSize = await User.count();
     const { firstName, lastName, email, password } = req.body;
     const verificationToken = crypto.randomBytes(40).toString('hex');
     let newUser;
-    const verifyDate = new Date(Date.now() + fiveMinutes);
+    const verifyDate = new Date(Date.now() + oneDay);
     // eslint-disable-next-line prefer-const
     newUser = new User({
       firstName,
@@ -42,7 +45,6 @@ const signup = (req, res) => {
       verificationToken,
       verifyDate,
     });
-
     if (userSize === 0) {
       newUser.roles = 'admin';
     }
@@ -65,18 +67,45 @@ const signup = (req, res) => {
   });
 };
 
+const signin = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email }).exec();
+  if (!user) return Unauthenticated(res, 'Email chưa được đăng ký tài khoản');
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    return Unauthenticated(res, 'Vui lòng xem lại mật khẩu');
+  }
+  if (!user.isVerified) {
+    return Unauthenticated(res, 'Tài khoản chưa được kích hoạt');
+  }
+
+  const userData = createTokenUser(user);
+
+  const accessToken = createAccessToken(userData);
+  const newRefreshToken = createRefreshToken(userData);
+  // Saving refreshToken with current user
+  user.refreshToken = newRefreshToken;
+  await user.save();
+  // Creates Secure Cookie with refresh token
+
+  return Response(res, {
+    userData,
+    accessToken,
+  });
+};
 const verifyEmail = (req, res) => {
-  const { email, token } = req.body.data;
+  const { email, token } = req.body;
 
   User.findOne({ email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (!user) return NotFound(res, 'User');
+    if (!user) return NotFound(res, 'Tài khoản');
     if (user.verificationToken === token) {
       const now = new Date(Date.now());
-      console.log(now);
       console.log(user.verifyDate);
+      console.log(now);
+      console.log(user.verifyDate < now);
       if (user.verifyDate < now) {
-        return BadRequest(res, 'Link has expired email verification time');
+        return BadRequest(res, 'Đường dẫn kích hoạt đã hết hạn!');
       }
       user.isVerified = true;
       user.verified = Date.now();
@@ -84,11 +113,14 @@ const verifyEmail = (req, res) => {
       user.save(async (error, data) => {
         if (error) return ServerError(res, error.message);
         if (data) {
-          return Response(res, 'Success! Account is active');
+          return Response(
+            res,
+            'Thành công! Tài khoản của ban đã được kích hoạt.'
+          );
         }
       });
     } else {
-      return BadRequest(res, 'Link is error');
+      return BadRequest(res, 'Đường dẫn bị lỗi!');
     }
   });
 };
@@ -101,7 +133,8 @@ const reSendVerifyEmail = async (req, res) => {
   const email = req.body.data;
   const verificationToken = crypto.randomBytes(40).toString('hex');
   const user = await User.findOne({ email });
-  user.verifyDate = new Date(Date.now() + fiveMinutes);
+
+  user.verifyDate = new Date(Date.now() + oneDay);
   user.verificationToken = verificationToken;
   user.save(async (error, data) => {
     if (error) return ServerError(res, error.message);
@@ -126,7 +159,7 @@ const forgotPassword = async (req, res) => {
 
   if (!user) return NotFound(res, 'User');
   const passwordToken = crypto.randomBytes(70).toString('hex');
-  const passwordTokenExpirationDate = new Date(Date.now() + fiveMinutes);
+  const passwordTokenExpirationDate = new Date(Date.now() + oneDay);
   await sendResetPasswordEmail({
     firstName: user.firstName,
     email,
@@ -215,6 +248,7 @@ const reSendRefreshToken = async (req, res) => {
 };
 module.exports = {
   signup,
+  signin,
   verifyEmail,
   reSendVerifyEmail,
   forgotPassword,

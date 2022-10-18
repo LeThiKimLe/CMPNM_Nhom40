@@ -9,9 +9,11 @@ const {
   forgotPassword,
   resetPassword,
   uploadImage,
+  signin,
 } = require('../controllers/user/user.controller');
 
-router.post('/signup', signup);
+router.post('/sign-up', signup);
+router.post('/sign-in', signin);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
 router.post('/forgot-password', forgotPassword);

@@ -5,7 +5,7 @@ const sendVerificationEmail = async ({
   email,
   verificationToken,
 }) => {
-  const verifyEmail = `http://localhost:3001/verify-email?token=${verificationToken}&email=${email}`;
+  const verifyEmail = `http://localhost:3002/verify-email?token=${verificationToken}&email=${email}`;
   const message = `<p>Please verify your account by clicking the link: 
   <a href="${verifyEmail}">Verify Email</a> </p>`;
 

@@ -1,20 +1,56 @@
-import { Container, Stack, Paper, IconButton, InputBase } from '@mui/material';
+import {
+  Container,
+  Stack,
+  Paper,
+  IconButton,
+  InputBase,
+  Menu,
+} from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import React from 'react';
+import React, { useState } from 'react';
 import MDBox from '../../components/MDBox';
 import { Link } from 'react-router-dom';
 import AdbIcon from '@mui/icons-material/Adb';
 import MDTypography from '../../components/MDTypography';
 import SearchIcon from '@mui/icons-material/Search';
 import MDButton from '../../components/MDButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MuiLink from '@mui/material/Link';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
+import NotificationItem from '../../components/NotificationItem';
 const Navbar = () => {
+  const dispatch = useDispatch();
+
+  const [openMenu, setOpenMenu] = useState(false);
+  const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
+  const handleSignOut = () => {
+    dispatch(userActions.signout());
+  };
+
+  const handleCloseMenu = (e) => setOpenMenu(false);
+  const handleOpenMenu = (event) => {
+    setOpenMenu(event.currentTarget);
+  };
+
+  const renderMenu = () => (
+    <Menu
+      anchorEl={openMenu}
+      sx={{ marginTop: '10px' }}
+      open={Boolean(openMenu)}
+    >
+      <NotificationItem title="Tài khoản" />
+      <NotificationItem title="Đơn mua" />
+      <NotificationItem title="Đăng xuất" />
+    </Menu>
+  );
   return (
     <MDBox
       color="white"
-      bgColor="dark"
+      bgColor="info"
       variant="contained"
       borderRadius="none"
       opacity={1}
@@ -35,7 +71,7 @@ const Navbar = () => {
               >
                 <MDTypography
                   component={MuiLink}
-                  href="#"
+                  href="/"
                   variant="body1"
                   color="white"
                 >
@@ -67,11 +103,21 @@ const Navbar = () => {
             <Grid item xs={2} alignItems="center" justifyContent="flex-end">
               <Stack direction="row" spacing={3}>
                 <MDButton variant="outlined" component={Link} to="/cart">
-                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <ShoppingCartIcon />
                 </MDButton>
-                <MDButton variant="outlined" component={Link} to="/sign-in">
-                  <FontAwesomeIcon icon={faUser} />
-                </MDButton>
+                {isLoggedIn ? (
+                  <MDButton
+                    variant="outlined"
+                    onMouseOver={(e) => handleOpenMenu(e)}
+                  >
+                    <AccountCircleIcon />
+                    {renderMenu()}
+                  </MDButton>
+                ) : (
+                  <MDButton variant="outlined" component={Link} to="/sign-in">
+                    <ArrowForwardIcon />
+                  </MDButton>
+                )}
               </Stack>
             </Grid>
           </Grid>

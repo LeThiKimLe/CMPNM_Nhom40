@@ -3,8 +3,6 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet');
-const { logger } = require('./src/middlewares/logger');
-const errorHandler = require('./src/middlewares/error-handler');
 const corsOptions = require('./src/configs/cors-options');
 const credentials = require('./src/middlewares/credentials');
 
@@ -25,7 +23,6 @@ const productRouter = require('./src/routes/product.routes');
 
 app.use(cookieParser());
 app.use(helmet());
-app.use(logger);
 // built-in middleware for json
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -41,8 +38,6 @@ app.use('/api/product', productRouter);
 app.use('/api/color', colorRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', userRouter);
-
-app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

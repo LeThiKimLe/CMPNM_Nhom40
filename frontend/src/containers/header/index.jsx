@@ -4,6 +4,7 @@ import MDTypography from '../../components/MDTypography';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
+
 // react-router-dom components
 import { Link } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -14,20 +15,20 @@ const Header = () => {
   return (
     <MDBox
       color="white"
-      bgColor="dark"
+      bgColor="info"
       variant="contained"
       borderRadius="none"
       opacity={1}
       p={2}
-      display="flex"
       height="10px"
+      display="flex"
       alignItems="center"
     >
       {' '}
       <Container>
         <Stack direction="row" spacing={2}>
           <Grid container item xs={12} spacing={1}>
-            <Grid item xs={10}>
+            <Grid item xs={10} alignItems="center">
               <Stack direction="row" spacing={1}>
                 <PhoneIcon />
                 <MDTypography
@@ -44,12 +45,19 @@ const Header = () => {
                     fontWeight="bold"
                     color={'white'}
                   >
-                    buitiep379@gmail.com
+                    18110379@student.hcmute.edu.vn
+                  </MDTypography>
+                  <MDTypography
+                    variant="button"
+                    fontWeight="bold"
+                    color={'white'}
+                  >
+                    19110397@student.hcmute.edu.vn
                   </MDTypography>
                 </Stack>
               </Stack>
             </Grid>
-            <Grid item xs={2} justifyContent="flex-end">
+            <Grid item xs={2} justifyContent="flex-end" alignItems="center">
               <Stack direction="row" spacing={1}>
                 <AddAlertIcon />
                 <MDTypography

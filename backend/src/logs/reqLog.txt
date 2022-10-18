@@ -381,3 +381,16 @@
 20221012	18:35:02	ec187617-c4c1-41c0-9d6f-04e29e1e7b32	OPTIONS	http://localhost:3001	/api/admin/refresh-token
 20221012	18:35:02	51414eb8-3581-43e9-874a-51bb2c564a43	POST	http://localhost:3001	/api/admin/refresh-token
 20221012	18:35:02	78467ced-f72f-42d5-aea8-43d710d65fce	GET	http://localhost:3001	/api/category
+20221016	13:38:12	bfe4de90-4758-48f4-a1db-ed7d6644939e	OPTIONS	http://localhost:3001	/api/category
+20221016	13:38:12	564da22e-ea90-4bad-af0b-465be6384a00	GET	http://localhost:3001	/api/category
+20221016	13:38:12	a6a930de-6896-4f44-88e0-96f4562bb4e8	OPTIONS	http://localhost:3001	/api/admin/refresh-token
+20221016	13:38:12	60facc02-d43a-4359-8279-63b7e952d051	POST	http://localhost:3001	/api/admin/refresh-token
+20221016	15:34:14	9bf09b22-97ce-494e-93ef-411ae1786779	OPTIONS	http://localhost:3002	/api/sign-up
+20221016	15:35:02	c15c9a78-46b7-4e01-a4c2-006f8c841a3e	GET	undefined	/api/sign-up
+20221016	15:36:32	a51c7937-8f79-44e4-b401-5b2b313b24af	OPTIONS	http://localhost:3002	/api/sign-up
+20221016	15:36:32	6032686f-c8a4-41fc-982a-743fcc0df1aa	POST	http://localhost:3002	/api/sign-up
+20221016	15:37:24	b595254e-3dc9-4e86-9303-c80c0a273983	OPTIONS	http://localhost:3002	/api/sign-up
+20221016	15:37:24	e92030fa-3c08-42c9-9d62-925a24c48cb8	POST	http://localhost:3002	/api/sign-up
+20221016	15:38:38	3d610538-9303-44dd-9bda-eb59e2d1de90	OPTIONS	http://localhost:3002	/api/sign-up
+20221016	15:38:38	3c673ad1-9372-4098-b1cb-978465b47786	POST	http://localhost:3002	/api/sign-up
+20221016	15:39:02	b398bdad-499d-4b04-a130-a8ff5909e233	GET	undefined	/api/sign-up
