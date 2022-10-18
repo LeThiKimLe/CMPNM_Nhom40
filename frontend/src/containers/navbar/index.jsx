@@ -16,7 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import MDButton from '../../components/MDButton';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MuiLink from '@mui/material/Link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -106,16 +106,12 @@ const Navbar = () => {
                   <ShoppingCartIcon />
                 </MDButton>
                 {isLoggedIn ? (
-                  <MDButton
-                    variant="outlined"
-                    onMouseOver={(e) => handleOpenMenu(e)}
-                  >
-                    <AccountCircleIcon />
-                    {renderMenu()}
+                  <MDButton variant="outlined" onClick={handleSignOut}>
+                    <ArrowForwardIcon />
                   </MDButton>
                 ) : (
                   <MDButton variant="outlined" component={Link} to="/sign-in">
-                    <ArrowForwardIcon />
+                    <ArrowBackIcon />
                   </MDButton>
                 )}
               </Stack>
