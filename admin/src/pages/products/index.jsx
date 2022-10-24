@@ -6,15 +6,17 @@ import {
   Row,
   Col,
   Typography,
-  Spin,
+  Switch,
   Avatar,
   Table,
+  Spin,
 } from 'antd';
 import AddProductModal from './components/modal-add';
 import { useDispatch, useSelector } from 'react-redux';
 import productThunk from '../../features/product/product.service';
 import MenuSearch from './components/menu-search';
-import { getBase64 } from '../../utils';
+import { getBase64, formatThousand } from '../../utils';
+import ConfirmDelete from '../../components/ui/modal/confirm-delete';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -24,6 +26,16 @@ import {
 const { Title } = Typography;
 
 function Products() {
+  const category = useSelector((state) => state.category);
+  const getCategoryById = (id) => {
+    let name;
+    category.categories.map((cat) => {
+      if (cat._id === id) {
+        name = cat.name;
+      }
+    });
+    return name;
+  };
   const columns = [
     {
       title: 'Tên sản phẩm',
@@ -67,6 +79,7 @@ function Products() {
   const dispatch = useDispatch();
   const product = useSelector((state) => state.product);
   const [visibleAdd, setVisibleAdd] = useState(false);
+  const [visibleDelete, setVisibleDelete] = useState(false);
   // *tab mô tả
   const [description, setDescription] = useState('');
   // *tab info
@@ -148,6 +161,7 @@ function Products() {
         });
         setTimeout(() => {
           setVisibleAdd(false);
+          dispatch(productThunk.getAllAPI());
         }, 1000);
       })
       .catch((error) => {
@@ -155,6 +169,35 @@ function Products() {
           message: error,
           placement: 'top',
         });
+      });
+  };
+  const onClickBtnDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một trường để xóa',
+        placement: 'top',
+      });
+    } else {
+      setVisibleDelete(true);
+    }
+  };
+  // *delete button handle
+  const handleConfirmDelete = () => {
+    console.log(selectedRowKeys);
+    dispatch(productThunk.deleteProductAPI(selectedRowKeys))
+      .unwrap()
+      .then(() => {
+        notification.success({
+          message: 'Xóa tài sản phẩm công!',
+          placement: 'top',
+        });
+        setTimeout(() => {
+          setVisibleDelete(false);
+          dispatch(productThunk.getAllAPI());
+        }, 1000);
+      })
+      .catch((error) => {
+        notification.error({ message: error, placement: 'top' });
       });
   };
   useEffect(() => {
@@ -189,7 +232,7 @@ function Products() {
               <>
                 <div className="ant-employed">
                   <Typography.Title level={5}>
-                    {product.regularPrice}
+                    {formatThousand(product.regularPrice)}đ
                   </Typography.Title>
                 </div>
               </>
@@ -197,9 +240,14 @@ function Products() {
             category: (
               <>
                 <div className="author-info">
-                  <Typography.Title level={5}>
-                    {product.category}
-                  </Typography.Title>
+                  <Button
+                    style={{
+                      borderRadius: '20px',
+                      backgroundColor: '#F0F8FF',
+                    }}
+                  >
+                    {getCategoryById(product.category)}
+                  </Button>
                 </div>
               </>
             ),
@@ -210,8 +258,8 @@ function Products() {
                   style={{
                     backgroundColor: `${product.color}`,
                     borderRadius: '50%',
-                    width: '40px',
-                    height: '40px',
+                    width: '30px',
+                    height: '30px',
                   }}
                 >
                   {' '}
@@ -227,9 +275,14 @@ function Products() {
             ),
             active: (
               <>
-                <Button type="primary" className="tag-primary">
-                  {product.active ? 'Đã kích hoạt' : 'Chưa kích hoạt'}
-                </Button>
+                {product.active ? (
+                  <Switch
+                    defaultChecked
+                    style={{ backgroundColor: '#00CED1' }}
+                  />
+                ) : (
+                  <Switch />
+                )}
               </>
             ),
             created: (
@@ -264,6 +317,13 @@ function Products() {
         fileList={fileList}
         description={description}
         setDescription={setDescription}
+      />
+      <ConfirmDelete
+        visible={visibleDelete}
+        onCancel={() => setVisibleDelete(false)}
+        loading={product.loading}
+        handleDelete={handleConfirmDelete}
+        title={'Xóa thương hiệu'}
       />
       <div className="tabled">
         <Row gutter={[24, 0]}>
@@ -325,20 +385,33 @@ function Products() {
                     borderRadius: '10px',
                   }}
                   icon={<DeleteOutlined />}
+                  onClick={onClickBtnDelete}
                 >
                   Xóa
                 </Button>
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              {' '}
-              <Table
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={data}
-                pagination={true}
-                className="ant-border-space"
-              />
+              {product.getLoading ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '20px',
+                  }}
+                >
+                  <Spin size="large" />
+                </div>
+              ) : (
+                <Table
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={data}
+                  pagination={true}
+                  className="ant-border-space"
+                />
+              )}
             </div>
           </Col>
         </Row>

@@ -41,6 +41,16 @@ const productSlice = createSlice({
       .addCase(productThunk.getAllAPI.rejected, (state, action) => {
         state.error = true;
         state.getLoading = false;
+      })
+      .addCase(productThunk.deleteProductAPI.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(productThunk.deleteProductAPI.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(productThunk.deleteProductAPI.rejected, (state) => {
+        state.error = true;
+        state.loading = false;
       });
   },
 });

@@ -10,6 +10,8 @@ import {
   Avatar,
   Table,
   Typography,
+  Switch,
+  Spin,
 } from 'antd';
 import {
   PlusOutlined,
@@ -31,16 +33,18 @@ const { Title } = Typography;
 function Users() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { users, getLoading, loading, success } = user;
+  const { users, getLoading, loading } = user;
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [fileList, setFileList] = useState([]);
   const [data, setData] = useState([]);
   // form
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
-
+  const handleChangeUpload = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
   // table code start
   const columns = [
     {
@@ -77,11 +81,12 @@ function Users() {
   };
   // *delete button handle
   const handleConfirmDelete = () => {
+    console.log(selectedRowKeys);
     dispatch(userThunk.deleteUsersAPI(selectedRowKeys))
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Delete succesfully',
+          message: 'Xóa tài khoản thành công!',
           placement: 'top',
         });
         setTimeout(() => {
@@ -96,7 +101,7 @@ function Users() {
   const onClickBtnDelete = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một đối tượng để xóa',
+        message: 'Vui lòng chỉ chọn một trường để xóa',
         placement: 'top',
       });
     } else {
@@ -106,12 +111,12 @@ function Users() {
   const onClickBtnEdit = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một đối tượng để chỉnh sửa',
+        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
         placement: 'top',
       });
     } else if (selectedRowKeys.length > 1) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một đối tượng để chỉnh sửa',
+        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
         placement: 'top',
       });
     } else {
@@ -169,7 +174,7 @@ function Users() {
     dispatch(userThunk.createUserAPI(userData))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'User created successfully' });
+        notification.success({ message: 'Tạo tài khoản thành công!' });
         // formAdd.resetFields();
         dispatch(userActions.reset());
         setTimeout(() => {
@@ -197,9 +202,9 @@ function Users() {
     dispatch(userThunk.getAllUserAPI());
   }, [dispatch]);
   useEffect(() => {
-    if (user.users.length > 0) {
+    if (users.length > 0) {
       setData(
-        user.users.map((user) => {
+        users.map((user) => {
           return {
             key: user._id,
             name: (
@@ -224,7 +229,7 @@ function Users() {
               <>
                 <div className="ant-employed">
                   <Typography.Title level={5}>
-                    {user.contactNumber}
+                    {!user.contactNumber ? 'Chưa cập nhật' : user.contactNumber}
                   </Typography.Title>
                 </div>
               </>
@@ -232,16 +237,23 @@ function Users() {
             role: (
               <>
                 <div className="author-info">
-                  <Typography.Title level={5}>{user.roles}</Typography.Title>
+                  <Typography.Title level={5}>
+                    {user.roles === 'user' ? 'Người dùng' : 'Quản trị viên'}
+                  </Typography.Title>
                 </div>
               </>
             ),
 
             status: (
               <>
-                <Button type="primary" className="tag-primary">
-                  {user.isVerified ? 'Đã kích hoạt' : 'Chưa kích hoạt'}
-                </Button>
+                {user.isVerified ? (
+                  <Switch
+                    defaultChecked
+                    style={{ backgroundColor: '#00CED1' }}
+                  />
+                ) : (
+                  <Switch />
+                )}
               </>
             ),
             created: (
@@ -259,7 +271,7 @@ function Users() {
     } else {
       setData([]);
     }
-  }, [user.users]);
+  }, [users]);
   return (
     <>
       <AddUserModal
@@ -278,10 +290,10 @@ function Users() {
       />
       <ConfirmDelete
         visible={visibleDelete}
-        onFinish={onFinishEditHandle}
         onCancel={() => setVisibleDelete(false)}
         loading={loading}
         handleDelete={handleConfirmDelete}
+        title={'Xóa người dùng'}
       />
       <div className="tabled">
         <Row gutter={[24, 0]}>
@@ -351,13 +363,26 @@ function Users() {
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              <Table
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={data}
-                pagination={true}
-                className="ant-border-space"
-              />
+              {getLoading ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '20px',
+                  }}
+                >
+                  <Spin size="large" />
+                </div>
+              ) : (
+                <Table
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={data}
+                  pagination={true}
+                  className="ant-border-space"
+                />
+              )}
             </div>
           </Col>
         </Row>

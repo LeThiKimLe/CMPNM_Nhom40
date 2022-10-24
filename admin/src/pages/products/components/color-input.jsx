@@ -130,8 +130,8 @@ const ColorInput = (props) => {
                 <List
                   dataSource={data}
                   grid={{
-                    gutter: 32,
-                    column: 8,
+                    gutter: 64,
+                    column: 4,
                   }}
                   renderItem={(item) => (
                     <div>

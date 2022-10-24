@@ -14,13 +14,12 @@ import LanguageIcon from '@mui/icons-material/Language';
 const Header = () => {
   return (
     <MDBox
-      color="white"
-      bgColor="info"
-      variant="contained"
+      color="#FFFFFF"
+      bgColor="#0F3460"
       borderRadius="none"
       opacity={1}
-      p={2}
-      height="10px"
+      p={2.5}
+      height="20px"
       display="flex"
       alignItems="center"
     >
@@ -33,7 +32,7 @@ const Header = () => {
                 <PhoneIcon />
                 <MDTypography
                   variant="button"
-                  fontWeight="bold"
+                  fontWeight="regular"
                   color={'white'}
                 >
                   Nhóm 9
@@ -42,17 +41,10 @@ const Header = () => {
                   <EmailIcon />
                   <MDTypography
                     variant="button"
-                    fontWeight="bold"
+                    fontWeight="regular"
                     color={'white'}
                   >
                     18110379@student.hcmute.edu.vn
-                  </MDTypography>
-                  <MDTypography
-                    variant="button"
-                    fontWeight="bold"
-                    color={'white'}
-                  >
-                    19110397@student.hcmute.edu.vn
                   </MDTypography>
                 </Stack>
               </Stack>
@@ -62,7 +54,7 @@ const Header = () => {
                 <AddAlertIcon />
                 <MDTypography
                   variant="button"
-                  fontWeight="bold"
+                  fontWeight="regular"
                   color={'white'}
                   component={Link}
                   to="/notification"
@@ -72,7 +64,7 @@ const Header = () => {
                 <LanguageIcon />
                 <MDTypography
                   variant="button"
-                  fontWeight="bold"
+                  fontWeight="regular"
                   color={'white'}
                 >
                   VIE

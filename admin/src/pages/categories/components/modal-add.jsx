@@ -1,11 +1,25 @@
-import { Modal, Form, Button, Upload, Input, Spin } from 'antd';
+import { Modal, Form, Button, Upload, Input, Spin, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
-
+const { Option } = Select;
 const AddCategoryModal = (props) => {
-  const { visible, onFinish, loading, onCancel, form, handleCancel } = props;
+  const {
+    visible,
+    onFinish,
+    loading,
+    onCancel,
+    form,
+    handleCancel,
+    categoriesParent,
+    setCategoryParent,
+  } = props;
   // form.submit
-
+  const handleCategoryParent = (value) => {
+    setCategoryParent(value);
+  };
+  const onSearch = (value) => {
+    console.log('search:', value);
+  };
   return (
     <div
       style={{
@@ -14,34 +28,74 @@ const AddCategoryModal = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal footer={null} visible={visible} title="Add New Category" onCancel={onCancel}>
-        <Form form={form} layout="vertical" className="row-col" autoComplete="off" onFinish={onFinish}>
+      <Modal
+        footer={null}
+        visible={visible}
+        title="Thêm mới thương hiệu"
+        onCancel={onCancel}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          className="row-col"
+          autoComplete="off"
+          onFinish={onFinish}
+        >
           <Form.Item
             className="username"
-            label="Name"
+            label="Tên"
             style={{ fontWeight: '600' }}
             name="name"
             rules={[
               {
                 required: true,
-                message: 'Please input name category!',
+                message: 'Vui lòng điền tên thương hiệu!',
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Name" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
+            <Input
+              placeholder="Thương hiệu"
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+            />
+          </Form.Item>
+          <Form.Item
+            className="username"
+            label="Thương hiệu"
+            style={{ fontWeight: '600' }}
+          >
+            <Select
+              showSearch
+              placeholder="Chọn nhãn hiệu"
+              optionFilterProp="children"
+              onChange={handleCategoryParent}
+              size="large"
+              onSearch={onSearch}
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              filterOption={(input, option) =>
+                option.children.toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {categoriesParent.length > 0
+                ? categoriesParent.map((category) => {
+                    return (
+                      <Option
+                        size="large"
+                        key={category._id}
+                        value={category._id}
+                      >
+                        {category.name}
+                      </Option>
+                    );
+                  })
+                : null}
+            </Select>
           </Form.Item>
           <Form.Item
             className="username"
             label="Image"
             style={{ fontWeight: '600' }}
             name="image"
-            rules={[
-              {
-                required: true,
-                message: 'Please input image category!',
-              },
-            ]}
           >
             <Upload
               beforeUpload={() => {
@@ -49,7 +103,10 @@ const AddCategoryModal = (props) => {
               }}
               accept=".png, .jpeg, .jpg"
             >
-              <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
+              <Button
+                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                icon={<UploadOutlined />}
+              >
                 Click to Upload
               </Button>
             </Upload>
@@ -65,12 +122,31 @@ const AddCategoryModal = (props) => {
           </Form.Item>
 
           <Form.Item>
-            <Button htmlType="submit" style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
-              Create
+            <Button
+              htmlType="submit"
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#40E0D0',
+                color: 'white',
+                width: '30%',
+                marginRight: '10px',
+              }}
+            >
+              Thêm mới
             </Button>
 
-            <Button onClick={handleCancel} style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#FF6347', color: 'white', width: '30%' }}>
-              Cancel
+            <Button
+              onClick={handleCancel}
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#FF6347',
+                color: 'white',
+                width: '30%',
+              }}
+            >
+              Hủy
             </Button>
           </Form.Item>
         </Form>

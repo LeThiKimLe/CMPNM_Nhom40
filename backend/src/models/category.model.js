@@ -13,6 +13,14 @@ const categorySchema = new mongoose.Schema(
       unique: true,
     },
     categoryImage: { type: String },
+    parentId: {
+      type: String,
+    },
+    level: {
+      type: Number,
+      enum: [1, 2, 3],
+      default: 1,
+    },
     isActive: {
       type: Boolean,
       default: true,
