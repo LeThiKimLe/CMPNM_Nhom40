@@ -35,8 +35,29 @@ const getAllAPI = createAsyncThunk('/products/get-all', async (thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+const deleteProductAPI = createAsyncThunk(
+  '/product/delete',
+  async (listID, thunkAPI) => {
+    try {
+      const response = await axiosClient.post(
+        `/product/delete`,
+        JSON.stringify({ data: listID })
+      );
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 const productThunk = {
   createAPI,
   getAllAPI,
+  deleteProductAPI,
 };
 export default productThunk;

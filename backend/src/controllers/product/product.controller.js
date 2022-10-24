@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-plusplus */
 /* eslint-disable array-callback-return */
@@ -40,7 +41,7 @@ const createProduct = async (req, res) => {
         desctiption,
         detailsProduct,
       });
-      product.slug = slugify(info.name);
+      product.slug = slugify(`${info.name} + ${info.color} + ${digital.ram}`);
       product.createdBy = req.user.userId;
 
       return product.save(product);
@@ -55,7 +56,16 @@ const getAll = async (req, res) => {
   );
   return Response(res, { list: products });
 };
+const deleteProduct = async (req, res) => {
+  const listID = req.body.data;
+  listID.forEach(async (value) => {
+    const item = await Product.findByIdAndDelete(value);
+    await ProductDetails.findByIdAndDelete(item.detailsProduct);
+  });
+  return Response(res);
+};
 module.exports = {
   createProduct,
   getAll,
+  deleteProduct,
 };

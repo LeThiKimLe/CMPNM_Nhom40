@@ -1,9 +1,29 @@
-import { Modal, Form, Button, Upload, Input, Spin, Row, Col, Radio } from 'antd';
+import {
+  Modal,
+  Form,
+  Button,
+  Upload,
+  Input,
+  Spin,
+  Row,
+  Col,
+  Radio,
+} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
 const AddUserModal = (props) => {
-  const { visible, onCancel, beforeUpload, form, onFinish, loading, handleCancel } = props;
+  const {
+    visible,
+    onCancel,
+    beforeUpload,
+    form,
+    onFinish,
+    loading,
+    handleCancel,
+    fileList,
+    handleChangeUpload,
+  } = props;
   const [value, setValue] = useState('admin');
   const onChange = ({ target: { value } }) => {
     console.log('radio1 checked', value);
@@ -32,8 +52,21 @@ const AddUserModal = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal bodyStyle={{ marginLeft: '30px', marginRight: '30px' }} width={600} footer={null} visible={visible} title="Create New User" onCancel={onCancel}>
-        <Form form={form} onFinish={onFinish} layout="vertical" className="row-col" autoComplete="off">
+      <Modal
+        bodyStyle={{ marginLeft: '30px', marginRight: '30px' }}
+        width={600}
+        footer={null}
+        visible={visible}
+        title="Thêm mới tài khoản"
+        onCancel={onCancel}
+      >
+        <Form
+          form={form}
+          onFinish={onFinish}
+          layout="vertical"
+          className="row-col"
+          autoComplete="off"
+        >
           <Row gutter={[16, 8]}>
             <Col span={12}>
               {' '}
@@ -50,7 +83,10 @@ const AddUserModal = (props) => {
                 ]}
                 hasFeedback
               >
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Tên" />
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Tên"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -67,7 +103,10 @@ const AddUserModal = (props) => {
                 ]}
                 hasFeedback
               >
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Họ" />
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Họ"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -89,7 +128,10 @@ const AddUserModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Email" />
+            <Input
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Email"
+            />
           </Form.Item>
           <Form.Item
             className="username"
@@ -104,14 +146,40 @@ const AddUserModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Số điện thoại" />
+            <Input
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Số điện thoại"
+            />
           </Form.Item>
-          <Form.Item className="username" label="Quyền" name="roles" style={{ fontWeight: '600' }} hasFeedback>
-            <Radio.Group onChange={onChange} defaultValue="admin" options={options} optionType="button" />
+          <Form.Item
+            className="username"
+            label="Quyền"
+            name="roles"
+            style={{ fontWeight: '600' }}
+            hasFeedback
+          >
+            <Radio.Group
+              onChange={onChange}
+              options={options}
+              optionType="button"
+            />
           </Form.Item>
-          <Form.Item className="username" label="Avatar" style={{ fontWeight: '600' }} name="image">
-            <Upload accept=".png, .jpeg, .jpg" beforeUpload={beforeUpload}>
-              <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
+          <Form.Item
+            className="username"
+            label="Avatar"
+            style={{ fontWeight: '600' }}
+            name="image"
+          >
+            <Upload
+              accept=".png, .jpeg, .jpg"
+              beforeUpload={beforeUpload}
+              fileList={fileList}
+              onChange={handleChangeUpload}
+            >
+              <Button
+                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                icon={<UploadOutlined />}
+              >
                 Click to Upload
               </Button>
             </Upload>
@@ -134,7 +202,10 @@ const AddUserModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input.Password style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Mật khẩu" />
+            <Input.Password
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Mật khẩu"
+            />
           </Form.Item>
           <Form.Item
             className="username"
@@ -158,7 +229,10 @@ const AddUserModal = (props) => {
             ]}
             hasFeedback
           >
-            <Input.Password style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Nhập lại mật khẩu" />
+            <Input.Password
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Nhập lại mật khẩu"
+            />
           </Form.Item>
           <Form.Item
             style={{
@@ -176,10 +250,29 @@ const AddUserModal = (props) => {
               justifyContent: 'center',
             }}
           >
-            <Button htmlType="submit" style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
+            <Button
+              htmlType="submit"
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#40E0D0',
+                color: 'white',
+                width: '30%',
+                marginRight: '10px',
+              }}
+            >
               Create
             </Button>
-            <Button onClick={handleCancel} style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#FF6347', color: 'white', width: '30%' }}>
+            <Button
+              onClick={handleCancel}
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#FF6347',
+                color: 'white',
+                width: '30%',
+              }}
+            >
               Cancel
             </Button>
           </div>

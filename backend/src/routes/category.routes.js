@@ -11,5 +11,5 @@ const { adminCheckRole, authenticateAdmin } = require('../middlewares');
 router.use(authenticateAdmin, adminCheckRole);
 router.get('/', getAll);
 router.post('/create', create);
-router.delete('/delete/:id', deleteCategory);
+router.post('/delete', deleteCategory);
 module.exports = router;

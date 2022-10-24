@@ -13,15 +13,21 @@ import FinishSignUp from './pages/finish-signup';
 import { userActions } from './features/user/user.slice';
 import { PrivateComponent } from './utils/private-component';
 import VerifyEmail from './pages/verify-email';
+import dataThunk from './features/data/data.service';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const data = useSelector((state) => state.data);
+  const { categories, products } = data;
   // thêm input để khi auth.authenticate thay đổi thì useEffect() chạy
   useEffect(() => {
     if (!user.isLoggedIn) {
       dispatch(userActions.isUserLoggedIn());
     }
-  }, [user.isLoggedIn, dispatch]);
+    if (categories.length === 0 && products.length === 0) {
+      dispatch(dataThunk.getAllAPI());
+    }
+  }, [user.isLoggedIn, dispatch, categories, products]);
   return (
     <>
       <ThemeProvider theme={theme}>

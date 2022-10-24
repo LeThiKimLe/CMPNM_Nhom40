@@ -29,7 +29,18 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
+  function handleClick(event) {
+    console.log(event.currentTarget);
+    if (anchorEl !== event.currentTarget) {
+      setAnchorEl(event.currentTarget);
+    }
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const handleSignOut = () => {
     dispatch(userActions.signout());
@@ -37,8 +48,8 @@ const Navbar = () => {
 
   return (
     <MDBox
-      color="white"
-      bgColor="info"
+      color="#000000"
+      bgColor="#ffffff"
       variant="contained"
       borderRadius="none"
       opacity={1}
@@ -62,11 +73,19 @@ const Navbar = () => {
                   component={MuiLink}
                   href="/"
                   variant="body1"
-                  color="white"
+                  sx={{
+                    color: '#111111',
+                  }}
                 >
                   <AdbIcon color="inherit" />
                 </MDTypography>
-                <MDTypography variant="h4" fontWeight="bold" color={'white'}>
+                <MDTypography
+                  variant="h4"
+                  fontWeight="bold"
+                  sx={{
+                    color: '#111111',
+                  }}
+                >
                   LOGO
                 </MDTypography>
               </Stack>
@@ -78,6 +97,7 @@ const Navbar = () => {
                   display: 'flex',
                   width: '100%',
                 }}
+                variant="outlined"
               >
                 <InputBase sx={{ ml: 1, flex: 1 }} />
                 <IconButton
@@ -98,36 +118,63 @@ const Navbar = () => {
               alignItems="flex-end"
             >
               <Stack direction="row" spacing={3}>
-                <MDButton variant="outlined" component={Link} to="/cart">
-                  <ShoppingCartIcon />
-                </MDButton>
                 {isLoggedIn ? (
-                  <PopupState variant="popover" popupId="demo-popup-menu">
-                    {(popupState) => (
-                      <React.Fragment>
-                        <MDButton
-                          variant="outlined"
-                          {...bindTrigger(popupState)}
-                        >
-                          <AccountCircleIcon />
-                        </MDButton>
-                        <Menu {...bindMenu(popupState)}>
-                          <MenuItem onClick={popupState.close}>
-                            Tài khoản
-                          </MenuItem>
-                          <MenuItem onClick={popupState.close}>
-                            Đơn mua
-                          </MenuItem>
-                          <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
-                        </Menu>
-                      </React.Fragment>
-                    )}
-                  </PopupState>
+                  <>
+                    <MDButton
+                      id={`fade-button`}
+                      variant="outlined"
+                      color="dark"
+                      aria-owns={anchorEl ? `simple-menu` : undefined}
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                    >
+                      <AccountCircleIcon
+                        sx={{
+                          color: '#111111',
+                        }}
+                      />
+                    </MDButton>
+
+                    <Menu
+                      id={`simple-menu`}
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}
+                      MenuListProps={{ onMouseLeave: handleClose }}
+                    >
+                      <MenuItem onClick={handleClose}>
+                        Tài khoản của Tôi
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>Đơn mua</MenuItem>
+                      <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
+                    </Menu>
+                  </>
                 ) : (
-                  <MDButton variant="outlined" component={Link} to="/sign-in">
-                    <ArrowBackIcon />
+                  <MDButton
+                    variant="outlined"
+                    color="dark"
+                    component={Link}
+                    to="/sign-in"
+                  >
+                    <ArrowBackIcon
+                      sx={{
+                        color: '#111111',
+                      }}
+                    />
                   </MDButton>
                 )}
+                <MDButton
+                  variant="outlined"
+                  color="dark"
+                  component={Link}
+                  to="/cart"
+                >
+                  <ShoppingCartIcon
+                    sx={{
+                      color: '#111111',
+                    }}
+                  />
+                </MDButton>
               </Stack>
             </Grid>
           </Grid>

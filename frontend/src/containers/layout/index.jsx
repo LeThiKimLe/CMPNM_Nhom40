@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import React from 'react';
 import Header from '../header';
 import Navbar from '../navbar';
-import FadeMenu from '../categories';
+import SideNavigation from '../side-navigation';
 
 function Layout({ children }) {
   let { pathname } = useLocation();
@@ -20,7 +20,7 @@ function Layout({ children }) {
       <>
         <Header />
         <Navbar />
-        <FadeMenu />
+        <SideNavigation />
         {children}
       </>
     );

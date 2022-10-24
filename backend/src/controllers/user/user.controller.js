@@ -6,7 +6,7 @@
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { User } = require('../../models');
+const { User, Category, Product } = require('../../models');
 const {
   ServerError,
   BadRequest,
@@ -246,6 +246,15 @@ const reSendRefreshToken = async (req, res) => {
     );
   }
 };
+const getAllData = async (req, res) => {
+  const listCategory = await Category.find({ isActive: true }).select(
+    '_id name slug isActive level parentId'
+  );
+  const listProduct = await Product.find({ active: true }).select(
+    '_id name slug regularPrice color stock productPictures category active createdAt'
+  );
+  return Response(res, { list: [listCategory, listProduct] });
+};
 module.exports = {
   signup,
   signin,
@@ -256,4 +265,5 @@ module.exports = {
   showProfile,
   uploadImage,
   reSendRefreshToken,
+  getAllData,
 };

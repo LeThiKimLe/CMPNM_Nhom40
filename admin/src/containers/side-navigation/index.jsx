@@ -1,14 +1,14 @@
-import { Menu } from "antd";
-import { NavLink, useLocation } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Menu } from 'antd';
+import { NavLink } from 'react-router-dom';
+import logo from '../../assets/images/logo.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLayerGroup,
   faPeopleGroup,
   faBoxesStacked,
   faBagShopping,
   faTableColumns,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
   // const { pathname } = useLocation();
   // const page = pathname.replace('/', '');

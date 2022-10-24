@@ -2,7 +2,7 @@ import { Modal, Result, Button, Spin } from 'antd';
 import React from 'react';
 
 const ConfirmDelete = (props) => {
-  const { visible, handleDelete, loading, onCancel } = props;
+  const { visible, handleDelete, loading, onCancel, title } = props;
   return (
     <div
       style={{
@@ -11,8 +11,14 @@ const ConfirmDelete = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal footer={null} visible={visible} title="Delete Category" onCancel={onCancel} width={500}>
-        <Result status="warning" title="Are you sure you want to delete?" />
+      <Modal
+        footer={null}
+        visible={visible}
+        title={title}
+        onCancel={onCancel}
+        width={500}
+      >
+        <Result status="warning" title="Bạn có chắc chăn muốn xóa không!" />
         <div
           style={{
             display: 'flex',
@@ -23,11 +29,22 @@ const ConfirmDelete = (props) => {
         >
           {loading ? <Spin /> : null}
         </div>
-        <Button onClick={handleDelete} style={{ background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
-          Delete
+        <Button
+          onClick={handleDelete}
+          style={{
+            background: '#40E0D0',
+            color: 'white',
+            width: '30%',
+            marginRight: '10px',
+          }}
+        >
+          Xóa
         </Button>
-        <Button onClick={onCancel} style={{ background: '#FF6347', color: 'white', width: '30%' }}>
-          Cancel
+        <Button
+          onClick={onCancel}
+          style={{ background: '#FF6347', color: 'white', width: '30%' }}
+        >
+          Hủy
         </Button>
       </Modal>
     </div>

@@ -10,10 +10,12 @@ const {
   resetPassword,
   uploadImage,
   signin,
+  getAllData,
 } = require('../controllers/user/user.controller');
 
 router.post('/sign-up', signup);
 router.post('/sign-in', signin);
+router.get('/get-all-data', getAllData);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
 router.post('/forgot-password', forgotPassword);

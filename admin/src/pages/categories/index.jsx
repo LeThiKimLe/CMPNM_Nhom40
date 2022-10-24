@@ -1,22 +1,18 @@
 import {
   Row,
   Col,
-  Card,
   Image,
   Switch,
-  Statistic,
+  Table,
   Typography,
   Button,
   notification,
   Form,
   Spin,
-  Space,
 } from 'antd';
 import {
   PlusOutlined,
-  SettingOutlined,
   EditOutlined,
-  EllipsisOutlined,
   SearchOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
@@ -27,11 +23,10 @@ import AddCategoryModal from './components/modal-add';
 import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
-import ConfirmDeleteModal from './components/modal-delete';
 import { getBase64 } from '../../utils';
+import ConfirmDelete from '../../components/ui/modal/confirm-delete';
 
 const { Title } = Typography;
-const { Meta } = Card;
 // project table start
 
 function ListCategories() {
@@ -44,17 +39,35 @@ function ListCategories() {
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
-  const [keySelected, setKeySelected] = useState('');
+  const [categoryParentList, setCategoryParentList] = useState([]);
+  const [categoryParent, setCategoryParent] = useState('');
+
   const [categoryList, setCategoryList] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
   // TODO Handle after
   const onFinishEditHandle = () => {};
-
   const handleCancel = () => {
     formAdd.resetFields();
     setVisibleAdd(false);
+  };
+  const getCategoryById = (id) => {
+    let name;
+    category.categories.map((cat) => {
+      if (cat._id === id) {
+        name = cat.name;
+      }
+    });
+    return name;
+  };
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
   };
   const renderDataInEdit = (editKey) => {
     let categoryEdit;
@@ -73,13 +86,19 @@ function ListCategories() {
   };
   // todo create Category
   const handleAddCategory = async (values) => {
-    const { name, image } = values;
-    const { fileList } = image;
-    const picture = await getBase64(fileList[0].originFileObj);
-    const categoryData = {
+    const { name } = values;
+    let categoryData = {
       name,
-      picture,
     };
+    if (categoryParent !== '') {
+      categoryData.parentId = categoryParent;
+    }
+    if (values.image) {
+      const { fileList } = values.image;
+      const picture = await getBase64(fileList[0].originFileObj);
+      categoryData.picture = picture;
+    }
+
     dispatch(categoryThunk.createAPI(categoryData))
       .unwrap()
       .then(() => {
@@ -101,31 +120,153 @@ function ListCategories() {
       });
   };
   // todo handle delete event
-  const handleDeleteCategory = () => {
-    dispatch(categoryThunk.deleteCategoryAPI(keySelected))
+  const onClickBtnDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một trường để xóa',
+        placement: 'top',
+      });
+    } else {
+      setVisibleDelete(true);
+    }
+  };
+  // *delete button handle
+  const handleConfirmDelete = () => {
+    console.log(selectedRowKeys);
+    dispatch(categoryThunk.deleteCategoryAPI(selectedRowKeys))
+      .unwrap()
       .then(() => {
-        notification.success({ message: 'Category delete successfully' });
-        dispatch(categoryActions.reset());
+        notification.success({
+          message: 'Xóa tài khoản thành công!',
+          placement: 'top',
+        });
         setTimeout(() => {
           setVisibleDelete(false);
           dispatch(categoryThunk.getAllAPI());
         }, 1000);
       })
-      .catch(() => {
-        notification.success({ message: 'Delete category error' });
+      .catch((error) => {
+        notification.error({ message: error, placement: 'top' });
       });
   };
+
   useEffect(() => {
     dispatch(categoryThunk.getAllAPI());
   }, [dispatch]);
   //* watch for changes to the category.categoryies after get all categories
   useEffect(() => {
     if (category.categories.length > 0) {
-      setCategoryList(category.categories);
+      const listParent = category.categories.filter(
+        (cate) => cate.level === 1 || cate.level === 2
+      );
+
+      setCategoryParentList(listParent);
+      setCategoryList(
+        category.categories.map((category) => {
+          return {
+            key: category._id,
+            name: (
+              <>
+                <div className="avatar-info">
+                  <Typography.Title level={5}>{category.name}</Typography.Title>
+                  <p>{category._id}</p>
+                </div>
+              </>
+            ),
+            parentId: (
+              <>
+                {category.parentId ? (
+                  <div className="author-info">
+                    <Button
+                      style={{
+                        borderRadius: '20px',
+                        backgroundColor: '#F0F8FF',
+                      }}
+                    >
+                      {getCategoryById(category.parentId)}
+                    </Button>
+                  </div>
+                ) : null}
+              </>
+            ),
+            categoryImage: (
+              <>
+                {category.categoryImage ? (
+                  <Image width={130} height={60} src={category.categoryImage} />
+                ) : null}
+              </>
+            ),
+            level: (
+              <>
+                <div className="author-info">
+                  <Typography.Title level={5}>
+                    {category.level}
+                  </Typography.Title>
+                </div>
+              </>
+            ),
+            isActive: (
+              <>
+                {category.isActive ? (
+                  <Switch
+                    defaultChecked
+                    style={{ backgroundColor: '#00CED1' }}
+                  />
+                ) : (
+                  <Switch />
+                )}
+              </>
+            ),
+            created: (
+              <>
+                <div className="ant-employed">
+                  <Typography.Title level={5}>
+                    {new Date(category.createdAt).toLocaleDateString()}
+                  </Typography.Title>
+                </div>
+              </>
+            ),
+          };
+        })
+      );
     } else {
       setCategoryList([]);
     }
   }, [category.categories]);
+  const columns = [
+    {
+      title: 'Tên',
+      dataIndex: 'name',
+      key: 'name',
+      width: '15%',
+    },
+    {
+      title: 'Thương hiệu',
+      key: 'parentId',
+      dataIndex: 'parentId',
+    },
+    {
+      title: 'Logo',
+      dataIndex: 'categoryImage',
+      key: 'categoryImage',
+    },
+
+    {
+      title: 'Level',
+      key: 'level',
+      dataIndex: 'level',
+    },
+    {
+      title: 'Trạng thái',
+      key: 'isActive',
+      dataIndex: 'isActive',
+    },
+    {
+      title: 'Ngày tạo',
+      key: 'created',
+      dataIndex: 'created',
+    },
+  ];
   return (
     <>
       <AddCategoryModal
@@ -135,6 +276,8 @@ function ListCategories() {
         onFinish={handleAddCategory}
         visible={visibleAdd}
         onCancel={() => setVisibleAdd(false)}
+        setCategoryParent={setCategoryParent}
+        categoriesParent={categoryParentList}
       />
       <EditCategoryModal
         handleCancel={handleCancel}
@@ -144,16 +287,17 @@ function ListCategories() {
         visible={visibleEdit}
         onCancel={() => setVisibleEdit(false)}
       />
-      <ConfirmDeleteModal
-        loading={loading}
+      <ConfirmDelete
         visible={visibleDelete}
-        handleDelete={handleDeleteCategory}
         onCancel={() => setVisibleDelete(false)}
+        loading={loading}
+        handleDelete={handleConfirmDelete}
+        title={'Xóa thương hiệu'}
       />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
-            <Title level={3}>Danh sách Nhãn Hiệu</Title>
+            <Title level={3}>Danh sách Thương hiệu</Title>
           </Col>
           <Col xs="24" xl={24}>
             <Row>
@@ -210,6 +354,7 @@ function ListCategories() {
                     borderRadius: '10px',
                   }}
                   icon={<DeleteOutlined />}
+                  onClick={onClickBtnDelete}
                 >
                   Xóa
                 </Button>
@@ -228,44 +373,13 @@ function ListCategories() {
                   <Spin size="large" />
                 </div>
               ) : (
-                <Row gutter={[8, 8]}>
-                  {category.categories.map((category, i) => {
-                    return (
-                      <Col span={4}>
-                        <Card
-                          key={category._id}
-                          style={{
-                            borderRadius: '10px',
-                            padding: '20px 20px 0px',
-                            background: '#F0F8FF',
-                          }}
-                          cover={
-                            <Image
-                              src={category.categoryImage}
-                              height={80}
-                              alt={category.name}
-                              style={{ borderRadius: '10px' }}
-                            />
-                          }
-                          actions={[
-                            <EditOutlined key="edit" />,
-                            <DeleteOutlined key="delete" />,
-                          ]}
-                        >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Title level={4}>{category.name}</Title>
-                          </div>
-                        </Card>
-                      </Col>
-                    );
-                  })}
-                </Row>
+                <Table
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={categoryList}
+                  pagination={true}
+                  className="ant-border-space"
+                />
               )}
             </div>
           </Col>

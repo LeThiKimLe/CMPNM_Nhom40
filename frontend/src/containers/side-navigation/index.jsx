@@ -1,29 +1,117 @@
-import { Container, Stack } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
-import React from 'react';
+import React, { useState } from 'react';
 import MDBox from '../../components/MDBox';
-import FadeMenu from '../categories';
+import CategoryItem from '../../components/CategoryItem';
+import CategoryIcon from '@mui/icons-material/Category';
+// react-router-dom components
+import Grid from '@mui/material/Unstable_Grid2';
+import { Container, Stack, Menu, Button, MenuItem } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useSelector } from 'react-redux';
 
-const MenuCategories = () => {
+const SideNavigation = () => {
+  const [icon, setIcon] = useState(false);
+
+  const data = useSelector((state) => state.data);
+  const { categories } = data;
+  let categoryLevelOne = categories.filter((item) => item.level === 1);
+  let categoryCustom = categoryLevelOne.map((item) => {
+    return {
+      key: item._id,
+      name: item.name,
+      value: item._id,
+    };
+  });
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  function handleClick(event) {
+    if (anchorEl !== event.currentTarget) {
+      setAnchorEl(event.currentTarget);
+      setIcon(true);
+    }
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+    setIcon(false);
+  }
   return (
     <MDBox
-      color="white"
-      bgColor="info"
-      variant="contained"
+      color="dark"
+      bgColor="white"
       borderRadius="none"
       opacity={1}
-      p={2}
+      p={2.5}
+      height="20px"
       display="flex"
       alignItems="center"
-      justifyContent="space-between"
     >
+      {' '}
       <Container>
-        <Stack direction="row">
-          <Grid container item xs={12}></Grid>
+        <Stack direction="row" spacing={2}>
+          <Grid container item xs={12} spacing={1}>
+            <Grid xs={6} item alignItems="center">
+              <>
+                <Button
+                  id={`fade-button`}
+                  variant="text"
+                  size="medium"
+                  p={0}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    paddingLeft: '10px',
+                    paddingRight: '10px',
+                    color: '#111111',
+                    fontWeight: '500',
+                    fontSize: '0.875rem',
+                    textTransform: 'initial !important',
+                  }}
+                  startIcon={<CategoryIcon />}
+                  endIcon={
+                    icon ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
+                  }
+                  aria-owns={anchorEl ? `simple-menu` : undefined}
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                >
+                  Danh sách điện thoại
+                </Button>
+                <Menu
+                  id={`simple-menu`}
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  MenuListProps={{ onMouseLeave: handleClose }}
+                >
+                  <MenuItem onClick={handleClose}>Chọn theo hãng</MenuItem>
+                  <MenuItem onClick={handleClose}>Chọn theo mức giá</MenuItem>
+                  <MenuItem onClick={handleClose}>Loại điện thoại</MenuItem>
+                  <MenuItem onClick={handleClose}>Chọn theo nhu cầu</MenuItem>
+                  <MenuItem onClick={handleClose}>Điện thoại hot</MenuItem>
+                </Menu>
+              </>
+            </Grid>
+            <Grid item xs={4} justifyContent="flex-end" alignItems="center">
+              <Stack direction="row" spacing={1}>
+                {categoryCustom.map((cat) => {
+                  return (
+                    <CategoryItem
+                      key={cat.key}
+                      name={cat.name}
+                      value={cat.value}
+                      categories={categories}
+                    />
+                  );
+                })}
+              </Stack>
+            </Grid>
+          </Grid>
         </Stack>
       </Container>
     </MDBox>
   );
 };
 
-export default MenuCategories;
+export default SideNavigation;
