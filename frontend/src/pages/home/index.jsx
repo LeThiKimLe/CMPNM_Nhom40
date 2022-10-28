@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Container, Box, Paper } from '@mui/material';
+import { Container, Box } from '@mui/material';
 import ProductCard from '../../components/ProductItem';
+import { useSelector } from 'react-redux';
+import { renderScreen } from '../../utils/custom-products';
+import { useEffect } from 'react';
+import MDBox from '../../components/MDBox';
+import { createCategoryGroup } from '../../utils/custome-category';
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -19,7 +24,7 @@ function Item(props) {
         borderRadius: 2,
         fontSize: '0.875rem',
         fontWeight: '700',
-        maxWidth: '250px',
+        maxWidth: '240px',
         ...sx,
       }}
       {...other}
@@ -39,31 +44,52 @@ Item.propTypes = {
     PropTypes.object,
   ]),
 };
+
 const Home = () => {
+  const data = useSelector((state) => state.data);
+  const { productGroups, categories } = data;
+  const list = createCategoryGroup(categories);
+  // useEffect(() => {}, [products, categories]);
   return (
-    <Container>
-      <div style={{ width: '100%' }}>
+    <MDBox
+      color="#000000"
+      bgColor="#ffffff"
+      variant="contained"
+      borderRadius="none"
+      opacity={1}
+      p={2}
+      display="flex"
+      justifyContent="space-between"
+      alignItems="flex-end"
+    >
+      <Container>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
-          <Item>
-            <Paper
-              elevation={0}
-              sx={{
-                padding: '5px',
-              }}
-            >
-              <ProductCard
-                image="https://res.cloudinary.com/dqcsrhhoc/image/upload/v1666540718/Images/Product/g83caevased0vcxi0ghm.jpg"
-                name="Điện thoại iPhone 14 Pro Max"
-                screen={[`6.7"`, 'Super Retina XDR']}
-                ram={['64GB', '128GB']}
-                regularPrice="33.990.000"
-                salePrice="31.990.000"
-              />
-            </Paper>
-          </Item>
+          {productGroups.length > 0
+            ? productGroups.map((item, index) => {
+                return (
+                  <Item key={index}>
+                    <ProductCard
+                      key={index}
+                      image={item.picture}
+                      name={item.name}
+                      screen={renderScreen(item.screen)}
+                      ram={item.rams}
+                      regularPrice={item.regularPrice}
+                      salePrice={item.salePrice}
+                      storage={item.storages}
+                      sale={item.sale}
+                      category={item.category}
+                      categoryOne={item.categoryOne}
+                      categoryOneName={item.categoryOneName}
+                      options={item.options}
+                    />
+                  </Item>
+                );
+              })
+            : null}
         </Box>
-      </div>
-    </Container>
+      </Container>
+    </MDBox>
   );
 };
 

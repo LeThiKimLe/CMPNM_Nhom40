@@ -1,3 +1,8 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-undef */
+/* eslint-disable array-callback-return */
+/* eslint-disable prefer-const */
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
@@ -6,7 +11,7 @@
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { User, Category, Product } = require('../../models');
+const { User, Category, Product, Color } = require('../../models');
 const {
   ServerError,
   BadRequest,
@@ -246,14 +251,25 @@ const reSendRefreshToken = async (req, res) => {
     );
   }
 };
+const getDetailsProduct = (listDetail, id) => {
+  let details;
+  listDetail.map((item) => {
+    if (item._id === id) {
+      details = item;
+    }
+  });
+  return details;
+};
 const getAllData = async (req, res) => {
   const listCategory = await Category.find({ isActive: true }).select(
     '_id name slug isActive level parentId'
   );
+
   const listProduct = await Product.find({ active: true }).select(
-    '_id name slug regularPrice color stock productPictures category active createdAt'
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale'
   );
-  return Response(res, { list: [listCategory, listProduct] });
+  const listColor = await Color.find({});
+  return Response(res, { list: [listCategory, listProduct, listColor] });
 };
 module.exports = {
   signup,

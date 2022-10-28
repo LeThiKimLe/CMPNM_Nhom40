@@ -42,6 +42,9 @@ const SideNavigation = () => {
       borderRadius="none"
       opacity={1}
       p={2.5}
+      sx={{
+        paddingLeft: '0px',
+      }}
       height="20px"
       display="flex"
       alignItems="center"

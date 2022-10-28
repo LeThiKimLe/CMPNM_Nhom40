@@ -5,12 +5,12 @@
 /* eslint-disable prefer-const */
 /* eslint-disable no-unused-vars */
 const slugify = require('slugify');
-const { Product, ProductDetails } = require('../../models');
+const { Product } = require('../../models');
 const { Response, ServerError, Create } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 
 const createProduct = async (req, res) => {
-  const { info, digital, desctiption } = req.body.data;
+  const { info, digital, description } = req.body.data;
 
   let productPicturesUpload = [];
   let productPictures = [];
@@ -26,22 +26,18 @@ const createProduct = async (req, res) => {
       for (let i = 0; i < info.productPictures.length; i++) {
         productPictures.push(values[i].url);
       }
-
-      const detailsProduct = new ProductDetails({
-        ...digital,
-      });
-      return detailsProduct.save();
-    })
-    .then((result) => {
-      const detailsProduct = result._id;
       delete info.productPictures;
       info.productPictures = productPictures;
       const product = new Product({
         ...info,
-        desctiption,
-        detailsProduct,
+        description,
+        detailsProduct: {
+          ...digital,
+        },
       });
-      product.slug = slugify(`${info.name} + ${info.color} + ${digital.ram}`);
+      product.slug = slugify(
+        `${info.name}${info.color}${digital.ram}${digital.storage}`
+      );
       product.createdBy = req.user.userId;
 
       return product.save(product);
@@ -58,9 +54,10 @@ const getAll = async (req, res) => {
 };
 const deleteProduct = async (req, res) => {
   const listID = req.body.data;
-  listID.forEach(async (value) => {
-    const item = await Product.findByIdAndDelete(value);
-    await ProductDetails.findByIdAndDelete(item.detailsProduct);
+  await Product.deleteMany({
+    _id: {
+      $in: listID,
+    },
   });
   return Response(res);
 };

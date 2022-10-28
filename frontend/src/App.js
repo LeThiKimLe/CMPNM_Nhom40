@@ -14,20 +14,25 @@ import { userActions } from './features/user/user.slice';
 import { PrivateComponent } from './utils/private-component';
 import VerifyEmail from './pages/verify-email';
 import dataThunk from './features/data/data.service';
+import SingleProduct from './pages/single_product';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const data = useSelector((state) => state.data);
-  const { categories, products } = data;
-  // thêm input để khi auth.authenticate thay đổi thì useEffect() chạy
+  const { categories, products, colors } = data;
+  // thêm input để khi auth.aut, henticate thay đổi thì useEffect() chạy
   useEffect(() => {
     if (!user.isLoggedIn) {
       dispatch(userActions.isUserLoggedIn());
     }
-    if (categories.length === 0 && products.length === 0) {
+    if (
+      categories.length === 0 ||
+      products.length === 0 ||
+      colors.length === 0
+    ) {
       dispatch(dataThunk.getAllAPI());
     }
-  }, [user.isLoggedIn, dispatch, categories, products]);
+  }, [user.isLoggedIn, dispatch, categories, products, colors]);
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -42,7 +47,8 @@ function App() {
                 </PrivateComponent>
               }
             />
-            <Route path="/finish-signup" element={<FinishSignUp />} />
+            <Route path="/products/*" element={<SingleProduct />} />
+            <Route path="/finish-signup/:slug" element={<FinishSignUp />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

@@ -64,7 +64,8 @@ const create = async (req, res) => {
   };
   if (req.body.data.parentId) {
     const { parentId } = req.body.data;
-    const catParent = Category.find({ parentId });
+    const catParent = await Category.findOne({ id: parentId });
+    console.log(catParent);
     categoryObj.parentId = req.body.data.parentId;
     if (catParent.level === 1) {
       categoryObj.level = 2;

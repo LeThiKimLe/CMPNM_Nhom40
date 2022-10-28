@@ -26,9 +26,43 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
     detailsProduct: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'DetailsProduct',
-      required: true,
+      screen: {
+        type: String,
+        required: true,
+      },
+      OS: {
+        type: String,
+        required: true,
+      },
+      backCamera: {
+        type: String,
+        required: true,
+      },
+      frontCamera: {
+        type: String,
+      },
+
+      cpu: {
+        type: String,
+        required: true,
+      },
+
+      ram: {
+        type: String,
+        required: true,
+      },
+      storage: {
+        type: String,
+        required: true,
+      },
+      sim: {
+        type: String,
+        required: true,
+      },
+      batteryPowerAndCharger: {
+        type: String,
+        required: true,
+      },
     },
     color: { type: String, required: true },
     quantitySold: {

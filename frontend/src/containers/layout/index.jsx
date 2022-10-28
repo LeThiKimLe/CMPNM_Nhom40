@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import Divider from '@mui/material/Divider';
 import React from 'react';
 import Header from '../header';
 import Navbar from '../navbar';
@@ -21,6 +22,7 @@ function Layout({ children }) {
         <Header />
         <Navbar />
         <SideNavigation />
+
         {children}
       </>
     );
