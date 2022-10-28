@@ -23,36 +23,13 @@ const TabInfo = (props) => {
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
   const [categorySelect, setCategorySelect] = useState('');
-  const [saleValue, setSaleValue] = useState(0);
-  const [regularPrice, setRegularPrice] = useState(0);
-  const [salePrice, setSalePrice] = useState(regularPrice);
+
   const [btnAddCheck, setBtnAddCheck] = useState(false);
   const [btnRemoveCheck, setBtnRemoveCheck] = useState(false);
   // * color
   const [colorList, setColorList] = useState([]);
   // * color selected
 
-  const onChangeSalePrice = (value) => {
-    if (isNaN(value)) {
-      return;
-    }
-    setSaleValue(value);
-    const salePrice =
-      Number(regularPrice) - (Number(regularPrice) * Number(value)) / 100;
-    form.setFieldValue('salePrice', salePrice.toString());
-  };
-  const onChangeRegularPrice = (e) => {
-    setRegularPrice(e.target.value);
-
-    if (saleValue !== 0) {
-      const salePrice =
-        Number(e.target.value) -
-        (Number(e.target.value) * Number(saleValue)) / 100;
-      form.setFieldValue('salePrice', salePrice.toString());
-    } else {
-      form.setFieldValue('salePrice', e.target.value);
-    }
-  };
   const onChangeSelect = (value) => {
     setCategorySelect(value);
     dispatch(colorThunk.getColorAllByCategoryAPI(value))
@@ -142,9 +119,7 @@ const TabInfo = (props) => {
               height: '40px',
             }}
             size="large"
-            value={regularPrice}
             placeholder="Giá gốc"
-            onChange={(e) => onChangeRegularPrice(e)}
           />
         </Form.Item>
         <Row gutter={[16, 8]}>
@@ -159,25 +134,14 @@ const TabInfo = (props) => {
             >
               <Row>
                 <Col span={12}>
-                  <Slider
-                    min={0}
-                    max={30}
-                    onChange={onChangeSalePrice}
-                    value={typeof saleValue === 'number' ? saleValue : 0}
-                    step={1}
-                  />
-                </Col>
-                <Col span={12}>
                   <InputNumber
                     min={0}
                     max={30}
                     style={{
-                      margin: '0 16px',
                       borderRadius: '10px',
                     }}
                     size="middle"
                     step={1}
-                    value={saleValue}
                   />
                 </Col>
               </Row>
@@ -192,7 +156,6 @@ const TabInfo = (props) => {
         >
           <Input
             style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            value={salePrice}
           />
         </Form.Item>
         <Form.Item

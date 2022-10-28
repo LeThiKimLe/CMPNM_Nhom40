@@ -19,6 +19,7 @@
     "@testing-library/user-event": "^13.2.1",
     "axios": "^1.1.2",
     "chroma-js": "^2.4.2",
+    "embla-carousel-react": "^7.0.3",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "material-ui-popup-state": "^4.1.0",
