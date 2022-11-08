@@ -9,7 +9,7 @@ import MDBox from '../../components/MDBox';
 import MDInput from '../../components/MDInput';
 import MDTypography from '../../components/MDTypography';
 import MDButton from '../../components/MDButton';
-import Footer from '../sign_in/components/footer';
+import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 import verifyEmailSuccess from '../../assets/images/verify-email-success.png';

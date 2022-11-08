@@ -21,7 +21,7 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import MDInput from '../../components/MDInput';
 import MDButton from '../../components/MDButton';
-import Footer from '../sign_in/components/footer';
+import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 import Header from '../../containers/header';

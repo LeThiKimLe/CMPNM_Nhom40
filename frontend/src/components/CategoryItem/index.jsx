@@ -3,7 +3,7 @@ import { MenuItem, Menu, Button } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 const CategoryItem = (props) => {
-  const { name, key, value, categories } = props;
+  const { name, index, value, categories } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [icon, setIcon] = useState(false);
   const listCategory = categories.filter((item) => item.parentId === value);
@@ -20,7 +20,7 @@ const CategoryItem = (props) => {
     setIcon(false);
   }
   return (
-    <div key={key}>
+    <div key={index}>
       <Button
         id={`fade-button-${name}`}
         variant="text"

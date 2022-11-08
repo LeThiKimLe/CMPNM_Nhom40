@@ -27,20 +27,8 @@ export const customGroupProduct = (group, categories, category) => {
   let listStorage = [];
   let listProductIDs = [];
   let listOption = [];
-  const {
-    name,
-    productPictures,
-    regularPrice,
-    salePrice,
-    sale,
-    detailsProduct,
-  } = group[0];
-  productGroup.name = name;
-  productGroup.picture = productPictures[0];
-  productGroup.regularPrice = regularPrice;
-  productGroup.salePrice = salePrice;
-  productGroup.sale = sale;
-  productGroup.screen = detailsProduct.screen;
+  const productSelected = group[0];
+
   productGroup.category = category;
   productGroup.categoryOne = getCategoryLevelOne(categories, category);
   productGroup.categoryOneName = getCategoryName(
@@ -64,12 +52,12 @@ export const customGroupProduct = (group, categories, category) => {
       listStorage.push(storage);
     }
   });
-
+  productGroup.productSelected = productSelected;
   productGroup.rams = listRam;
+  productGroup.products = group;
   productGroup.storages = listStorage;
   productGroup.options = listOption;
   productGroup.colors = listColor;
-  productGroup.ids = listProductIDs;
   return productGroup;
 };
 export const renderScreen = (screen) => {
@@ -117,4 +105,40 @@ export const getCategoryName = (list, id) => {
     }
   });
   return name;
+};
+
+export const getProduct = (products, ram, color, storage) => {
+  products.map((item) => {
+    if (
+      item.color === color &&
+      item.detailsProduct.ram === ram &&
+      item.detailsProduct.storage === storage
+    ) {
+      return item;
+    }
+  });
+};
+
+export const getDetailCartItem = (products, cartItem) => {
+  let itemProduct = {};
+  products.map((item) => {
+    if (item._id === cartItem.product) {
+      itemProduct = {
+        product: {
+          ...item,
+        },
+        quantity: cartItem.quantity,
+      };
+    }
+  });
+  return itemProduct;
+};
+
+export const getAllCartItemsDetail = (products, cartItems) => {
+  let list = [];
+  cartItems.map((item) => {
+    const cartItem = getDetailCartItem(products, item);
+    list.push(cartItem);
+  });
+  return list;
 };

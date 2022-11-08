@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Container, Box } from '@mui/material';
+
 import ProductCard from '../../components/ProductItem';
 import { useSelector } from 'react-redux';
-import { renderScreen } from '../../utils/custom-products';
-import { useEffect } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import MDBox from '../../components/MDBox';
-import { createCategoryGroup } from '../../utils/custome-category';
+
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -47,47 +48,66 @@ Item.propTypes = {
 
 const Home = () => {
   const data = useSelector((state) => state.data);
-  const { productGroups, categories } = data;
-  const list = createCategoryGroup(categories);
-  // useEffect(() => {}, [products, categories]);
+  const { productGroups } = data;
+
   return (
     <MDBox
       color="#000000"
-      bgColor="#ffffff"
+      bgColor="Light"
       variant="contained"
       borderRadius="none"
       opacity={1}
-      p={2}
       display="flex"
       justifyContent="space-between"
-      alignItems="flex-end"
+      alignItems="flex-start"
+      minHeight="80vh"
     >
-      <Container>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
-          {productGroups.length > 0
-            ? productGroups.map((item, index) => {
-                return (
-                  <Item key={index}>
-                    <ProductCard
-                      key={index}
-                      image={item.picture}
-                      name={item.name}
-                      screen={renderScreen(item.screen)}
-                      ram={item.rams}
-                      regularPrice={item.regularPrice}
-                      salePrice={item.salePrice}
-                      storage={item.storages}
-                      sale={item.sale}
-                      category={item.category}
-                      categoryOne={item.categoryOne}
-                      categoryOneName={item.categoryOneName}
-                      options={item.options}
-                    />
-                  </Item>
-                );
-              })
-            : null}
-        </Box>
+      <Container
+        disableGutters
+        maxWidth={false}
+        sx={{
+          backgroundColor: 'Light',
+        }}
+      >
+        {data.loading ? (
+          <MDBox
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            p={2}
+          >
+            <CircularProgress />
+          </MDBox>
+        ) : (
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              paddingTop: '30px',
+            }}
+          >
+            {productGroups.length > 0
+              ? productGroups.map((item, index) => {
+                  return (
+                    <Item key={index}>
+                      <ProductCard
+                        index={item.category}
+                        rams={item.rams}
+                        storages={item.storages}
+                        category={item.category}
+                        categoryOne={item.categoryOne}
+                        categoryOneName={item.categoryOneName}
+                        options={item.options}
+                        productSelected={item.productSelected}
+                        productGroup={item.products}
+                        colors={item.colors}
+                      />
+                    </Item>
+                  );
+                })
+              : null}
+          </Box>
+        )}
       </Container>
     </MDBox>
   );

@@ -4,7 +4,14 @@ import CategoryItem from '../../components/CategoryItem';
 import CategoryIcon from '@mui/icons-material/Category';
 // react-router-dom components
 import Grid from '@mui/material/Unstable_Grid2';
-import { Container, Stack, Menu, Button, MenuItem } from '@mui/material';
+import {
+  Container,
+  Stack,
+  Menu,
+  Button,
+  MenuItem,
+  Divider,
+} from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useSelector } from 'react-redux';
@@ -39,17 +46,15 @@ const SideNavigation = () => {
     <MDBox
       color="dark"
       bgColor="white"
-      borderRadius="none"
       opacity={1}
-      p={2.5}
-      sx={{
-        paddingLeft: '0px',
-      }}
-      height="20px"
       display="flex"
+      sx={{
+        paddingTop: '10px',
+        paddingBottom: '10px',
+      }}
+      shadow="lg"
       alignItems="center"
     >
-      {' '}
       <Container>
         <Stack direction="row" spacing={2}>
           <Grid container item xs={12} spacing={1}>
@@ -98,10 +103,10 @@ const SideNavigation = () => {
             </Grid>
             <Grid item xs={4} justifyContent="flex-end" alignItems="center">
               <Stack direction="row" spacing={1}>
-                {categoryCustom.map((cat) => {
+                {categoryCustom.map((cat, index) => {
                   return (
                     <CategoryItem
-                      key={cat.key}
+                      key={index}
                       name={cat.name}
                       value={cat.value}
                       categories={categories}

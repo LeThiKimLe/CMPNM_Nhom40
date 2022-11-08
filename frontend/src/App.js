@@ -15,38 +15,74 @@ import { PrivateComponent } from './utils/private-component';
 import VerifyEmail from './pages/verify-email';
 import dataThunk from './features/data/data.service';
 import SingleProduct from './pages/single_product';
+import { cartActions, selectCartItems } from './features/cart/cart.slice';
+import CartPage from './pages/cart';
+import cartThunk from './features/cart/cart.service';
+import ProfilePage from './pages/profile';
+import './App.css';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const data = useSelector((state) => state.data);
-  const { categories, products, colors } = data;
+  const cartItemsLocal =
+    localStorage.getItem('cartItems') == null
+      ? null
+      : JSON.parse(localStorage.getItem('cartItems'));
+
   // thêm input để khi auth.aut, henticate thay đổi thì useEffect() chạy
+  useEffect(() => {
+    dispatch(dataThunk.getAllAPI());
+  }, [dispatch]);
   useEffect(() => {
     if (!user.isLoggedIn) {
       dispatch(userActions.isUserLoggedIn());
     }
-    if (
-      categories.length === 0 ||
-      products.length === 0 ||
-      colors.length === 0
-    ) {
-      dispatch(dataThunk.getAllAPI());
+  }, [dispatch, user.isLoggedIn]);
+  useEffect(() => {
+    if (user.isLoggedIn) {
+      const { userId } = user.user;
+      dispatch(cartThunk.getAllItemsAPI());
+      // get cart in mongoose
+      // * cartItems in state change
+      if (cartItemsLocal !== null) {
+        // TODO add to mongose
+        console.log('cart', cartItemsLocal);
+        let newCartItems = [];
+        cartItemsLocal.map((item) => {
+          const newItem = {
+            product: item.product._id,
+            quantity: item.quantity,
+          };
+          newCartItems.push(newItem);
+        });
+        dispatch(
+          cartThunk.addLocalToCartAPI({
+            user: userId,
+            cartItems: newCartItems,
+          })
+        )
+          .unwrap()
+          .then(() => {
+            dispatch(cartThunk.getAllItemsAPI());
+          });
+        localStorage.removeItem('cartItems');
+      }
+    } else {
+      if (cartItemsLocal !== null) {
+        dispatch(cartActions.getAllItemsLocal(cartItemsLocal));
+      }
     }
-  }, [user.isLoggedIn, dispatch, categories, products, colors]);
+  }, [user.isLoggedIn, cartItemsLocal, dispatch, user.user]);
+
   return (
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <MainLayout>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateComponent>
-                  <Home />
-                </PrivateComponent>
-              }
-            />
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/products/*" element={<SingleProduct />} />
             <Route path="/finish-signup/:slug" element={<FinishSignUp />} />
             <Route path="/sign-in" element={<SignIn />} />
