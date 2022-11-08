@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
-import Footer from '../sign_in/components/footer';
+import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 import finishSignup from '../../assets/images/finish-signup.png';

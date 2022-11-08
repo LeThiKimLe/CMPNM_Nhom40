@@ -37,6 +37,7 @@ const userSlice = createSlice({
       prepare: () => {
         const token = TokenService.getLocalAccessToken();
         const user = JSON.parse(localStorage.getItem('user'));
+
         return { payload: { userData: user, accessToken: token } };
       },
     },
@@ -61,7 +62,6 @@ const userSlice = createSlice({
         state.logging = false;
       })
       .addCase(userThunk.signinAPI.rejected, (state, action) => {
-        console.log(action.payload);
         state.error = true;
         state.logging = false;
         state.message = action.payload;

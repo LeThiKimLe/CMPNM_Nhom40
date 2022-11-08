@@ -6,46 +6,59 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Button,
+  Badge,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MDBox from '../../components/MDBox';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdbIcon from '@mui/icons-material/Adb';
 import MDTypography from '../../components/MDTypography';
 import SearchIcon from '@mui/icons-material/Search';
-import MDButton from '../../components/MDButton';
-
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MuiLink from '@mui/material/Link';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
-import NotificationItem from '../../components/NotificationItem';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { cartActions } from '../../features/cart/cart.slice';
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const location = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
-
+  const cart = useSelector((state) => state.cart);
+  const cartItemsLocal =
+    localStorage.getItem('cartItems') == null
+      ? null
+      : JSON.parse(localStorage.getItem('cartItems'));
+  const [cartAmount, setCartAmount] = useState(0);
   function handleClick(event) {
-    console.log(event.currentTarget);
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
     }
   }
-
   function handleClose() {
     setAnchorEl(null);
   }
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const handleSignOut = () => {
+    // const pathname = location.pathname.replace('/', '');
     dispatch(userActions.signout());
+    dispatch(cartActions.reset());
   };
-
+  useEffect(() => {
+    if (!isLoggedIn) {
+      if (cartItemsLocal === null) {
+        setCartAmount(0);
+      } else {
+        setCartAmount(cartItemsLocal.length);
+      }
+    } else {
+      setCartAmount(cart.cartItems.length);
+    }
+  }, [cart, cartItemsLocal, isLoggedIn]);
   return (
     <MDBox
       color="#000000"
@@ -53,7 +66,9 @@ const Navbar = () => {
       variant="contained"
       borderRadius="none"
       opacity={1}
-      p={2}
+      sx={{
+        paddingTop: '10px',
+      }}
       display="flex"
       justifyContent="space-between"
       alignItems="flex-end"
@@ -120,20 +135,24 @@ const Navbar = () => {
               <Stack direction="row" spacing={3}>
                 {isLoggedIn ? (
                   <>
-                    <MDButton
+                    <IconButton
                       id={`fade-button`}
-                      variant="outlined"
-                      color="dark"
                       aria-owns={anchorEl ? `simple-menu` : undefined}
                       aria-haspopup="true"
                       onClick={handleClick}
+                      sx={{
+                        borderRadius: '8px',
+                        border: '1px solid #111111',
+                        paddingLeft: '15px',
+                        paddingRight: '15px',
+                      }}
                     >
                       <AccountCircleIcon
                         sx={{
                           color: '#111111',
                         }}
                       />
-                    </MDButton>
+                    </IconButton>
 
                     <Menu
                       id={`simple-menu`}
@@ -142,7 +161,7 @@ const Navbar = () => {
                       onClose={handleClose}
                       MenuListProps={{ onMouseLeave: handleClose }}
                     >
-                      <MenuItem onClick={handleClose}>
+                      <MenuItem onClick={() => navigate('/profile')}>
                         Tài khoản của Tôi
                       </MenuItem>
                       <MenuItem onClick={handleClose}>Đơn mua</MenuItem>
@@ -150,31 +169,37 @@ const Navbar = () => {
                     </Menu>
                   </>
                 ) : (
-                  <MDButton
-                    variant="outlined"
-                    color="dark"
+                  <IconButton
                     component={Link}
                     to="/sign-in"
-                  >
-                    <ArrowBackIcon
-                      sx={{
-                        color: '#111111',
-                      }}
-                    />
-                  </MDButton>
-                )}
-                <MDButton
-                  variant="outlined"
-                  color="dark"
-                  component={Link}
-                  to="/cart"
-                >
-                  <ShoppingCartIcon
                     sx={{
-                      color: '#111111',
+                      borderRadius: '8px',
+                      border: '1px solid #111111',
+                      paddingLeft: '15px',
+                      paddingRight: '15px',
                     }}
-                  />
-                </MDButton>
+                  >
+                    <ArrowBackIcon color="dark" />
+                  </IconButton>
+                )}
+
+                <Badge
+                  badgeContent={cartAmount === 0 ? 0 : cartAmount}
+                  color="secondary"
+                >
+                  <IconButton
+                    component={Link}
+                    to="/cart"
+                    sx={{
+                      borderRadius: '8px',
+                      border: '1px solid #111111',
+                      paddingLeft: '15px',
+                      paddingRight: '15px',
+                    }}
+                  >
+                    <ShoppingCartIcon color="dark" />
+                  </IconButton>
+                </Badge>
               </Stack>
             </Grid>
           </Grid>

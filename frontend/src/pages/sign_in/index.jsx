@@ -22,7 +22,7 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import MDInput from '../../components/MDInput';
 import MDButton from '../../components/MDButton';
-import Footer from './components/footer';
+import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 
@@ -48,7 +48,7 @@ function SignIn() {
   const [open, setOpen] = useState(false);
   const userState = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const { isLoggedIn, user, token } = userState;
+  const { isLoggedIn, user, error, message } = userState;
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -62,21 +62,25 @@ function SignIn() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(signinValidationSchema) });
   const onSubmit = (data) => {
-    dispatch(userThunk.signinAPI(data))
-      .unwrap()
-      .then((value) => {
-        navigate('/');
-        dispatch(userActions.reset());
-      })
-      .catch((error) => {
-        setOpen(true);
-      });
+    dispatch(userThunk.signinAPI(data));
+    dispatch(userActions.reset());
+    // .unwrap()
+    // .then((value) => {
+    //   navigate('/');
+    //   dispatch(userActions.reset());
+    // })
+    // .catch((error) => {
+    //   setOpen(true);
+    // });
   };
   useEffect(() => {
     if (isLoggedIn || user) {
       navigate('/');
     }
-  }, [user, isLoggedIn, navigate]);
+    if (error) {
+      setOpen(true);
+    }
+  }, [user, isLoggedIn, navigate, error]);
 
   return (
     <MDBox
@@ -93,7 +97,7 @@ function SignIn() {
         onClose={handleClose}
       >
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {userState.message}
+          {message}
         </Alert>
       </Snackbar>
       <MDBox width="100%" height="100vh" mx="auto">

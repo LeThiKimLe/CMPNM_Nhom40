@@ -11,31 +11,69 @@ import { Chip } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { useSelector } from 'react-redux';
+import { renderScreen } from '../../utils/custom-products';
 
 function ProductCard({
-  key,
-  image,
-  name,
-  screen,
-  ram,
-  storage,
-  regularPrice,
-  salePrice,
-  sale,
+  index,
+  rams,
+  storages,
   category,
   categoryOne,
   categoryOneName,
   options,
+  productSelected,
+  productGroup,
+  colors,
 }) {
-  const handleToProduct = (e) => {
-    console.log(e.currentTarget);
-  };
-  const [optionCheck, setOptionCheck] = useState(0);
+  const [optionSelected, setOptionSelected] = useState(0);
+  const [product, setProduct] = useState(productSelected);
+  const {
+    name,
+    productPictures,
+    regularPrice,
+    salePrice,
+    sale,
+    detailsProduct,
+  } = product;
+  const [ramSelected, setRamSelected] = useState(detailsProduct.ram);
+  const [storageSelected, setStorageSelected] = useState(
+    detailsProduct.storage
+  );
+  const screenCustom = renderScreen(detailsProduct.screen);
   const customOptions =
-    ram.length > 1 && storage.length > 1 ? options : storage;
+    rams.length > 1 && storages.length > 1 ? options : storages;
+  useEffect(() => {
+    if (customOptions.length === storages.length) {
+      rams.map((item, index) => {
+        if (optionSelected === index) {
+          setRamSelected(item);
+        }
+      });
+      setStorageSelected(storages[optionSelected]);
+    } else {
+      customOptions.map((item, index) => {
+        if (index === optionSelected) {
+          setRamSelected(item.split('-')[0]);
+          setStorageSelected(item.split('-')[1]);
+        }
+      });
+    }
+  }, [customOptions, optionSelected, rams, storages.length, storages]);
+  useEffect(() => {
+    productGroup.map((item) => {
+      const {
+        detailsProduct: { ram, storage },
+      } = item;
+      if (ram === ramSelected && storage === storageSelected) {
+        setProduct(item);
+        return;
+      }
+    });
+  }, [storageSelected, ramSelected, productGroup]);
   return (
     <Card
-      key={key}
+      key={index}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +84,19 @@ function ProductCard({
     >
       <Link
         to={`/products/${category}`}
-        state={{ id: categoryOne, name: categoryOneName }}
+        state={{
+          id: categoryOne,
+          name: categoryOneName,
+          product: product,
+          option: customOptions,
+          ram: ramSelected,
+          storage: storageSelected,
+          optionSelected: optionSelected,
+          rams: rams,
+          storages: storages,
+          productGroup: productGroup,
+          colors: colors,
+        }}
       >
         <MDBox
           position="relative"
@@ -54,7 +104,7 @@ function ProductCard({
           sx={{ marginBottom: '10px' }}
         >
           <CardMedia
-            src={image}
+            src={productPictures[0]}
             component="img"
             title={name}
             sx={{
@@ -72,7 +122,19 @@ function ProductCard({
         <MDBox mb={0.5}>
           <Link
             to={`/products/${category}`}
-            state={{ id: categoryOne, name: categoryOneName }}
+            state={{
+              id: categoryOne,
+              name: categoryOneName,
+              product: product,
+              option: customOptions,
+              ram: ramSelected,
+              storage: storageSelected,
+              optionSelected: optionSelected,
+              rams: rams,
+              storages: storages,
+              productGroup: productGroup,
+              colors: colors,
+            }}
           >
             <MDTypography
               sx={{
@@ -94,9 +156,10 @@ function ProductCard({
           alignItems="center"
         >
           {/* thông tin màn hình */}
-          {screen.map((item) => {
+          {screenCustom.map((item, index) => {
             return (
               <Chip
+                key={index}
                 size="medium"
                 sx={{
                   fontSize: '0.65rem',
@@ -117,47 +180,28 @@ function ProductCard({
         >
           {/* // danh sách ram */}
           {customOptions.map((item, index) => {
-            if (optionCheck === index) {
-              return (
-                <MDButton
-                  key={index}
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    padding: '2px 2px',
-                    border: '2px solid #2F4F4F',
-                    borderRadius: '0.3rem',
-                    marginRight: '3px',
-                    color: '#2F4F4F',
-                  }}
-                >
-                  {item}
-                </MDButton>
-              );
-            } else {
-              return (
-                <MDButton
-                  key={index}
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    padding: '2px 2px',
-                    border: '1px solid #808080',
-                    borderRadius: '0.3rem',
-                    marginRight: '3px',
-                  }}
-                  onClick={() => {
-                    setOptionCheck(index);
-                  }}
-                >
-                  {item}
-                </MDButton>
-              );
-            }
+            return (
+              <MDButton
+                key={index}
+                variant="contained"
+                size="small"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: '500',
+                  padding: '2px 2px',
+                  border:
+                    optionSelected === index
+                      ? '2px solid #2F4F4F'
+                      : '1px solid #2F4F4F',
+                  borderRadius: '0.3rem',
+                  marginRight: '3px',
+                  color: '#2F4F4F',
+                }}
+                onClick={() => setOptionSelected(index)}
+              >
+                {item}
+              </MDButton>
+            );
           })}
         </MDBox>
         <MDBox display="flex" justifyContent="flex-start" alignItems="center">
