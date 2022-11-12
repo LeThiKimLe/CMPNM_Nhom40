@@ -11,15 +11,23 @@ import SignIn from './pages/sign_in';
 import SignUp from './pages/sign-up';
 import FinishSignUp from './pages/finish-signup';
 import { userActions } from './features/user/user.slice';
-import { PrivateComponent } from './utils/private-component';
+// import { PrivateComponent } from './utils/private-component';
 import VerifyEmail from './pages/verify-email';
 import dataThunk from './features/data/data.service';
 import SingleProduct from './pages/single_product';
-import { cartActions, selectCartItems } from './features/cart/cart.slice';
+import { cartActions } from './features/cart/cart.slice';
 import CartPage from './pages/cart';
 import cartThunk from './features/cart/cart.service';
-import ProfilePage from './pages/profile';
+import ProfilePage from './pages/user/profile';
 import './App.css';
+import AddressPage from './pages/user/address';
+import OrderPage from './pages/user/order';
+import PasswordPage from './pages/user/password';
+import addressThunk from './features/address/address.service';
+import CheckOutPage from './pages/checkout';
+import OrderConfirmation from './pages/checkout/order-confirmation';
+import orderThunk from './features/order/order.service';
+import OrderDetails from './pages/user/order-detail';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -40,8 +48,10 @@ function App() {
   }, [dispatch, user.isLoggedIn]);
   useEffect(() => {
     if (user.isLoggedIn) {
+      dispatch(addressThunk.getAllAPI());
       const { userId } = user.user;
       dispatch(cartThunk.getAllItemsAPI());
+      dispatch(orderThunk.getAllOrder());
       // get cart in mongoose
       // * cartItems in state change
       if (cartItemsLocal !== null) {
@@ -50,7 +60,7 @@ function App() {
         let newCartItems = [];
         cartItemsLocal.map((item) => {
           const newItem = {
-            product: item.product._id,
+            product: item._id,
             quantity: item.quantity,
           };
           newCartItems.push(newItem);
@@ -81,8 +91,14 @@ function App() {
         <MainLayout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/user/profile" element={<ProfilePage />} />
+            <Route path="/user/address" element={<AddressPage />} />
+            <Route path="/user/password" element={<PasswordPage />} />
+            <Route path="/user/order/:id" element={<OrderDetails />} />
+            <Route path="/user/order" element={<OrderPage />} />
             <Route path="/cart" element={<CartPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/checkout" element={<CheckOutPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/products/*" element={<SingleProduct />} />
             <Route path="/finish-signup/:slug" element={<FinishSignUp />} />
             <Route path="/sign-in" element={<SignIn />} />

@@ -11,10 +11,12 @@ const {
   uploadImage,
   signin,
   getAllData,
+  reSendRefreshToken,
 } = require('../controllers/user/user.controller');
 
 router.post('/sign-up', signup);
 router.post('/sign-in', signin);
+router.post('/refresh-token', reSendRefreshToken);
 router.get('/get-all-data', getAllData);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);

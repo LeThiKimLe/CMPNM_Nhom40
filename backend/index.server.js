@@ -21,6 +21,8 @@ const categoryRouter = require('./src/routes/category.routes');
 const colorRouter = require('./src/routes/color.routes');
 const productRouter = require('./src/routes/product.routes');
 const cartRouter = require('./src/routes/cart.routes');
+const addressRouter = require('./src/routes/address.routes');
+const orderRouter = require('./src/routes/order.routes');
 
 app.use(cookieParser());
 app.use(helmet());
@@ -38,6 +40,8 @@ app.use('/api/category', categoryRouter);
 app.use('/api/product', productRouter);
 app.use('/api/color', colorRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/address', addressRouter);
+app.use('/api/order/', orderRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', userRouter);
 

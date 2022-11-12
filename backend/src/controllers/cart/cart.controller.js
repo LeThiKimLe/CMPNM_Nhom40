@@ -16,32 +16,39 @@ function runUpdate(filter, updateData, options) {
       .catch((err) => reject(err));
   });
 }
+
 const getAllItems = (req, res) => {
   const { userId } = req.user;
-  let newCartItems = [];
-  Cart.findOne({ user: userId }).exec((error, cart) => {
-    if (cart) {
-      if (cart.cartItems.length > 0) {
-        let promises = [];
-        cart.cartItems.map((item) => {
-          const product = Product.findById(item.product);
-          promises.push(product);
+  Cart.findOne({ user: userId })
+    .populate(
+      'cartItems.product',
+      '_id name salePrice regularPrice productPictures detailsProduct color category'
+    )
+    .exec((error, cart) => {
+      console.log(cart);
+      if (error) return res.status(400).json({ error });
+      if (cart) {
+        let cartItems = [];
+        cart.cartItems.forEach((item, index) => {
+          console.log(item);
+          const newCartItem = {
+            _id: item.product._id.toString(),
+            name: item.product.name,
+            productPicture: item.product.productPictures[0],
+            detailsProduct: item.product.detailsProduct,
+            salePrice: item.product.salePrice,
+            regularPrice: item.product.regularPrice,
+            quantity: item.quantity,
+            color: item.product.color,
+            category: item.product.category,
+          };
+          cartItems.push(newCartItem);
         });
-        Promise.all(promises).then((value) => {
-          value.map((item, index) => {
-            const newItem = {
-              product: item,
-              quantity: cart.cartItems[index].quantity,
-            };
-            newCartItems.push(newItem);
-          });
-          return Response(res, { cartItems: newCartItems });
-        });
+        res.status(200).json({ cartItems });
       } else {
-        return Response(res, { cartItems: [] });
+        res.status(200).json({ cartItems: [] });
       }
-    }
-  });
+    });
 };
 const addItems = (req, res) => {
   const { cartItems } = req.body.data;
@@ -162,14 +169,15 @@ const addItem = (req, res) => {
         });
       }
     } else {
-      const newCartItem = new CartItem({
-        product,
-        quantity,
-      });
       let newCart = new Cart({
         user: userId,
+        cartItems: [
+          {
+            product,
+            quantity,
+          },
+        ],
       });
-      newCart.cartItems.push(newCartItem);
       newCart
         .save()
         .then(() => {

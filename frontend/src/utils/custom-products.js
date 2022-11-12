@@ -16,7 +16,6 @@ export const getAllGroupProducts = (categories, products, listCategoryInit) => {
     group = customGroupProduct(group, listCategoryInit, item);
     list.push(group);
   });
-  console.log(list);
   return list;
 };
 
@@ -134,11 +133,25 @@ export const getDetailCartItem = (products, cartItem) => {
   return itemProduct;
 };
 
-export const getAllCartItemsDetail = (products, cartItems) => {
+export const getColorProduct = (product, colors) => {
+  let colorName = '';
+  const { color, category } = product;
+  colors.map((item) => {
+    if (item.value === color && item.category == category) {
+      colorName = item.name;
+    }
+  });
+  return colorName;
+};
+export const customListOrderProducts = (products) => {
   let list = [];
-  cartItems.map((item) => {
-    const cartItem = getDetailCartItem(products, item);
-    list.push(cartItem);
+  products.map((item) => {
+    const newItem = {
+      productId: item._id,
+      price: item.salePrice,
+      purchasedQty: item.quantity,
+    };
+    list.push(newItem);
   });
   return list;
 };

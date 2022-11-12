@@ -12,14 +12,21 @@ import { formatThousand } from '../../utils/custom-price';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '../../features/cart/cart.slice';
 import cartThunk from '../../features/cart/cart.service';
+import { getColorProduct } from '../../utils/custom-products';
 
 const CartItem = (props) => {
-  const { product, quantity, keyIndex, handleDelete } = props;
-  const { ram, storage } = product.detailsProduct;
-  const { productPictures, name, color, salePrice, regularPrice } = product;
-  const [amount, setAmount] = useState(quantity);
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const data = useSelector((state) => state.data);
+  const { product, keyIndex, handleDelete } = props;
+
+  const { ram, storage } = product.detailsProduct;
+  const { productPicture, name, salePrice, regularPrice, quantity } = product;
+
+  const [amount, setAmount] = useState(quantity);
+
+  const colorName = getColorProduct(product, data.colors);
+
   const handleIncrease = () => {
     if (user.isLoggedIn) {
       let newCartItem = { product: product._id, quantity: amount + 1 };
@@ -94,7 +101,7 @@ const CartItem = (props) => {
         <MDBox display="flex" alignItems="center" lineHeight={1}>
           <MDAvatar
             variant="square"
-            src={productPictures[0]}
+            src={productPicture}
             name={name}
             size="xl"
           />
@@ -106,7 +113,7 @@ const CartItem = (props) => {
               {name}
             </MDTypography>
             <MDTypography sx={{ color: '#5b5b5b' }} variant="overline">
-              {ram}-{storage}-{color}
+              {ram}-{storage}-{colorName}
             </MDTypography>
           </MDBox>
         </MDBox>

@@ -4,7 +4,16 @@ import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
 
 const EditCategoryModal = (props) => {
-  const { visible, onFinish, loading, onCancel, form, fileList, onChange, onPreview } = props;
+  const {
+    visible,
+    onFinish,
+    loading,
+    onCancel,
+    form,
+    fileList,
+    onChange,
+    onPreview,
+  } = props;
   // form.submit
   const { name, categoryImage, checked } = form.getFieldsValue();
 
@@ -16,8 +25,19 @@ const EditCategoryModal = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal footer={null} visible={visible} title="Edit Category" onCancel={onCancel}>
-        <Form form={form} layout="vertical" className="row-col" autoComplete="off" onFinish={onFinish}>
+      <Modal
+        footer={null}
+        visible={visible}
+        title="Edit Category"
+        onCancel={onCancel}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          className="row-col"
+          autoComplete="off"
+          onFinish={onFinish}
+        >
           <Form.Item
             className="username"
             label="Name"
@@ -26,15 +46,24 @@ const EditCategoryModal = (props) => {
             rules={[
               {
                 required: true,
-                message: 'Please input name category!',
+                message: 'Vui lòng nhập tên thương hiệu',
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Name" style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} />
+            <Input
+              placeholder="Tên thương hiệu"
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+            />
           </Form.Item>
 
-          <Form.Item name="checked" valuePropName="checked" className="username" label="Status" style={{ fontWeight: '600' }}>
+          <Form.Item
+            name="checked"
+            valuePropName="checked"
+            className="username"
+            label="Status"
+            style={{ fontWeight: '600' }}
+          >
             {checked ? <Switch defaultChecked /> : <Switch />}
           </Form.Item>
           <Form.Item

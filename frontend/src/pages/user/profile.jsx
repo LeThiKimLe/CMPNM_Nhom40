@@ -2,9 +2,11 @@ import { Divider, Stack, Chip } from '@mui/material';
 import React from 'react';
 import MDTypography from '../../components/MDTypography';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-const AccountComponent = () => {
+import UserPage from './user-page';
+
+const ProfilePage = () => {
   return (
-    <>
+    <UserPage>
       <Stack
         justifyContent="flex-start"
         alignItems="flex-start"
@@ -102,8 +104,8 @@ const AccountComponent = () => {
           </Stack>
         </Grid>
       </Grid>
-    </>
+    </UserPage>
   );
 };
 
-export default AccountComponent;
+export default ProfilePage;

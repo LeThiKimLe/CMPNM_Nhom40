@@ -102,7 +102,7 @@ function ListCategories() {
     dispatch(categoryThunk.createAPI(categoryData))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Category created successfully' });
+        notification.success({ message: 'Thêm thương hiệu thành công!' });
         formAdd.resetFields();
         dispatch(categoryActions.reset());
         setTimeout(() => {

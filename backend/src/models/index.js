@@ -3,6 +3,8 @@ const Category = require('./category.model');
 const Color = require('./color.model');
 const Product = require('./product.model');
 const Cart = require('./cart.model');
+const UserAddress = require('./address.model');
+const Order = require('./order.model');
 
 module.exports = {
   User,
@@ -10,4 +12,6 @@ module.exports = {
   Color,
   Product,
   Cart,
+  UserAddress,
+  Order,
 };

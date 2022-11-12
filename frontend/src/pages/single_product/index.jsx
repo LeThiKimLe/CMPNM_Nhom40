@@ -1,6 +1,7 @@
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
 import { Container, Stack, Divider, CircularProgress } from '@mui/material';
+import { notification } from 'antd';
 import Breadcrumbs from '../../components/CustomBreadcrumbs';
 import MDBox from '../../components/MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -12,14 +13,17 @@ import { formatThousand } from '../../utils/custom-price';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import { getProduct } from '../../utils/custom-products';
+
 import { cartActions, selectCartItems } from '../../features/cart/cart.slice';
 import { selectIsLoggedIn } from '../../features/user/user.slice';
 import cartThunk from '../../features/cart/cart.service';
 const SingleProduct = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-
+  const data = useSelector((state) => state.data);
+  const user = useSelector((state) => state.user);
+  const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
+  const { colors } = data;
   const id = location.state?.id;
   const name = location.state?.name;
   const product = location.state?.product;
@@ -38,13 +42,10 @@ const SingleProduct = () => {
   const [storageSelected, setStorageSelected] = useState(storage);
   const [optionSelected, setOptionSelected] = useState(optionSelect);
   const [colorSelected, setColorSelected] = useState(colorGroup[0]);
+
   const [amount, setAmount] = useState(1);
   // select state
   const [productSelected, setProductSelected] = useState(product);
-  const data = useSelector((state) => state.data);
-  const user = useSelector((state) => state.user);
-  const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
-  const { colors } = data;
 
   const handleAddItemToCart = () => {
     if (isLoggedIn) {
@@ -57,6 +58,10 @@ const SingleProduct = () => {
       )
         .unwrap()
         .then(() => {
+          notification.success({
+            message: 'Đã thêm sản phẩm vào giỏ hàng!',
+            placement: 'top',
+          });
           dispatch(cartThunk.getAllItemsAPI());
         });
     } else {
@@ -84,7 +89,6 @@ const SingleProduct = () => {
         }
       });
     }
-    console.log(optionSelected);
   }, [category, colors, optionSelected, rams, option, storages]);
   // handle option
   useEffect(() => {

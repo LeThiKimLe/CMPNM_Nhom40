@@ -45,11 +45,31 @@ Item.propTypes = {
     PropTypes.object,
   ]),
 };
+async function getMethodShip(to_district) {
+  const response = await fetch(
+    `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Origin: 'cors',
+        Host: 'api.producthunt.com',
+        token: `53cff26c-f9d5-11ec-ad26-3a4226f77ff0`,
+      },
+    }
+  ).then((response) => response.json());
 
+  // update the state
+  if (response.code === 200) {
+    console.log(response);
+    return response.data[0].service_id;
+  }
+}
 const Home = () => {
   const data = useSelector((state) => state.data);
   const { productGroups } = data;
-
+  getMethodShip(2046);
   return (
     <MDBox
       color="#000000"
@@ -83,7 +103,7 @@ const Home = () => {
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(5, 1fr)',
-              paddingTop: '30px',
+              paddingTop: '15px',
             }}
           >
             {productGroups.length > 0
