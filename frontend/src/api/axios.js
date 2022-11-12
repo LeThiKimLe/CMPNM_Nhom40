@@ -25,26 +25,26 @@ axiosClient.interceptors.response.use(
     return response;
   },
   async function (error) {
-    // const originalConfig = error.config;
-    // if (originalConfig.url !== '/signin' && error.response) {
-    //   // Access Token was expired
-    //   if (error.response.status === 401 && !originalConfig._retry) {
-    //     originalConfig._retry = true;
-    //     try {
-    //       const rs = await axiosClient.post('/refresh-token', {
-    //         userId: TokenService.getUser().userId,
-    //       });
+    const originalConfig = error.config;
+    if (originalConfig.url !== '/signin' && error.response) {
+      // Access Token was expired
+      if (error.response.status === 401 && !originalConfig._retry) {
+        originalConfig._retry = true;
+        try {
+          const rs = await axiosClient.post('/refresh-token', {
+            userId: TokenService.getUser().userId,
+          });
 
-    //       const { accessToken } = rs.data;
-    //       TokenService.updateLocalAccessToken(accessToken);
+          const { accessToken } = rs.data;
+          TokenService.updateLocalAccessToken(accessToken);
 
-    //       return axiosClient(originalConfig);
-    //     } catch (_error) {
-    //       TokenService.removeData();
-    //       return Promise.reject(_error);
-    //     }
-    //   }
-    // }
+          return axiosClient(originalConfig);
+        } catch (_error) {
+          TokenService.removeData();
+          return Promise.reject(_error);
+        }
+      }
+    }
     return Promise.reject(error);
   }
 );

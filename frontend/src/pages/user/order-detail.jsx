@@ -1,0 +1,414 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import UserPage from './user-page';
+import { Stack, Paper, Divider, CircularProgress } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import MDTypography from '../../components/MDTypography';
+import MDButton from '../../components/MDButton';
+import MDBox from '../../components/MDBox';
+import CustomizedSteppers from './order-status';
+import { formatThousand } from '../../utils/custom-price';
+import { useDispatch } from 'react-redux';
+import orderThunk from '../../features/order/order.service';
+import OrderDetailItem from './order-detail-item';
+function getTotalPrice(items) {
+  let total = 0;
+  items.map((item, index) => {
+    const { price, purchasedQty } = item;
+    const itemPrice = Number(price) * purchasedQty;
+    total = total + itemPrice;
+  });
+  return total;
+}
+const OrderDetails = () => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const orderId = location?.pathname.split('/')[3];
+  console.log('orderId', orderId);
+  const [orderSelected, setOrderSelected] = useState({});
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (orderId) {
+      dispatch(orderThunk.getOrder(orderId))
+        .unwrap()
+        .then((value) => {
+          console.log(value.order);
+          setLoading(false);
+          setOrderSelected(value.order);
+        });
+    }
+  }, [dispatch, orderId]);
+
+  return (
+    <UserPage>
+      <Grid
+        container
+        display="flex"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        spacing={1.5}
+      >
+        {loading ? (
+          <MDBox
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            p={2}
+          >
+            <CircularProgress />
+          </MDBox>
+        ) : orderSelected ? (
+          <>
+            <Grid item xs={12}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                display="flex"
+                alignItems="center"
+                spacing={1}
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="flex-start"
+                  display="flex"
+                  alignItems="flex-start"
+                  spacing={1}
+                >
+                  {' '}
+                  <ShoppingBagIcon
+                    fontSize="medium"
+                    color="error"
+                    sx={{ marginTop: '3px' }}
+                  />
+                  <MDTypography
+                    sx={{ color: '#444444', fontSize: '20px' }}
+                    fontWeight="medium"
+                  >
+                    Chi tiết đơn hàng
+                  </MDTypography>
+                </Stack>
+                <MDButton
+                  size="medium"
+                  color="primary"
+                  sx={{
+                    textTransform: 'initial !important',
+                    fontWeight: '500',
+                    padding: '2px 10px',
+                  }}
+                >
+                  Mua lần nữa
+                </MDButton>
+              </Stack>
+            </Grid>
+            <Grid item xs={12}>
+              <MDBox variant="contained" bgColor="light">
+                <CustomizedSteppers
+                  stepActive={orderSelected.orderStatus.length - 1}
+                />
+              </MDBox>
+            </Grid>
+            <Grid item xs={12}>
+              <MDBox variant="contained" bgColor="light">
+                <Paper elevation={2} sx={{ padding: '10px 10px' }}>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Grid xs={4}>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        {' '}
+                        <MDTypography
+                          sx={{
+                            color: '#7d879c',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Mã đơn hàng:
+                        </MDTypography>
+                        <MDTypography
+                          sx={{
+                            color: '#2b3445',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {orderSelected._id}
+                        </MDTypography>
+                      </Stack>
+                    </Grid>
+                    <Grid xs={4}>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        {' '}
+                        <MDTypography
+                          sx={{
+                            color: '#7d879c',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Ngày đặt hàng:
+                        </MDTypography>
+                        <MDTypography
+                          sx={{
+                            color: '#2b3445',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {new Date(
+                            orderSelected.orderStatus[0].date
+                          ).toLocaleDateString('en-AU', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: 'numeric',
+                          })}
+                        </MDTypography>
+                      </Stack>
+                    </Grid>
+                    <Grid xs={4}>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        {' '}
+                        <MDTypography
+                          sx={{
+                            color: '#7d879c',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Ngày giao hàng:
+                        </MDTypography>
+                        <MDTypography
+                          sx={{
+                            color: '#2b3445',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {new Date(
+                            '2022-11-12T04:57:38.575+00:00'
+                          ).toLocaleDateString('en-AU', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: 'numeric',
+                          })}
+                        </MDTypography>
+                      </Stack>
+                    </Grid>
+                  </Stack>
+                  <Divider sx={{ width: '100%' }} />
+                  {orderSelected.items.map((item, index) => {
+                    return <OrderDetailItem key={index} item={item} />;
+                  })}
+                </Paper>
+              </MDBox>
+            </Grid>
+            <Grid
+              container
+              display="flex"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              sx={{
+                paddingTop: '10px',
+                paddingLeft: '5px',
+                paddingRight: '5px',
+              }}
+              spacing={2}
+              xs={12}
+            >
+              <Grid
+                item
+                xs={8}
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={2}
+              >
+                <MDBox variant="contained">
+                  <Paper elevation={3} sx={{ padding: '15px' }}>
+                    <Stack
+                      justifyContent="flex-start"
+                      alignItems="flex-start"
+                      spacing={2}
+                      sx={{ marginBottom: '5px' }}
+                    >
+                      <MDTypography
+                        sx={{
+                          color: '#444444',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Địa chỉ giao hàng
+                      </MDTypography>
+                      <MDTypography
+                        sx={{
+                          color: '#5b5b5b',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                        }}
+                      >
+                        {orderSelected.address.name} -{' '}
+                        {orderSelected.address.address},{' '}
+                        {orderSelected.address.wardName},{' '}
+                        {orderSelected.address.districtName},{' '}
+                        {orderSelected.address.provinceName}
+                      </MDTypography>
+                    </Stack>
+                  </Paper>
+                </MDBox>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}
+              >
+                <MDBox variant="contained">
+                  <Paper elevation={3} sx={{ padding: '15px' }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{ marginBottom: '5px' }}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="h4"
+                      >
+                        Tổng cộng
+                      </MDTypography>
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="h4"
+                      >
+                        {orderSelected.items.length} sản phẩm
+                      </MDTypography>
+                    </Stack>
+
+                    <Divider />
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{ marginBottom: '5px' }}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body"
+                      >
+                        Tổng tiền hàng:
+                      </MDTypography>
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body1"
+                      >
+                        {formatThousand(getTotalPrice(orderSelected.items))}đ
+                      </MDTypography>
+                    </Stack>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{ marginBottom: '5px' }}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body"
+                      >
+                        Tổng phí vận chuyển:
+                      </MDTypography>
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body1"
+                      >
+                        {' '}
+                        {formatThousand(orderSelected.shipAmount)}đ
+                      </MDTypography>
+                    </Stack>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{ marginBottom: '5px' }}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body"
+                      >
+                        Tổng phí vận chuyển:
+                      </MDTypography>
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="body1"
+                      >
+                        {' '}
+                        - {formatThousand(orderSelected.freeShip)}đ
+                      </MDTypography>
+                    </Stack>
+                    <Divider />
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px', fontWeight: '500' }}
+                        variant="body"
+                      >
+                        Tổng thanh toán:
+                      </MDTypography>
+                      <MDTypography
+                        sx={{
+                          fontSize: '14px',
+                          color: '#990000',
+                          fontWeight: '500',
+                        }}
+                      >
+                        {formatThousand(orderSelected.totalAmount)}đ
+                      </MDTypography>
+                    </Stack>
+                  </Paper>
+                </MDBox>
+              </Grid>
+            </Grid>
+          </>
+        ) : null}
+      </Grid>
+    </UserPage>
+  );
+};
+
+export default OrderDetails;

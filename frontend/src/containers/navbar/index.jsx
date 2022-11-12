@@ -22,6 +22,7 @@ import MuiLink from '@mui/material/Link';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
 import { cartActions } from '../../features/cart/cart.slice';
+import { addressActions } from '../../features/address/address.slice';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -47,6 +48,8 @@ const Navbar = () => {
     // const pathname = location.pathname.replace('/', '');
     dispatch(userActions.signout());
     dispatch(cartActions.reset());
+    dispatch(addressActions.reset());
+    navigate('/');
   };
   useEffect(() => {
     if (!isLoggedIn) {
@@ -161,10 +164,12 @@ const Navbar = () => {
                       onClose={handleClose}
                       MenuListProps={{ onMouseLeave: handleClose }}
                     >
-                      <MenuItem onClick={() => navigate('/profile')}>
+                      <MenuItem onClick={() => navigate('/user/profile')}>
                         Tài khoản của Tôi
                       </MenuItem>
-                      <MenuItem onClick={handleClose}>Đơn mua</MenuItem>
+                      <MenuItem onClick={() => navigate('/user/order')}>
+                        Đơn mua
+                      </MenuItem>
                       <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
                     </Menu>
                   </>

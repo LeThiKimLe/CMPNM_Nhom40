@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Stack, Paper, IconButton, Divider } from '@mui/material';
+import React from 'react';
+import { Container, Stack, IconButton, Divider, Paper } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDTypography from '../../components/MDTypography';
 import MDBox from '../../components/MDBox';
@@ -10,27 +10,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import LockIcon from '@mui/icons-material/Lock';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import AccountComponent from './account';
-import AddressComponent from './address';
-import PasswordComponent from './password';
-import OrderComponent from './order';
-import { Link } from 'react-router-dom';
-const ProfilePage = () => {
-  const [page, setPage] = useState('account');
-  const renderPage = () => {
-    switch (page) {
-      case 'address':
-        return <AddressComponent />;
-      case 'account':
-        return <AccountComponent />;
-      case 'password':
-        return <PasswordComponent />;
-      case 'order':
-        return <OrderComponent />;
-      default:
-        return <AccountComponent />;
-    }
-  };
+
+import { Link, useNavigate } from 'react-router-dom';
+const UserPage = ({ children }) => {
+  const navigate = useNavigate();
   return (
     <MDBox
       color="#000000"
@@ -38,13 +21,14 @@ const ProfilePage = () => {
       variant="contained"
       borderRadius="none"
       opacity={1}
-      p={2}
+      p={1}
       display="flex"
-      justifyContent="center"
-      alignItems="center"
+      justifyContent="flex-start"
+      width="100%"
+      minHeight="75vh"
     >
       <Container>
-        <Grid container item xs={12} spacing={2}>
+        <Grid sx={{ paddingTop: '15px' }} container item xs={12} spacing={2}>
           <Grid item xs={2} justifyContent="flex-start" alignItems="center">
             <MDBox
               borderRadius="lg"
@@ -89,7 +73,7 @@ const ProfilePage = () => {
                           <EditIcon fontSize="inherit" color="primary" />
                         </IconButton>
                         <MDTypography
-                          sx={{ color: '#111111', fontSize: '0.75rem' }}
+                          sx={{ color: '#111111', fontSize: '12px' }}
                         >
                           Sửa hồ sơ
                         </MDTypography>
@@ -103,7 +87,7 @@ const ProfilePage = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   spacing={2}
-                  onClick={() => setPage('account')}
+                  onClick={() => navigate('/user/profile')}
                 >
                   <IconButton
                     size="small"
@@ -116,7 +100,7 @@ const ProfilePage = () => {
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '0.75rem' }}
+                    sx={{ color: '#111111', fontSize: '14px' }}
                   >
                     Hồ sơ của tôi
                   </MDTypography>
@@ -126,7 +110,7 @@ const ProfilePage = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   spacing={2}
-                  onClick={() => setPage('address')}
+                  onClick={() => navigate('/user/address')}
                 >
                   <IconButton
                     size="small"
@@ -139,7 +123,7 @@ const ProfilePage = () => {
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '0.75rem' }}
+                    sx={{ color: '#111111', fontSize: '14px' }}
                   >
                     Địa chỉ
                   </MDTypography>
@@ -149,7 +133,7 @@ const ProfilePage = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   spacing={2}
-                  onClick={() => setPage('password')}
+                  onClick={() => navigate('/user/password')}
                 >
                   <IconButton
                     size="small"
@@ -162,7 +146,7 @@ const ProfilePage = () => {
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '0.75rem' }}
+                    sx={{ color: '#111111', fontSize: '14px' }}
                   >
                     Đổi mật khẩu
                   </MDTypography>
@@ -172,7 +156,7 @@ const ProfilePage = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   spacing={2}
-                  onClick={() => setPage('order')}
+                  onClick={() => navigate('/user/order')}
                 >
                   <IconButton
                     size="small"
@@ -185,7 +169,7 @@ const ProfilePage = () => {
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '0.75rem' }}
+                    sx={{ color: '#111111', fontSize: '14px' }}
                   >
                     Đơn mua
                   </MDTypography>
@@ -194,15 +178,7 @@ const ProfilePage = () => {
             </MDBox>
           </Grid>
           <Grid item xs={10}>
-            <MDBox
-              borderRadius="lg"
-              sx={{
-                backgroundColor: '#ffffff',
-                padding: '15px 15px',
-              }}
-            >
-              {renderPage()}
-            </MDBox>
+            <MDBox variant="contained">{children}</MDBox>
           </Grid>
         </Grid>
       </Container>
@@ -210,4 +186,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default UserPage;

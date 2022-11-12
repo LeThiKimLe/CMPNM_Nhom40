@@ -26,33 +26,30 @@ const cartSlice = createSlice({
       // amount product
       let items = [];
       const amount = action.payload.amount;
-      const product = action.payload.product;
+      const product = action.payload.product; // productId
       const cartItems =
         localStorage.getItem('cartItems') == null
           ? null
           : JSON.parse(localStorage.getItem('cartItems'));
 
       let cartItem = {};
-
+      const newCartItem = {
+        ...product,
+        productPicture: product.productPictures[0],
+        quantity: amount,
+      };
       if (cartItems === null) {
-        cartItem = {
-          product,
-          quantity: amount,
-        };
-        items.push(cartItem);
+        items.push(newCartItem);
       } else {
         items = cartItems;
         const index = items.findIndex((item) => {
-          return item.product._id === product._id;
+          return item._id === product._id;
         });
 
         if (index !== -1) {
           items[index].quantity = Number(items[index].quantity) + amount;
         } else {
-          items.push({
-            product,
-            quantity: amount,
-          });
+          items.push(newCartItem);
         }
       }
 
