@@ -52,71 +52,78 @@ const SideNavigation = () => {
         paddingTop: '10px',
         paddingBottom: '10px',
       }}
-      shadow="lg"
+      shadow="md"
       alignItems="center"
     >
       <Container>
-        <Stack direction="row" spacing={2}>
-          <Grid container item xs={12} spacing={1}>
-            <Grid xs={6} item alignItems="center">
-              <>
-                <Button
-                  id={`fade-button`}
-                  variant="text"
-                  size="medium"
-                  p={0}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    paddingLeft: '10px',
-                    paddingRight: '10px',
-                    color: '#111111',
-                    fontWeight: '500',
-                    fontSize: '0.875rem',
-                    textTransform: 'initial !important',
-                  }}
-                  startIcon={<CategoryIcon />}
-                  endIcon={
-                    icon ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
-                  }
-                  aria-owns={anchorEl ? `simple-menu` : undefined}
-                  aria-haspopup="true"
-                  onClick={handleClick}
-                >
-                  Danh sách điện thoại
-                </Button>
-                <Menu
-                  id={`simple-menu`}
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                  MenuListProps={{ onMouseLeave: handleClose }}
-                >
-                  <MenuItem onClick={handleClose}>Chọn theo hãng</MenuItem>
-                  <MenuItem onClick={handleClose}>Chọn theo mức giá</MenuItem>
-                  <MenuItem onClick={handleClose}>Loại điện thoại</MenuItem>
-                  <MenuItem onClick={handleClose}>Chọn theo nhu cầu</MenuItem>
-                  <MenuItem onClick={handleClose}>Điện thoại hot</MenuItem>
-                </Menu>
-              </>
-            </Grid>
-            <Grid item xs={4} justifyContent="flex-end" alignItems="center">
-              <Stack direction="row" spacing={1}>
-                {categoryCustom.map((cat, index) => {
-                  return (
-                    <CategoryItem
-                      key={index}
-                      name={cat.name}
-                      value={cat.value}
-                      categories={categories}
-                    />
-                  );
-                })}
-              </Stack>
-            </Grid>
-          </Grid>
-        </Stack>
+        <Grid xs={12} container display="flex" justifyContent="space-between">
+          <Stack
+            direction="row"
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={3}
+          >
+            <>
+              <Button
+                variant="text"
+                size="medium"
+                p={0}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  paddingLeft: '2px',
+                  paddingRight: '10px',
+                  color: '#111111',
+                  fontWeight: '500',
+                  fontSize: '0.875rem',
+                  textTransform: 'initial !important',
+                }}
+                startIcon={<CategoryIcon />}
+                endIcon={
+                  icon ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />
+                }
+                aria-owns={anchorEl ? `simple-menu` : undefined}
+                aria-haspopup="true"
+                onClick={handleClick}
+              >
+                Danh sách điện thoại
+              </Button>
+              <Menu
+                id={`simple-menu`}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{ onMouseLeave: handleClose }}
+              >
+                <MenuItem onClick={handleClose}>Chọn theo hãng</MenuItem>
+                <MenuItem onClick={handleClose}>Chọn theo mức giá</MenuItem>
+                <MenuItem onClick={handleClose}>Loại điện thoại</MenuItem>
+                <MenuItem onClick={handleClose}>Chọn theo nhu cầu</MenuItem>
+                <MenuItem onClick={handleClose}>Điện thoại hot</MenuItem>
+              </Menu>
+            </>
+          </Stack>
+          <Stack
+            direction="row"
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={3}
+          >
+            {categoryCustom.map((cat, index) => {
+              return (
+                <CategoryItem
+                  key={index}
+                  name={cat.name}
+                  value={cat.value}
+                  categories={categories}
+                />
+              );
+            })}
+          </Stack>
+        </Grid>
       </Container>
     </MDBox>
   );

@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
-const { User } = require('../../models');
+const { User, Category, Product, Order, UserAddress } = require('../../models');
 const {
   Unauthenticated,
   createTokenUser,
@@ -132,11 +132,35 @@ const deleteUser = (req, res) => {
     }
   );
 };
+const getAllData = async (req, res) => {
+  const listUser = await User.find({}).select(
+    '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
+  );
+  const listUserAddress = await UserAddress.find({})
+    .select('user address')
+    .populate('user', '_id');
+  const listCategory = await Category.find({ isActive: true }).select(
+    '_id name slug isActive level parentId categoryImage createdAt'
+  );
 
+  const listProduct = await Product.find({ active: true }).select(
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description'
+  );
+  const listOrder = await Order.find({})
+    .select(
+      '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+    )
+    .populate('items.productId', '_id name productPicture salePrice');
+
+  return Response(res, {
+    list: [listUser, listUserAddress, listCategory, listProduct, listOrder],
+  });
+};
 module.exports = {
   signin,
   createUser,
   getAllUser,
   deleteUser,
   getUserById,
+  getAllData,
 };

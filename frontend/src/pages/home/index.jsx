@@ -21,11 +21,12 @@ function Item(props) {
         borderColor: (theme) =>
           theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300',
         p: 1,
-        m: 1,
         borderRadius: 2,
         fontSize: '0.875rem',
         fontWeight: '700',
         maxWidth: '240px',
+        marginLeft: '5px',
+        marginBottom: '8px',
         ...sx,
       }}
       {...other}
@@ -45,31 +46,10 @@ Item.propTypes = {
     PropTypes.object,
   ]),
 };
-async function getMethodShip(to_district) {
-  const response = await fetch(
-    `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
-    {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Origin: 'cors',
-        Host: 'api.producthunt.com',
-        token: `53cff26c-f9d5-11ec-ad26-3a4226f77ff0`,
-      },
-    }
-  ).then((response) => response.json());
 
-  // update the state
-  if (response.code === 200) {
-    console.log(response);
-    return response.data[0].service_id;
-  }
-}
 const Home = () => {
   const data = useSelector((state) => state.data);
   const { productGroups } = data;
-  getMethodShip(2046);
   return (
     <MDBox
       color="#000000"
@@ -79,12 +59,10 @@ const Home = () => {
       opacity={1}
       display="flex"
       justifyContent="space-between"
-      alignItems="flex-start"
+      alignItems="center"
       minHeight="80vh"
     >
       <Container
-        disableGutters
-        maxWidth={false}
         sx={{
           backgroundColor: 'Light',
         }}
@@ -108,6 +86,7 @@ const Home = () => {
           >
             {productGroups.length > 0
               ? productGroups.map((item, index) => {
+                  console.log(item);
                   return (
                     <Item key={index}>
                       <ProductCard
@@ -121,6 +100,7 @@ const Home = () => {
                         productSelected={item.productSelected}
                         productGroup={item.products}
                         colors={item.colors}
+                        groupColors={item.groupColors}
                       />
                     </Item>
                   );

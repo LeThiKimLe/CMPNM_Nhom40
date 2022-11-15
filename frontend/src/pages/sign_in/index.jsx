@@ -34,6 +34,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
+import SideNavigation from '../../containers/side-navigation';
 function SignIn() {
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()
@@ -103,6 +104,7 @@ function SignIn() {
       <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
+        <SideNavigation />
         <Grid
           container
           spacing={1}

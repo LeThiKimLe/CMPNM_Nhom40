@@ -31,7 +31,6 @@ import OrderDetails from './pages/user/order-detail';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const data = useSelector((state) => state.data);
   const cartItemsLocal =
     localStorage.getItem('cartItems') == null
       ? null

@@ -1,6 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
-import { Container, Stack, Divider, CircularProgress } from '@mui/material';
+import {
+  Container,
+  Stack,
+  Divider,
+  CircularProgress,
+  Paper,
+} from '@mui/material';
 import { notification } from 'antd';
 import Breadcrumbs from '../../components/CustomBreadcrumbs';
 import MDBox from '../../components/MDBox';
@@ -13,10 +20,23 @@ import { formatThousand } from '../../utils/custom-price';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-
+import './style.css';
 import { cartActions, selectCartItems } from '../../features/cart/cart.slice';
 import { selectIsLoggedIn } from '../../features/user/user.slice';
 import cartThunk from '../../features/cart/cart.service';
+import DetailProductItem from './detail-item';
+
+const listTitle = [
+  'Màn hình',
+  'Hệ điều hành',
+  'Camera sau',
+  'Camera trước',
+  'Chip',
+  'RAM',
+  'Dung lượng lưu trữ',
+  'SIM',
+  'Pin, Sạc',
+];
 const SingleProduct = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -31,8 +51,8 @@ const SingleProduct = () => {
   const ram = location.state?.ram;
   const storage = location.state?.storage;
   const rams = location.state?.rams;
-  const colorGroup = location.state?.colors;
   const storages = location.state?.storages;
+  const groupColors = location.state?.groupColors;
   const optionSelect = location.state?.optionSelected;
   const productGroup = location.state?.productGroup;
 
@@ -41,12 +61,17 @@ const SingleProduct = () => {
   const [ramSelected, setRamSelected] = useState(ram);
   const [storageSelected, setStorageSelected] = useState(storage);
   const [optionSelected, setOptionSelected] = useState(optionSelect);
-  const [colorSelected, setColorSelected] = useState(colorGroup[0]);
-
+  const [colorSelected, setColorSelected] = useState(null);
+  const [colorList, setColorList] = useState([]);
   const [amount, setAmount] = useState(1);
+  const [productPictureIndex, setProductPictureIndex] = useState(0);
   // select state
+  const [productImages, setProductImages] = useState([]);
   const [productSelected, setProductSelected] = useState(product);
-
+  const handleClickImage = (id, e) => {
+    e.preventDefault();
+    setProductPictureIndex(id);
+  };
   const handleAddItemToCart = () => {
     if (isLoggedIn) {
       let newCartItem = { product: productSelected._id, quantity: amount };
@@ -74,54 +99,75 @@ const SingleProduct = () => {
   //* useEffect handle init page
 
   useEffect(() => {
+    // setColorSelected(
+    //   colorSelected
+    //     ? colorSelected
+    //     : colorGroup.`${ramSelected}-${storageSelected}`.[0]
+    // );
+    let ramSelect = '';
+    let storageSelect = '';
     if (option.length === storages.length) {
       rams.map((item, index) => {
-        if (optionSelected === index) {
-          setRamSelected(item);
-        }
+        setRamSelected(item);
+        ramSelect = item;
       });
+      storageSelect = storages[optionSelected];
       setStorageSelected(storages[optionSelected]);
     } else {
       option.map((item, index) => {
         if (index === optionSelected) {
           setRamSelected(item.split('-')[0]);
           setStorageSelected(item.split('-')[1]);
+          ramSelect = item.split('-')[0];
+          storageSelect = item.split('-')[1];
         }
       });
     }
-  }, [category, colors, optionSelected, rams, option, storages]);
+
+    const colorList = groupColors[`${ramSelect}-${storageSelect}`];
+    setColorList(colorList);
+
+    if (!colorSelected || colorList.indexOf(colorSelected) === -1) {
+      setColorSelected(colorList[0]);
+    }
+  }, [optionSelected, rams, option, storages, colorSelected, groupColors]);
   // handle option
   useEffect(() => {
-    if (productGroup) {
-      productGroup.map((item) => {
-        const {
-          detailsProduct: { ram, storage },
-          color,
-        } = item;
-        if (
-          ram === ramSelected &&
-          storage === storageSelected &&
-          color === colorSelected
-        ) {
-          setProductSelected(item);
-          return;
-        }
-      });
-    }
-  }, [storageSelected, ramSelected, productGroup, colorSelected]);
+    productGroup.map((item) => {
+      const {
+        detailsProduct: { ram, storage },
+        color,
+      } = item;
+
+      if (
+        ram === ramSelected &&
+        storage === storageSelected &&
+        color === colorSelected
+      ) {
+        const productImage = item.productPictures.filter(
+          (item, index) => index !== 0
+        );
+        setProductImages(productImage);
+        setProductSelected(item);
+        return;
+      }
+    });
+  }, [colorSelected, ramSelected, storageSelected, productGroup]);
   return (
     <MDBox
       color="#000000"
-      bgColor="#ffffff"
+      bgColor="Light"
       variant="contained"
-      width="100vw"
-      height="100%"
-      sx={{ overflowX: 'hidden' }}
-      p={1}
+      borderRadius="none"
+      opacity={1}
+      paddingTop="10px"
+      display="flex"
+      justifyContent="space-between"
+      minHeight="80vh"
     >
       {productSelected ? (
         <Container>
-          <Grid container justifyContent="flex-start" alignItems="center">
+          <Grid container justifyContent="flex-start" alignItems="flex-start">
             <Breadcrumbs title={`Điện thoại ${name}`} url={id} />
           </Grid>
           <Grid>
@@ -129,30 +175,80 @@ const SingleProduct = () => {
               {`${productSelected.name} ${ramSelected}`}
             </MDTypography>
           </Grid>
-          <Divider sx={{ borderBottomWidth: '45px' }} flexItem />
+          <Divider flexItem />
           <Grid
             container
-            spacing={1}
+            spacing={2}
+            display="flex"
             justifyContent="space-between"
+            alignItems="flex-start"
             item
             xs={12}
           >
+            {/* Hình ảnh sản phẩm và mô tả */}
             <Grid
               item
               xs={7}
+              display="flex"
               justifyContent="flex-start"
               alignItems="flex-start"
               spacing={2}
+              maxWidth="100%"
             >
-              <MDBox variant="contained" p={2}>
-                <img
-                  width="250px"
-                  height="300px"
-                  src={productSelected.productPictures[0]}
-                  alt={productSelected.name}
-                />
-              </MDBox>
+              <Stack
+                direction="column"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                spacing={2}
+              >
+                <MDBox variant="contained" sx={{ marginRight: '10px' }}>
+                  <div className="product__detail-content">
+                    <div className="product__detail-wrap-img">
+                      <img
+                        src={productImages[productPictureIndex]}
+                        alt={productSelected.name}
+                        className="detail__img-big"
+                      />
+                    </div>
+                    <div className="product__detail-list-img">
+                      {productImages.map((item, index) => (
+                        <div className="detail__list-img-small" key={index}>
+                          <a href="" className="link__detail-img-small">
+                            <img
+                              onClick={(e) => handleClickImage(index, e)}
+                              src={item}
+                              className="detail__img-small"
+                              alt="tiep"
+                            />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </MDBox>
+                <MDTypography sx={{ fontSize: '20px', color: '#111111' }}>
+                  Thông tin sản phẩm
+                </MDTypography>
+                <MDBox variant="contained">
+                  {productSelected ? (
+                    <div
+                      className="content maxHeight gradient"
+                      dangerouslySetInnerHTML={{
+                        __html: productSelected.description.slice(0, 1000),
+                      }}
+                    />
+                  ) : null}
+                  <Stack
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <MDButton>Xem thêm</MDButton>
+                  </Stack>
+                </MDBox>
+              </Stack>
             </Grid>
+            {/* thông tin sản phẩm */}
             <Grid
               item
               xs={5}
@@ -194,10 +290,13 @@ const SingleProduct = () => {
                     : null}
                 </MDBox>
                 <MDBox variant="contained">
-                  {colorGroup
-                    ? colorGroup.map((item, index) => {
+                  {colorList
+                    ? colorList.map((item, index) => {
                         for (let color of colors) {
-                          if (color.value === item) {
+                          if (
+                            color.value === item &&
+                            color.category === category
+                          ) {
                             return (
                               <MDButton
                                 key={index}
@@ -212,6 +311,7 @@ const SingleProduct = () => {
                                       : '1px solid #2F4F4F',
                                   borderRadius: '0.3rem',
                                   marginRight: '5px',
+                                  marginBottom: '10px',
                                   color: '#2F4F4F',
                                 }}
                                 onClick={() => setColorSelected(item)}
@@ -374,8 +474,39 @@ const SingleProduct = () => {
                   </MDButton>
                 </MDBox>
               </Stack>
+              <MDTypography
+                sx={{
+                  color: '#111111',
+                  marginBottom: '16px',
+                  marginTop: '16px',
+                }}
+              >
+                Cấu hình {productSelected.name}
+              </MDTypography>
+              <MDBox variant="contained" maxWidth="460px">
+                {productSelected
+                  ? Object.entries(productSelected.detailsProduct).map(
+                      (item, index) => {
+                        return (
+                          <DetailProductItem
+                            key={index}
+                            value={item[1]}
+                            title={listTitle[index]}
+                            color={index % 2 === 0 ? '#f5f5f5' : '#ffffff'}
+                          />
+                        );
+                      }
+                    )
+                  : null}
+              </MDBox>
             </Grid>
           </Grid>
+          <Grid
+            container
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+          ></Grid>
         </Container>
       ) : (
         <CircularProgress />

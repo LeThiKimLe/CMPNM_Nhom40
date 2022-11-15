@@ -16,6 +16,9 @@ import { authActions } from './features/auth/auth.slice';
 import Products from './pages/products';
 import VerifyAccount from './pages/verify_email';
 import ReSendEmail from './pages/resend-email';
+import authThunk from './features/auth/auth.service';
+import EditOrder from './pages/orders/edit-order';
+import DetailOrder from './pages/orders/detail-order';
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -25,6 +28,13 @@ function App() {
       dispatch(authActions.isUserLoggedIn());
     }
   }, [auth.isLoggedIn, dispatch]);
+  useEffect(() => {
+    if (auth.isLoggedIn) {
+      console.log('chay');
+      dispatch(authThunk.getAllDataAPI());
+    }
+  }, [auth.isLoggedIn, dispatch]);
+
   return (
     <BrowserRouter>
       <div className="App">
@@ -59,6 +69,23 @@ function App() {
               element={
                 <PrivateComponent>
                   <Users />
+                </PrivateComponent>
+              }
+            />
+
+            <Route
+              path="/orders/edit/:id"
+              element={
+                <PrivateComponent>
+                  <EditOrder />
+                </PrivateComponent>
+              }
+            />
+            <Route
+              path="/orders/:id"
+              element={
+                <PrivateComponent>
+                  <DetailOrder />
                 </PrivateComponent>
               }
             />

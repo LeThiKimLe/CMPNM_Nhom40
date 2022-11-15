@@ -31,7 +31,7 @@ const CategoryItem = (props) => {
           justifyContent: 'flex-start',
           alignItems: 'center',
           paddingLeft: '10px',
-          paddingRight: '10px',
+          paddingRight: '0px',
           color: '#111111',
           fontWeight: '500',
           fontSize: '0.875rem',

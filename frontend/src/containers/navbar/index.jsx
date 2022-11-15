@@ -73,142 +73,141 @@ const Navbar = () => {
         paddingTop: '10px',
       }}
       display="flex"
-      justifyContent="space-between"
-      alignItems="flex-end"
     >
       <Container>
-        <Stack direction="row">
-          <Grid container item xs={12} spacing={7}>
-            <Grid
-              item
-              xs={2}
-              display="flex"
-              justifyContent="flex-start"
-              alignItems="center"
+        <Grid xs={12} container display="flex" justifyContent="space-between">
+          <Stack
+            direction="row"
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={3}
+            onClick={() => navigate('/')}
+          >
+            <MDTypography
+              variant="body1"
+              sx={{
+                color: '#111111',
+                paddingTop: '3px',
+              }}
             >
-              <Stack direction="row" spacing={2}>
-                <MDTypography
-                  component={MuiLink}
-                  href="/"
-                  variant="body1"
-                  sx={{
-                    color: '#111111',
-                  }}
-                >
-                  <AdbIcon color="inherit" />
-                </MDTypography>
-                <MDTypography
-                  variant="h4"
-                  fontWeight="bold"
-                  sx={{
-                    color: '#111111',
-                  }}
-                >
-                  LOGO
-                </MDTypography>
-              </Stack>
-            </Grid>
-            <Grid item xs={8}>
+              <AdbIcon color="inherit" />
+            </MDTypography>
+            <MDTypography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                color: '#111111',
+              }}
+            >
+              LOGO
+            </MDTypography>
+          </Stack>
+          <Grid xs={8}>
+            <Stack
+              direction="row"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              spacing={3}
+            >
               <Paper
                 component="form"
                 sx={{
                   display: 'flex',
                   width: '100%',
+                  borderRadius: '10px',
                 }}
                 variant="outlined"
               >
-                <InputBase sx={{ ml: 1, flex: 1 }} />
-                <IconButton
-                  type="button"
-                  sx={{ p: '10px' }}
-                  aria-label="search"
-                >
+                <InputBase
+                  sx={{ ml: 1, flex: 1, fontSize: '14px' }}
+                  placeholder="Tìm kiếm sản phẩm..."
+                />
+                <IconButton type="button" sx={{ p: '10px' }}>
                   <SearchIcon />
                 </IconButton>
               </Paper>
-            </Grid>
-            <Grid
-              item
-              xs={2}
-              direction="row"
-              display="flex"
-              justifyContent="flex-start"
-              alignItems="flex-end"
-            >
-              <Stack direction="row" spacing={3}>
-                {isLoggedIn ? (
-                  <>
-                    <IconButton
-                      id={`fade-button`}
-                      aria-owns={anchorEl ? `simple-menu` : undefined}
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      sx={{
-                        borderRadius: '8px',
-                        border: '1px solid #111111',
-                        paddingLeft: '15px',
-                        paddingRight: '15px',
-                      }}
-                    >
-                      <AccountCircleIcon
-                        sx={{
-                          color: '#111111',
-                        }}
-                      />
-                    </IconButton>
-
-                    <Menu
-                      id={`simple-menu`}
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                      MenuListProps={{ onMouseLeave: handleClose }}
-                    >
-                      <MenuItem onClick={() => navigate('/user/profile')}>
-                        Tài khoản của Tôi
-                      </MenuItem>
-                      <MenuItem onClick={() => navigate('/user/order')}>
-                        Đơn mua
-                      </MenuItem>
-                      <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
-                    </Menu>
-                  </>
-                ) : (
-                  <IconButton
-                    component={Link}
-                    to="/sign-in"
-                    sx={{
-                      borderRadius: '8px',
-                      border: '1px solid #111111',
-                      paddingLeft: '15px',
-                      paddingRight: '15px',
-                    }}
-                  >
-                    <ArrowBackIcon color="dark" />
-                  </IconButton>
-                )}
-
-                <Badge
-                  badgeContent={cartAmount === 0 ? 0 : cartAmount}
-                  color="secondary"
-                >
-                  <IconButton
-                    component={Link}
-                    to="/cart"
-                    sx={{
-                      borderRadius: '8px',
-                      border: '1px solid #111111',
-                      paddingLeft: '15px',
-                      paddingRight: '15px',
-                    }}
-                  >
-                    <ShoppingCartIcon color="dark" />
-                  </IconButton>
-                </Badge>
-              </Stack>
-            </Grid>
+            </Stack>
           </Grid>
-        </Stack>
+          <Stack
+            direction="row"
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={3}
+          >
+            {isLoggedIn ? (
+              <>
+                <IconButton
+                  id={`fade-button`}
+                  aria-owns={anchorEl ? `simple-menu` : undefined}
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                  sx={{
+                    borderRadius: '8px',
+                    border: '1px solid #111111',
+                    paddingLeft: '15px',
+                    paddingRight: '15px',
+                  }}
+                >
+                  <AccountCircleIcon
+                    sx={{
+                      color: '#111111',
+                    }}
+                  />
+                </IconButton>
+
+                <Menu
+                  id={`simple-menu`}
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  MenuListProps={{ onMouseLeave: handleClose }}
+                >
+                  <MenuItem onClick={() => navigate('/user/profile')}>
+                    Tài khoản của Tôi
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate('/user/order')}>
+                    Đơn mua
+                  </MenuItem>
+                  <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <IconButton
+                component={Link}
+                to="/sign-in"
+                sx={{
+                  borderRadius: '8px',
+                  border: '1px solid #111111',
+                  paddingLeft: '15px',
+                  paddingRight: '15px',
+                }}
+              >
+                <ArrowBackIcon color="dark" />
+              </IconButton>
+            )}
+
+            <Badge
+              badgeContent={cartAmount === 0 ? 0 : cartAmount}
+              color="secondary"
+            >
+              <IconButton
+                component={Link}
+                to="/cart"
+                sx={{
+                  borderRadius: '8px',
+                  border: '1px solid #111111',
+                  paddingLeft: '15px',
+                  paddingRight: '15px',
+                }}
+              >
+                <ShoppingCartIcon color="dark" />
+              </IconButton>
+            </Badge>
+          </Stack>
+        </Grid>
       </Container>
     </MDBox>
   );

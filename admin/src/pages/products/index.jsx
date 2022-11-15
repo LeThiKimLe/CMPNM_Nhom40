@@ -27,6 +27,9 @@ const { Title } = Typography;
 
 function Products() {
   const category = useSelector((state) => state.category);
+  const product = useSelector((state) => state.product);
+  const auth = useSelector((state) => state.auth);
+  const { products } = auth.data;
   const getCategoryById = (id) => {
     let name;
     category.categories.map((cat) => {
@@ -77,7 +80,7 @@ function Products() {
   ];
   // * useDispatch
   const dispatch = useDispatch();
-  const product = useSelector((state) => state.product);
+  const [listProduct, setListProduct] = useState(products);
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   // *tab mô tả
@@ -89,6 +92,7 @@ function Products() {
   const [formTabDigital] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -201,13 +205,21 @@ function Products() {
       });
   };
   useEffect(() => {
-    dispatch(productThunk.getAllAPI());
-  }, [dispatch]);
+    if (listProduct.length === 0) {
+      dispatch(productThunk.getAllAPI())
+        .unwrap()
+        .then((value) => {
+          setLoading(false);
+          setListProduct(value.list);
+        });
+    }
+  }, [dispatch, listProduct]);
 
   useEffect(() => {
-    if (product.products.length > 0) {
+    if (listProduct.length > 0) {
+      setLoading(false);
       setData(
-        product.products.map((product) => {
+        listProduct.map((product) => {
           return {
             key: product._id,
             name: (
@@ -300,7 +312,7 @@ function Products() {
     } else {
       setData([]);
     }
-  }, [product.products]);
+  }, [listProduct]);
   return (
     <>
       <AddProductModal
@@ -392,7 +404,7 @@ function Products() {
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              {product.getLoading ? (
+              {loading ? (
                 <div
                   style={{
                     display: 'flex',

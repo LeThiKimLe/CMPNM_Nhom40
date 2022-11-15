@@ -7,7 +7,12 @@ const {
   getAllUser,
   deleteUser,
   getUserById,
+  getAllData,
 } = require('../../controllers/admin/admin.controller');
+const {
+  getAllOrder,
+  getOrder,
+} = require('../../controllers/order/order.controller');
 const {
   reSendRefreshToken,
   uploadImage,
@@ -18,10 +23,13 @@ const { authenticateAdmin, adminCheckRole } = require('../../middlewares');
 router.post('/signin', signin);
 router.post('/refresh-token', reSendRefreshToken);
 router.use(authenticateAdmin, adminCheckRole);
+router.get('/get-all-data', getAllData);
 router.post('/create-user', createUser);
 router.get('/get-users', getAllUser);
 router.get('/get-user/:id', getUserById);
 router.post('/delete-users', deleteUser);
+router.get('/get-all-order', getAllOrder);
+router.get('/get-order/:id', getOrder);
 // upload image in create user
 // * /admin/user/upload-image
 router.post('/upload-image', uploadImage);

@@ -78,7 +78,7 @@ const typography = {
   },
 
   h3: {
-    fontSize: pxToRem(30),
+    fontSize: '20px',
     lineHeight: 1.375,
     ...baseHeadingProperties,
   },

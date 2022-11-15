@@ -1,13 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 import authThunk from './auth.service';
 import TokenService from '../token/token.service';
+import { customListOrder } from '../../utils/custom-order';
 //
 
 const initialState = {
   token: null,
   user: null,
+  data: {
+    users: [],
+    addressUsers: [],
+    categories: [],
+    products: [],
+    orders: [],
+  },
   isLoggedIn: false,
   logging: false,
+  loading: false,
   error: null,
   message: '',
 };
@@ -64,6 +73,25 @@ const authSlice = createSlice({
         state.error = true;
         state.logging = false;
         state.message = action.payload;
+      })
+      .addCase(authThunk.getAllDataAPI.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(authThunk.getAllDataAPI.fulfilled, (state, action) => {
+        const newListOrder = customListOrder(
+          action.payload.list[4],
+          action.payload.list[1]
+        );
+        state.data.users = action.payload.list[0];
+        state.data.addressUsers = action.payload.list[1];
+        state.data.categories = action.payload.list[2];
+        state.data.products = action.payload.list[3];
+        state.data.orders = newListOrder;
+        state.loading = false;
+      })
+      .addCase(authThunk.getAllDataAPI.rejected, (state, action) => {
+        state.error = true;
+        state.loading = false;
       });
   },
 });

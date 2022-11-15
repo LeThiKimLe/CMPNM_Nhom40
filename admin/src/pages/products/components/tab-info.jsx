@@ -136,7 +136,7 @@ const TabInfo = (props) => {
                 <Col span={12}>
                   <InputNumber
                     min={0}
-                    max={30}
+                    max={50}
                     style={{
                       borderRadius: '10px',
                     }}
