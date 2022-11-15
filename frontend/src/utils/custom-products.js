@@ -51,17 +51,33 @@ export const customGroupProduct = (group, categories, category) => {
       listStorage.push(storage);
     }
   });
+
   productGroup.productSelected = productSelected;
   productGroup.rams = listRam;
   productGroup.products = group;
   productGroup.storages = listStorage;
   productGroup.options = listOption;
-  productGroup.colors = listColor;
+  productGroup.groupColors = getListColorGroup(listOption, group);
   return productGroup;
 };
 export const renderScreen = (screen) => {
   const screens = screen.split(',');
   return screens;
+};
+const getListColorGroup = (listOption, listProduct) => {
+  let listColor = {};
+  listOption.map((item) => {
+    const ramCheck = item.split('-')[0];
+    const storageCheck = item.split('-')[1];
+    listColor[`${ramCheck}-${storageCheck}`] = [];
+    for (const product of listProduct) {
+      const { ram, storage } = product.detailsProduct;
+      if (ramCheck === ram && storageCheck === storage) {
+        listColor[`${ramCheck}-${storageCheck}`].push(product.color);
+      }
+    }
+  });
+  return listColor;
 };
 export const getListCategory = (listProduct) => {
   let categories = [];

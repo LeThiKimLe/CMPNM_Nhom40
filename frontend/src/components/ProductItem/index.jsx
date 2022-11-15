@@ -5,9 +5,10 @@ import CardMedia from '@mui/material/CardMedia';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 // Material Dashboard 2 React components
 import MDBox from '../MDBox';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../MDTypography';
 import MDButton from '../MDButton';
-import { Chip } from '@mui/material';
+import { Chip, Stack } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -24,6 +25,7 @@ function ProductCard({
   options,
   productSelected,
   productGroup,
+  groupColors,
   colors,
 }) {
   const [optionSelected, setOptionSelected] = useState(0);
@@ -95,6 +97,7 @@ function ProductCard({
           rams: rams,
           storages: storages,
           productGroup: productGroup,
+          groupColors: groupColors,
           colors: colors,
         }}
       >
@@ -132,8 +135,9 @@ function ProductCard({
               optionSelected: optionSelected,
               rams: rams,
               storages: storages,
-              productGroup: productGroup,
               colors: colors,
+              productGroup: productGroup,
+              groupColors: groupColors,
             }}
           >
             <MDTypography
@@ -176,33 +180,42 @@ function ProductCard({
           mb={1}
           display="flex"
           justifyContent="flex-start"
-          alignItems="center"
+          alignItems="flex-start"
         >
+          <Grid
+            container
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            xs={12}
+          >
+            {customOptions.map((item, index) => {
+              return (
+                <MDButton
+                  key={index}
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    padding: '2px 3px',
+                    border:
+                      optionSelected === index
+                        ? '2px solid #2F4F4F'
+                        : '1px solid #2F4F4F',
+                    borderRadius: '0.3rem',
+                    marginRight: '3px',
+                    marginBottom: '3px',
+                    color: '#2F4F4F',
+                    width: '30px',
+                  }}
+                  onClick={() => setOptionSelected(index)}
+                >
+                  {item}
+                </MDButton>
+              );
+            })}
+          </Grid>
           {/* // danh sách ram */}
-          {customOptions.map((item, index) => {
-            return (
-              <MDButton
-                key={index}
-                variant="contained"
-                size="small"
-                sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: '500',
-                  padding: '2px 2px',
-                  border:
-                    optionSelected === index
-                      ? '2px solid #2F4F4F'
-                      : '1px solid #2F4F4F',
-                  borderRadius: '0.3rem',
-                  marginRight: '3px',
-                  color: '#2F4F4F',
-                }}
-                onClick={() => setOptionSelected(index)}
-              >
-                {item}
-              </MDButton>
-            );
-          })}
         </MDBox>
         <MDBox display="flex" justifyContent="flex-start" alignItems="center">
           <MDTypography

@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+
     regularPrice: {
       type: String,
       required: true,

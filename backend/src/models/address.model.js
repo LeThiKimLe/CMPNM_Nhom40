@@ -65,7 +65,6 @@ const userAddressSchema = new mongoose.Schema(
     ],
   },
   { collection: 'Address' },
-
   { timestamps: true }
 );
 

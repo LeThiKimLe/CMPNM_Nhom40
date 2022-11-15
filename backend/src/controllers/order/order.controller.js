@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const { Order, Cart, UserAddress } = require('../../models');
+const { Response } = require('../../utils');
 
 const addOrder = (req, res) => {
   const { userId } = req.user;
@@ -27,7 +28,7 @@ const addOrder = (req, res) => {
     }
   });
 };
-const getAllOrder = (req, res) => {
+const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
     .select('_id totalAmount orderStatus paymentStatus items freeShip')
     .populate('items.productId', '_id name productPicture salePrice')
@@ -37,6 +38,19 @@ const getAllOrder = (req, res) => {
         res.status(200).json({ orders });
       }
     });
+};
+const getAllOrder = async (req, res) => {
+  const listUserAddress = await UserAddress.find({})
+    .select('user address')
+    .populate('user', '_id');
+  const listOrder = await Order.find({})
+    .select(
+      '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+    )
+    .populate('items.productId', '_id name productPicture salePrice');
+  return Response(res, {
+    list: [listUserAddress, listOrder],
+  });
 };
 const getOrder = (req, res) => {
   const { id } = req.params;
@@ -67,4 +81,5 @@ module.exports = {
   addOrder,
   getAllOrder,
   getOrder,
+  getAllOrderOfUser,
 };

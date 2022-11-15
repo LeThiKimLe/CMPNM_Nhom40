@@ -1,128 +1,216 @@
-import PropTypes from 'prop-types';
-
-// @mui material components
-import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-
-// Material Dashboard 2 React components
+import React from 'react';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
-
-// Material Dashboard 2 React base styles
-import typography from '../../assets/theme/base/typography';
+import qrCode from '../../assets/images/qr_code.png';
+import qrAppStore from '../../assets/images/app_store.png';
+import qrGooglePlay from '../../assets/images/google_play.png';
+// react-router-dom components
+import { Link } from 'react-router-dom';
+import Grid from '@mui/material/Unstable_Grid2';
+import { Container, Stack } from '@mui/material';
 
 function Footer({ light }) {
-  const { size } = typography;
-
   return (
-    <MDBox width="100%" bottom={0} py={4}>
+    <MDBox
+      color="#222935"
+      bgColor="#ffffff"
+      borderRadius="none"
+      opacity={1}
+      sx={{ paddingBottom: '20px', paddingTop: '20px' }}
+      display="flex"
+      justifyContent="space-between"
+    >
+      {' '}
       <Container>
-        <MDBox
-          width="100%"
+        <Grid
+          xs={12}
+          container
           display="flex"
-          flexDirection={{ xs: 'column', lg: 'row' }}
+          alignItems="flex-start"
           justifyContent="space-between"
-          alignItems="center"
-          px={1.5}
         >
-          <MDBox
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            flexWrap="wrap"
-            color={light ? 'white' : 'text'}
-            fontSize={size.sm}
-          >
-            &copy; {new Date().getFullYear()}, made with
-            <MDBox
-              fontSize={size.md}
-              color={light ? 'white' : 'dark'}
-              mb={-0.5}
-              mx={0.25}
+          <Grid xs={3}>
+            <Stack
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-start"
+              spacing={1}
             >
-              {<FavoriteIcon />}
-            </MDBox>
-            by
-            <Link href="https://www.creative-tim.com/" target="_blank">
               <MDTypography
-                variant="button"
-                fontWeight="medium"
-                color={light ? 'white' : 'dark'}
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '500',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
               >
-                &nbsp;Nhóm 9&nbsp;
+                Cửa hàng trên ứng dụng
               </MDTypography>
-            </Link>
-            for a better web.
-          </MDBox>
-          <MDBox
-            component="ul"
-            sx={({ breakpoints }) => ({
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'center',
-              listStyle: 'none',
-              mt: 3,
-              mb: 0,
-              p: 0,
-
-              [breakpoints.up('lg')]: {
-                mt: 0,
-              },
-            })}
-          >
-            <MDBox component="li" pr={2} lineHeight={1}>
-              <Link href="https://www.creative-tim.com/" target="_blank">
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color={light ? 'white' : 'dark'}
-                >
-                  Nhóm 9
-                </MDTypography>
-              </Link>
-            </MDBox>
-            <MDBox component="li" px={2} lineHeight={1}>
-              <Link
-                href="https://www.creative-tim.com/presentation"
-                target="_blank"
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-start"
+                spacing={2}
               >
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color={light ? 'white' : 'dark'}
+                <img src={qrCode} alt="qr code" height="60px" />
+                <Stack
+                  display="flex"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  spacing={2}
                 >
-                  TLCN - KLTN
-                </MDTypography>
-              </Link>
-            </MDBox>
-            <MDBox component="li" px={2} lineHeight={1}>
-              <Link href="https://www.creative-tim.com/blog" target="_blank">
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color={light ? 'white' : 'dark'}
-                >
-                  Trang chủ
-                </MDTypography>
-              </Link>
-            </MDBox>
-          </MDBox>
-        </MDBox>
+                  <img src={qrAppStore} alt="App Store" height="16px" />
+                  <img src={qrGooglePlay} alt="Google Play" height="16px" />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Grid>
+          <Grid xs={3}>
+            <Stack
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-start"
+              spacing={1}
+            >
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '500',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Giới thiệu
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Giới thiệu
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Tuyển dụng
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Điều khoản
+              </MDTypography>
+            </Stack>
+          </Grid>
+          <Grid xs={3}>
+            <Stack
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-start"
+              spacing={1}
+            >
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '500',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Chăm sóc khách hàng
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Trung tâm trợ giúp
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Shop Điện thoại
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Hướng dẫn mua hàng
+              </MDTypography>
+            </Stack>
+          </Grid>
+          <Grid xs={3}>
+            <Stack
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-start"
+              spacing={1}
+            >
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '500',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Liên hệ
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                1050QL 1A Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Trung tâm trợ giúp
+              </MDTypography>
+              <MDTypography
+                sx={{
+                  fontSize: '14px',
+                  color: '#222935',
+                  fontWeight: '400',
+                }}
+              >
+                Hướng dẫn mua hàng
+              </MDTypography>
+            </Stack>
+          </Grid>
+        </Grid>
       </Container>
     </MDBox>
   );
 }
-
-// Setting default props for the Footer
-Footer.defaultProps = {
-  light: false,
-};
-
-// Typechecking props for the Footer
-Footer.propTypes = {
-  light: PropTypes.bool,
-};
 
 export default Footer;

@@ -25,7 +25,40 @@ import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
 import { getBase64 } from '../../utils';
 import ConfirmDelete from '../../components/ui/modal/confirm-delete';
+const columns = [
+  {
+    title: 'Tên',
+    dataIndex: 'name',
+    key: 'name',
+    width: '15%',
+  },
+  {
+    title: 'Thương hiệu',
+    key: 'parentId',
+    dataIndex: 'parentId',
+  },
+  {
+    title: 'Logo',
+    dataIndex: 'categoryImage',
+    key: 'categoryImage',
+  },
 
+  {
+    title: 'Level',
+    key: 'level',
+    dataIndex: 'level',
+  },
+  {
+    title: 'Trạng thái',
+    key: 'isActive',
+    dataIndex: 'isActive',
+  },
+  {
+    title: 'Ngày tạo',
+    key: 'created',
+    dataIndex: 'created',
+  },
+];
 const { Title } = Typography;
 // project table start
 
@@ -33,8 +66,9 @@ function ListCategories() {
   // modal visible
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
-
-  const { loading, getLoading } = category;
+  const auth = useSelector((state) => state.auth);
+  const { categories } = auth.data;
+  const { getLoading } = category;
 
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
@@ -43,8 +77,9 @@ function ListCategories() {
   const [categoryParent, setCategoryParent] = useState('');
 
   const [categoryList, setCategoryList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
+  const [listCategory, setListCategory] = useState(categories);
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
   // TODO Handle after
@@ -53,9 +88,9 @@ function ListCategories() {
     formAdd.resetFields();
     setVisibleAdd(false);
   };
-  const getCategoryById = (id) => {
+  const getCategoryById = (listCategory, id) => {
     let name;
-    category.categories.map((cat) => {
+    listCategory.map((cat) => {
       if (cat._id === id) {
         name = cat.name;
       }
@@ -151,18 +186,26 @@ function ListCategories() {
   };
 
   useEffect(() => {
-    dispatch(categoryThunk.getAllAPI());
-  }, [dispatch]);
+    if (listCategory.length === 0) {
+      dispatch(categoryThunk.getAllAPI())
+        .unwrap()
+        .then((value) => {
+          setListCategory(value.list);
+          setLoading(false);
+        });
+    }
+  }, [dispatch, listCategory]);
   //* watch for changes to the category.categoryies after get all categories
   useEffect(() => {
-    if (category.categories.length > 0) {
-      const listParent = category.categories.filter(
+    if (listCategory.length > 0) {
+      setLoading(false);
+      const listParent = listCategory.filter(
         (cate) => cate.level === 1 || cate.level === 2
       );
 
       setCategoryParentList(listParent);
       setCategoryList(
-        category.categories.map((category) => {
+        listCategory.map((category) => {
           return {
             key: category._id,
             name: (
@@ -183,7 +226,7 @@ function ListCategories() {
                         backgroundColor: '#F0F8FF',
                       }}
                     >
-                      {getCategoryById(category.parentId)}
+                      {getCategoryById(listCategory, category.parentId)}
                     </Button>
                   </div>
                 ) : null}
@@ -232,41 +275,8 @@ function ListCategories() {
     } else {
       setCategoryList([]);
     }
-  }, [category.categories]);
-  const columns = [
-    {
-      title: 'Tên',
-      dataIndex: 'name',
-      key: 'name',
-      width: '15%',
-    },
-    {
-      title: 'Thương hiệu',
-      key: 'parentId',
-      dataIndex: 'parentId',
-    },
-    {
-      title: 'Logo',
-      dataIndex: 'categoryImage',
-      key: 'categoryImage',
-    },
+  }, [listCategory]);
 
-    {
-      title: 'Level',
-      key: 'level',
-      dataIndex: 'level',
-    },
-    {
-      title: 'Trạng thái',
-      key: 'isActive',
-      dataIndex: 'isActive',
-    },
-    {
-      title: 'Ngày tạo',
-      key: 'created',
-      dataIndex: 'created',
-    },
-  ];
   return (
     <>
       <AddCategoryModal
@@ -361,7 +371,7 @@ function ListCategories() {
               </Col>
             </Row>
             <div className="table-responsive">
-              {getLoading ? (
+              {loading ? (
                 <div
                   style={{
                     display: 'flex',

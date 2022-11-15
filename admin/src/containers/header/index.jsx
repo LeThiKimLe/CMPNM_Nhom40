@@ -2,7 +2,11 @@ import React from 'react';
 import { Row, Col, Breadcrumb, Input, Button } from 'antd';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRight,
+  faArrowLeft,
+  faCircleUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../features/auth/auth.slice';
 import TokenService from '../../features/token/token.service';
@@ -21,12 +25,17 @@ function Header({ name, subname }) {
         <Col span={24} md={6}>
           <Breadcrumb>
             <Breadcrumb.Item>
-              <NavLink to="/">Pages</NavLink>
+              <NavLink to="/">Trang chủ</NavLink>
             </Breadcrumb.Item>
-            <Breadcrumb.Item style={{ textTransform: 'capitalize' }}>{name.replace('/', '')}</Breadcrumb.Item>
+            <Breadcrumb.Item style={{ textTransform: 'capitalize' }}>
+              {name.replace('/', '')}
+            </Breadcrumb.Item>
           </Breadcrumb>
           <div className="ant-page-header-heading">
-            <span className="ant-page-header-heading-title" style={{ textTransform: 'capitalize' }}>
+            <span
+              className="ant-page-header-heading-title"
+              style={{ textTransform: 'capitalize' }}
+            >
               {subname.replace('/', '')}
             </span>
           </div>
@@ -37,7 +46,10 @@ function Header({ name, subname }) {
               <FontAwesomeIcon icon={faArrowRight} />
             </Button>
           ) : (
-            <Button className="btn-sign-in" onClick={() => navigate('/sign-in')}>
+            <Button
+              className="btn-sign-in"
+              onClick={() => navigate('/sign-in')}
+            >
               <FontAwesomeIcon icon={faArrowLeft} />
             </Button>
           )}

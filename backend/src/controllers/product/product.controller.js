@@ -48,7 +48,7 @@ const createProduct = async (req, res) => {
 
 const getAll = async (req, res) => {
   const products = await Product.find({}).select(
-    '_id name slug regularPrice color stock productPictures category active createdAt'
+    '_id name slug regularPrice color stock productPictures category active createdAt description'
   );
   return Response(res, { list: products });
 };

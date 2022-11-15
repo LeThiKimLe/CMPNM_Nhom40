@@ -25,54 +25,66 @@ const Header = () => {
     >
       {' '}
       <Container>
-        <Stack direction="row" spacing={2}>
-          <Grid container item xs={12} spacing={1}>
-            <Grid item xs={10} alignItems="center">
+        <Grid xs={12} container display="flex" justifyContent="space-between">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Stack
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+              spacing={2}
+            >
+              <PhoneIcon />
+              <MDTypography
+                variant="button"
+                fontWeight="regular"
+                color={'white'}
+              >
+                Nhóm 9
+              </MDTypography>
               <Stack direction="row" spacing={1}>
-                <PhoneIcon />
+                <EmailIcon />
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
                   color={'white'}
                 >
-                  Nhóm 9
-                </MDTypography>
-                <Stack direction="row" spacing={1}>
-                  <EmailIcon />
-                  <MDTypography
-                    variant="button"
-                    fontWeight="regular"
-                    color={'white'}
-                  >
-                    18110379@student.hcmute.edu.vn
-                  </MDTypography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={2} justifyContent="flex-end" alignItems="center">
-              <Stack direction="row" spacing={1}>
-                <AddAlertIcon />
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color={'white'}
-                  component={Link}
-                  to="/notification"
-                >
-                  Thông báo
-                </MDTypography>
-                <LanguageIcon />
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color={'white'}
-                >
-                  VIE
+                  18110379@student.hcmute.edu.vn
                 </MDTypography>
               </Stack>
-            </Grid>
-          </Grid>
-        </Stack>
+            </Stack>
+          </Stack>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={2}
+          >
+            <Stack direction="row" spacing={1}>
+              <AddAlertIcon />
+              <MDTypography
+                variant="button"
+                fontWeight="regular"
+                color={'white'}
+                component={Link}
+                to="/notification"
+              >
+                Thông báo
+              </MDTypography>
+              <LanguageIcon />
+              <MDTypography
+                variant="button"
+                fontWeight="regular"
+                color={'white'}
+              >
+                VIE
+              </MDTypography>
+            </Stack>
+          </Stack>
+        </Grid>
       </Container>
     </MDBox>
   );

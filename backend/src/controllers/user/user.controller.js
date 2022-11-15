@@ -266,7 +266,7 @@ const getAllData = async (req, res) => {
   );
 
   const listProduct = await Product.find({ active: true }).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale'
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description'
   );
   const listColor = await Color.find({});
   return Response(res, { list: [listCategory, listProduct, listColor] });
