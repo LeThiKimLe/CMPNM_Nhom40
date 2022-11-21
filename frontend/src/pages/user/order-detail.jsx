@@ -27,6 +27,7 @@ const OrderDetails = () => {
   const orderId = location?.pathname.split('/')[3];
   console.log('orderId', orderId);
   const [orderSelected, setOrderSelected] = useState({});
+  const [dateDelivered, setDateDelivered] = useState('');
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (orderId) {
@@ -34,6 +35,11 @@ const OrderDetails = () => {
         .unwrap()
         .then((value) => {
           console.log(value.order);
+          setDateDelivered(
+            new Date(
+              value.order.orderStatus[value.order.orderStatus.length - 1].date
+            )
+          );
           setLoading(false);
           setOrderSelected(value.order);
         });
@@ -90,7 +96,7 @@ const OrderDetails = () => {
                 </Stack>
                 <MDButton
                   size="medium"
-                  color="primary"
+                  color="warning"
                   sx={{
                     textTransform: 'initial !important',
                     fontWeight: '500',
@@ -105,6 +111,7 @@ const OrderDetails = () => {
               <MDBox variant="contained" bgColor="light">
                 <CustomizedSteppers
                   stepActive={orderSelected.orderStatus.length - 1}
+                  orderStatus={orderSelected.orderStatus}
                 />
               </MDBox>
             </Grid>
@@ -179,40 +186,90 @@ const OrderDetails = () => {
                         </MDTypography>
                       </Stack>
                     </Grid>
-                    <Grid xs={4}>
-                      <Stack
-                        direction="row"
-                        spacing={0.5}
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        {' '}
-                        <MDTypography
-                          sx={{
-                            color: '#7d879c',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                          }}
+                    {orderSelected.orderStatus[
+                      orderSelected.orderStatus.length - 1
+                    ].type === 'delivered' ? (
+                      <Grid xs={4}>
+                        <Stack
+                          direction="row"
+                          spacing={0.5}
+                          justifyContent="center"
+                          alignItems="center"
                         >
-                          Ngày giao hàng:
-                        </MDTypography>
-                        <MDTypography
-                          sx={{
-                            color: '#2b3445',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                          }}
+                          {' '}
+                          <MDTypography
+                            sx={{
+                              color: '#7d879c',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                            }}
+                          >
+                            Ngày giao hàng
+                          </MDTypography>
+                          <MDTypography
+                            sx={{
+                              color: '#2b3445',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                            }}
+                          >
+                            {new Date(
+                              orderSelected.orderStatus[
+                                orderSelected.orderStatus.length - 1
+                              ].date
+                            ).toLocaleDateString('en-AU', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: 'numeric',
+                            })}
+                          </MDTypography>
+                        </Stack>
+                      </Grid>
+                    ) : null}
+                    {orderSelected.orderStatus[
+                      orderSelected.orderStatus.length - 1
+                    ].type !== 'delivered' &&
+                    orderSelected.orderStatus[
+                      orderSelected.orderStatus.length - 1
+                    ].type !== 'cancelled' &&
+                    orderSelected.orderStatus[
+                      orderSelected.orderStatus.length - 1
+                    ].type !== 'refund' ? (
+                      <Grid xs={4}>
+                        <Stack
+                          direction="row"
+                          spacing={0.5}
+                          justifyContent="center"
+                          alignItems="center"
                         >
-                          {new Date(
-                            '2022-11-12T04:57:38.575+00:00'
-                          ).toLocaleDateString('en-AU', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: 'numeric',
-                          })}
-                        </MDTypography>
-                      </Stack>
-                    </Grid>
+                          {' '}
+                          <MDTypography
+                            sx={{
+                              color: '#7d879c',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                            }}
+                          >
+                            Ngày giao hàng dự kiến:
+                          </MDTypography>
+                          <MDTypography
+                            sx={{
+                              color: '#2b3445',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                            }}
+                          >
+                            {new Date(
+                              dateDelivered.setDate(dateDelivered.getDate() + 7)
+                            ).toLocaleDateString('en-AU', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: 'numeric',
+                            })}
+                          </MDTypography>
+                        </Stack>
+                      </Grid>
+                    ) : null}
                   </Stack>
                   <Divider sx={{ width: '100%' }} />
                   {orderSelected.items.map((item, index) => {
@@ -401,6 +458,28 @@ const OrderDetails = () => {
                       </MDTypography>
                     </Stack>
                   </Paper>
+                  {orderSelected.orderStatus.length === 1 ? (
+                    <Stack
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center"
+                      spacing={3}
+                      sx={{
+                        marginTop: '20px',
+                      }}
+                    >
+                      <MDButton
+                        color="primary"
+                        sx={{
+                          width: '100%',
+                          textTransform: 'initial !important',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Hủy đơn
+                      </MDButton>
+                    </Stack>
+                  ) : null}
                 </MDBox>
               </Grid>
             </Grid>

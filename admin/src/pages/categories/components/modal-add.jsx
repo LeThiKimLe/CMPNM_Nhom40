@@ -30,7 +30,7 @@ const AddCategoryModal = (props) => {
     >
       <Modal
         footer={null}
-        visible={visible}
+        open={visible}
         title="Thêm mới thương hiệu"
         onCancel={onCancel}
       >

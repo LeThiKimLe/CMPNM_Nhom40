@@ -24,7 +24,6 @@ const { Content } = Layout;
 function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [rememberMe, setRememberMe] = useState(false);
   const auth = useSelector((state) => state.auth);
   const { logging, isLoggedIn, error, user, message } = auth;
 
@@ -53,9 +52,9 @@ function SignIn() {
             lg={{ span: 6, offset: 2 }}
             md={{ span: 12 }}
           >
-            <Title className="mb-15">Sign In</Title>
+            <Title className="mb-15">Đăng nhập</Title>
             <Title className="font-regular text-muted" level={5}>
-              Enter your email and password to sign in
+              Nhập email và mật khẩu để đăng nhập
             </Title>
             {error ? <Alert message={message} type="error" showIcon /> : null}
             <Form
@@ -75,11 +74,11 @@ function SignIn() {
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your email!',
+                    message: 'Vui lòng nhập địa chỉ email!',
                   },
                   {
                     type: 'email',
-                    message: 'Please enter a valid email',
+                    message: 'Vui lòng nhập đúng địa chỉ email',
                   },
                 ]}
                 hasFeedback
@@ -91,35 +90,27 @@ function SignIn() {
               </Form.Item>
               <Form.Item
                 className="username"
-                label="Password"
+                label="Mật khẩu"
                 name="password"
                 style={{ fontWeight: '600' }}
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your password!',
+                    message: 'Vui lòng nhập mật khẩu!',
                   },
                   {
                     min: 6,
-                    message: 'Password min required 6 character',
+                    message: 'Mật khẩu phải tối thiểu 6 kí tự!',
                   },
                 ]}
                 hasFeedback
               >
                 <Input.Password
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
                 />
               </Form.Item>
 
-              <Form.Item
-                name="remember"
-                className="aligin-center"
-                valuePropName="checked"
-              >
-                {rememberMe ? <Switch defaultChecked /> : <Switch />}
-                Remember me
-              </Form.Item>
               <Form.Item
                 style={{
                   display: 'flex',
@@ -135,7 +126,7 @@ function SignIn() {
                   htmlType="submit"
                   style={{ width: '100%' }}
                 >
-                  SIGN IN
+                  Đăng nhập
                 </Button>
               </Form.Item>
             </Form>

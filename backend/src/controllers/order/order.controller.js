@@ -1,8 +1,11 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable prefer-const */
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-const { Order, Cart, UserAddress } = require('../../models');
-const { Response } = require('../../utils');
+const { Order, Cart, UserAddress, Color, Product } = require('../../models');
+const { Response, ServerError } = require('../../utils');
 
 const addOrder = (req, res) => {
   const { userId } = req.user;
@@ -39,18 +42,31 @@ const getAllOrderOfUser = (req, res) => {
       }
     });
 };
-const getAllOrder = async (req, res) => {
-  const listUserAddress = await UserAddress.find({})
+const getAllOrder = (req, res) => {
+  let promiseArray = [];
+  const listUserAddress = UserAddress.find({})
     .select('user address')
     .populate('user', '_id');
-  const listOrder = await Order.find({})
+
+  promiseArray.push(listUserAddress);
+  const listOrder = Order.find({})
     .select(
       '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
     )
-    .populate('items.productId', '_id name productPicture salePrice');
-  return Response(res, {
-    list: [listUserAddress, listOrder],
-  });
+    .populate(
+      'items.productId',
+      '_id name productPictures salePrice detailsProduct color'
+    );
+  promiseArray.push(listOrder);
+  Promise.all(promiseArray)
+    .then((value) => {
+      Response(res, {
+        list: [value[0], value[1]],
+      });
+    })
+    .catch((error) => {
+      ServerError(res, error);
+    });
 };
 const getOrder = (req, res) => {
   const { id } = req.params;
@@ -64,7 +80,7 @@ const getOrder = (req, res) => {
       if (error) return res.status(400).json({ error });
       if (order) {
         UserAddress.findOne({
-          user: req.user.userId,
+          user: order.user,
         }).exec((err, address) => {
           if (err) return res.status(400).json({ err });
           order.address = address.address.find(
@@ -77,9 +93,96 @@ const getOrder = (req, res) => {
       }
     });
 };
+const updateOrderStatus = (req, res) => {
+  const orderStatusData = req.body.data;
+  const { orderId, status } = orderStatusData;
+  console.log('status', status);
+  let promiseArray = [];
+  // todo Trạng thái đóng gói thì giảm số lượng trong kho
+  if (status == 'packed') {
+    //* get product
+
+    Order.findOne({ _id: orderId })
+      .populate(
+        'items.productId',
+        '_id name productPictures salePrice color detailsProduct regularPrice category'
+      )
+      .lean()
+      .exec((error, order) => {
+        if (error) return res.status(400).json({ error });
+        if (order) {
+          order.items.map((item, index) => {
+            const id = item.productId._id;
+            const quantity = item.purchasedQty;
+            const productUpdate = Product.findOneAndUpdate(
+              { _id: id },
+              { $inc: { quantitySold: +quantity } }
+            );
+            console.log('productUpdate', productUpdate);
+            promiseArray.push(productUpdate);
+          });
+        }
+      });
+    //* giảm số lương
+    //* save
+  }
+  // todo Nếu Trạng thái length > 3 và status === cancelled thì tăng số lượng lại
+  if (status == 'cancelled' || status == 'refund') {
+    //* get product
+    //* hoàn lai số lương
+    //* save
+    Order.findOne({ _id: orderId })
+      .populate(
+        'items.productId',
+        '_id name productPictures salePrice color detailsProduct regularPrice category'
+      )
+      .lean()
+      .exec((error, order) => {
+        if (error) return res.status(400).json({ error });
+        if (order) {
+          order.items.map((item, index) => {
+            const id = item.productId._id;
+            const quantity = item.purchasedQty;
+            const productUpdate = Product.findOneAndUpdate(
+              { _id: id },
+              { $inc: { quantitySold: -quantity } }
+            );
+            promiseArray.push(productUpdate);
+          });
+        }
+      });
+  }
+  // const newStatus = {
+  //   type: status,
+  //   date: new Date(),
+  //   isCompleted: true,
+  // };
+  // const updateOrder = Order.updateOne(
+  //   { _id: orderId },
+  //   {
+  //     $push: {
+  //       orderStatus: newStatus,
+  //     },
+  //   },
+  //   {
+  //     upsert: true,
+  //   }
+  // );
+  // promiseArray.push(updateOrder);
+  console.log('promiseArray', promiseArray);
+  Promise.all(promiseArray)
+    .then((value) => {
+      console.log('tiep', value);
+      Response(res);
+    })
+    .catch((error) => {
+      ServerError(res, error);
+    });
+};
 module.exports = {
   addOrder,
   getAllOrder,
   getOrder,
   getAllOrderOfUser,
+  updateOrderStatus,
 };

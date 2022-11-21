@@ -1,9 +1,17 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
-const { User, Category, Product, Order, UserAddress } = require('../../models');
+const {
+  User,
+  Category,
+  Product,
+  Order,
+  UserAddress,
+  Color,
+} = require('../../models');
 const {
   Unauthenticated,
   createTokenUser,
@@ -132,29 +140,44 @@ const deleteUser = (req, res) => {
     }
   );
 };
-const getAllData = async (req, res) => {
-  const listUser = await User.find({}).select(
+const getAllData = (req, res) => {
+  let listPromise = [];
+  const listUser = User.find({}).select(
     '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
   );
-  const listUserAddress = await UserAddress.find({})
+  listPromise.push(listUser);
+  const listUserAddress = UserAddress.find({})
     .select('user address')
     .populate('user', '_id');
-  const listCategory = await Category.find({ isActive: true }).select(
+  listPromise.push(listUserAddress);
+  const listCategory = Category.find({ isActive: true }).select(
     '_id name slug isActive level parentId categoryImage createdAt'
   );
-
-  const listProduct = await Product.find({ active: true }).select(
+  listPromise.push(listCategory);
+  const listProduct = Product.find({ active: true }).select(
     '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description'
   );
-  const listOrder = await Order.find({})
+  listPromise.push(listProduct);
+  const listOrder = Order.find({})
     .select(
       '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
     )
-    .populate('items.productId', '_id name productPicture salePrice');
-
-  return Response(res, {
-    list: [listUser, listUserAddress, listCategory, listProduct, listOrder],
-  });
+    .populate(
+      'items.productId',
+      '_id name productPictures salePrice detailsProduct'
+    );
+  listPromise.push(listOrder);
+  const listColor = Color.find({});
+  listPromise.push(listColor);
+  Promise.all(listPromise)
+    .then((value) => {
+      Response(res, {
+        list: [value[0], value[1], value[2], value[3], value[4], value[5]],
+      });
+    })
+    .catch((error) => {
+      ServerError(res, error);
+    });
 };
 module.exports = {
   signin,

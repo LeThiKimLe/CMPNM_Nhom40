@@ -7,6 +7,8 @@ import {
   Divider,
   CircularProgress,
   Paper,
+  Dialog,
+  DialogTitle,
 } from '@mui/material';
 import { notification } from 'antd';
 import Breadcrumbs from '../../components/CustomBreadcrumbs';
@@ -68,6 +70,18 @@ const SingleProduct = () => {
   // select state
   const [productImages, setProductImages] = useState([]);
   const [productSelected, setProductSelected] = useState(product);
+
+  // TODO description
+  const [openDescription, setOpenDescription] = React.useState(false);
+  const handleClose = () => {
+    setOpenDescription(false);
+  };
+  const handleToggle = () => {
+    setOpenDescription(!openDescription);
+  };
+
+  //
+
   const handleClickImage = (id, e) => {
     e.preventDefault();
     setProductPictureIndex(id);
@@ -193,7 +207,6 @@ const SingleProduct = () => {
               justifyContent="flex-start"
               alignItems="flex-start"
               spacing={2}
-              maxWidth="100%"
             >
               <Stack
                 direction="column"
@@ -242,8 +255,27 @@ const SingleProduct = () => {
                     display="flex"
                     justifyContent="center"
                     alignItems="center"
+                    sx={{ marginBottom: '20px' }}
                   >
-                    <MDButton>Xem thêm</MDButton>
+                    <MDButton onClick={handleToggle}>Xem thêm</MDButton>
+                    <Dialog
+                      fullWidth={'xl'}
+                      maxWidth={'xl'}
+                      open={openDescription}
+                      onClick={handleClose}
+                    >
+                      <DialogTitle fullScreen={true} fullWidth={true}>
+                        Thông tin sản phẩm
+                      </DialogTitle>
+                      {productSelected ? (
+                        <div
+                          style={{ padding: '24px' }}
+                          dangerouslySetInnerHTML={{
+                            __html: productSelected.description,
+                          }}
+                        />
+                      ) : null}
+                    </Dialog>
                   </Stack>
                 </MDBox>
               </Stack>
@@ -370,6 +402,23 @@ const SingleProduct = () => {
                     {productSelected.sale !== '0'
                       ? `-${productSelected.sale}%`
                       : null}
+                  </span>
+                </MDBox>
+                <MDBox
+                  display="flex"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                >
+                  <span
+                    style={{
+                      marginLeft: '3px',
+                      fontSize: '1rem',
+                      fontWeight: '400',
+                    }}
+                  >
+                    {productSelected.stock && productSelected.stock > 0
+                      ? 'Còn hàng'
+                      : 'Hết hàng'}
                   </span>
                 </MDBox>
                 <MDBox
@@ -506,7 +555,9 @@ const SingleProduct = () => {
             display="flex"
             justifyContent="flex-start"
             alignItems="flex-start"
-          ></Grid>
+          >
+            Xem thêm điện thoại khác
+          </Grid>
         </Container>
       ) : (
         <CircularProgress />

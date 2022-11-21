@@ -130,7 +130,6 @@ const ModalAddAddress = (props) => {
               <Input
                 value={name ? name : ''}
                 onChange={(e) => setName(e.target.value)}
-                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
               />
             </Form.Item>
           </Col>
@@ -151,7 +150,6 @@ const ModalAddAddress = (props) => {
               <Input
                 onChange={(e) => setMobileNumber(e.target.value)}
                 value={mobileNumber ? mobileNumber : ''}
-                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
               />
             </Form.Item>
           </Col>
@@ -174,7 +172,6 @@ const ModalAddAddress = (props) => {
             value={provinceName ? provinceName : ''}
             size="medium"
             onSearch={onSearch}
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
             filterOption={(input, option) =>
               option.children.toLowerCase().includes(input.toLowerCase())
             }
@@ -207,7 +204,6 @@ const ModalAddAddress = (props) => {
             optionFilterProp="children"
             size="middle"
             onSearch={onSearch}
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
             filterOption={(input, option) =>
               option.children.toLowerCase().includes(input.toLowerCase())
             }
@@ -237,7 +233,6 @@ const ModalAddAddress = (props) => {
             optionFilterProp="children"
             size="middle"
             onSearch={onSearch}
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
             filterOption={(input, option) =>
               option.children.toLowerCase().includes(input.toLowerCase())
             }
@@ -268,7 +263,6 @@ const ModalAddAddress = (props) => {
           <Input
             value={address ? address : ''}
             onChange={(e) => setAddress(e.target.value)}
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
           />
         </Form.Item>
         <Form.Item

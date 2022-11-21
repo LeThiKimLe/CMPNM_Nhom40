@@ -27,7 +27,7 @@ const EditCategoryModal = (props) => {
     >
       <Modal
         footer={null}
-        visible={visible}
+        open={visible}
         title="Edit Category"
         onCancel={onCancel}
       >

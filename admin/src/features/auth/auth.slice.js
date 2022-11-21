@@ -13,6 +13,7 @@ const initialState = {
     categories: [],
     products: [],
     orders: [],
+    colors: [],
   },
   isLoggedIn: false,
   logging: false,
@@ -87,6 +88,7 @@ const authSlice = createSlice({
         state.data.categories = action.payload.list[2];
         state.data.products = action.payload.list[3];
         state.data.orders = newListOrder;
+        state.data.colors = action.payload.list[5];
         state.loading = false;
       })
       .addCase(authThunk.getAllDataAPI.rejected, (state, action) => {

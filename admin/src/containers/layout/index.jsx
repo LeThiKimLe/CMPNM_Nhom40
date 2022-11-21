@@ -4,12 +4,38 @@ import Sidenav from '../side-navigation';
 import FooterComponent from '../footer';
 import HeaderAnt from '../header';
 import { useLocation } from 'react-router-dom';
-
-const { Header, Sider, Content } = Layout;
+const namePage = [
+  {
+    key: 'products',
+    value: 'Sản phẩm',
+  },
+  {
+    key: 'categories',
+    value: 'Thương hiệu',
+  },
+  {
+    key: 'users',
+    value: 'Người dùng',
+  },
+  {
+    key: 'orders',
+    value: 'Đơn hàng',
+  },
+];
+const getPathName = (pathName) => {
+  let name = '';
+  namePage.map((item) => {
+    if (item.key === pathName) {
+      name = item.value;
+    }
+  });
+  return name;
+};
+const { Sider, Content } = Layout;
 const Main = ({ children }) => {
   let { pathname } = useLocation();
   pathname = pathname.replace('/', '');
-
+  const namePage = getPathName(pathname);
   if (
     pathname === 'sign-in' ||
     pathname === 'verify-email' ||
@@ -18,7 +44,10 @@ const Main = ({ children }) => {
     return <>{children}</>;
   } else {
     return (
-      <Layout className="layout-dashboard">
+      <Layout
+        className="layout-dashboard"
+        style={{ backgroundColor: '#f3f6f4' }}
+      >
         {/* sider custom */}
         <Sider
           trigger={null}
@@ -27,12 +56,10 @@ const Main = ({ children }) => {
           className={`sider-primary ant-layout-sider-primary`}
           style={{ background: 'transparent' }}
         >
-          <Sidenav color={'1890ff'} />
+          <Sidenav color={'#1890ff'} />
         </Sider>
         <Layout className="layout-dashboard">
-          <Header>
-            <HeaderAnt name={pathname} subname={pathname} />
-          </Header>
+          <HeaderAnt name={namePage} subname={namePage} />
           <Content className="content-ant">{children}</Content>
           <FooterComponent />
         </Layout>

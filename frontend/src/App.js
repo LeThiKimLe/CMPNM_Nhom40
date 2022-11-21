@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import 'antd/dist/reset.css';
 import MainLayout from './containers/layout';
 import Home from './pages/home';
 import { ThemeProvider } from '@mui/material/styles';

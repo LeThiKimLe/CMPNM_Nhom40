@@ -22,7 +22,7 @@ function Sidenav() {
       <hr />
       <Menu theme="light" mode="inline">
         <Menu.Item key="dashboard">
-          <NavLink to="/dashboard">
+          <NavLink to="/">
             <span className="icon">
               <FontAwesomeIcon icon={faTableColumns} className="fa-lg" />
             </span>
@@ -42,7 +42,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faLayerGroup} className="fa-lg" />
             </span>
-            <span className="label">Danh mục</span>
+            <span className="label">Thương hiệu</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="products">

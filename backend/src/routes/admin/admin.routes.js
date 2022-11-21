@@ -12,6 +12,7 @@ const {
 const {
   getAllOrder,
   getOrder,
+  updateOrderStatus,
 } = require('../../controllers/order/order.controller');
 const {
   reSendRefreshToken,
@@ -30,6 +31,7 @@ router.get('/get-user/:id', getUserById);
 router.post('/delete-users', deleteUser);
 router.get('/get-all-order', getAllOrder);
 router.get('/get-order/:id', getOrder);
+router.post('/update-order-status', updateOrderStatus);
 // upload image in create user
 // * /admin/user/upload-image
 router.post('/upload-image', uploadImage);

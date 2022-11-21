@@ -1,71 +1,20 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
-import Stack from '@mui/material/Stack';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Check from '@mui/icons-material/Check';
-import SettingsIcon from '@mui/icons-material/Settings';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import VideoLabelIcon from '@mui/icons-material/VideoLabel';
+import { Stepper, Stack, Step, StepLabel } from '@mui/material';
+
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
-import { faTruckFast, faBoxArchive } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTruckFast,
+  faBoxArchive,
+  faTriangleExclamation,
+  faHandHoldingDollar,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import StepConnector, {
   stepConnectorClasses,
 } from '@mui/material/StepConnector';
 import MDTypography from '../../components/MDTypography';
-
-const QontoStepIconRoot = styled('div')(({ theme, ownerState }) => ({
-  color: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#eaeaf0',
-  display: 'flex',
-  height: 22,
-  alignItems: 'center',
-  ...(ownerState.active && {
-    color: '#784af4',
-  }),
-  '& .QontoStepIcon-completedIcon': {
-    color: '#784af4',
-    zIndex: 1,
-    fontSize: 18,
-  },
-  '& .QontoStepIcon-circle': {
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    backgroundColor: 'currentColor',
-  },
-}));
-
-function QontoStepIcon(props) {
-  const { active, completed, className } = props;
-
-  return (
-    <QontoStepIconRoot ownerState={{ active }} className={className}>
-      {completed ? (
-        <Check className="QontoStepIcon-completedIcon" />
-      ) : (
-        <div className="QontoStepIcon-circle" />
-      )}
-    </QontoStepIconRoot>
-  );
-}
-
-QontoStepIcon.propTypes = {
-  /**
-   * Whether this step is active.
-   * @default false
-   */
-  active: PropTypes.bool,
-  className: PropTypes.string,
-  /**
-   * Mark the step as completed. Is passed to child components.
-   * @default false
-   */
-  completed: PropTypes.bool,
-};
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -113,76 +62,88 @@ const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
       'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
   }),
 }));
-
-function ColorlibStepIcon(props) {
-  const { active, completed, className } = props;
-
-  const icons = {
-    1: <WorkHistoryIcon />,
-    2: <FontAwesomeIcon icon={faBoxArchive} />,
-    3: <FontAwesomeIcon icon={faTruckFast} />,
-    4: <AssignmentTurnedInIcon />,
-  };
-
-  return (
-    <ColorlibStepIconRoot
-      ownerState={{ completed, active }}
-      className={className}
-    >
-      {icons[String(props.icon)]}
-    </ColorlibStepIconRoot>
-  );
-}
-
-ColorlibStepIcon.propTypes = {
-  /**
-   * Whether this step is active.
-   * @default false
-   */
-  active: PropTypes.bool,
-  className: PropTypes.string,
-  /**
-   * Mark the step as completed. Is passed to child components.
-   * @default false
-   */
-  completed: PropTypes.bool,
-  /**
-   * The label displayed in the step icon.
-   */
-  icon: PropTypes.node,
-};
-
-const steps = [
-  'Chờ xác nhận',
-  'Đã đóng gói',
-  'Đang vận chuyện',
-  'Đã vận chuyển',
+const orderStatusList = [
+  {
+    key: 'pending',
+    value: 'Chờ xác nhận',
+    icon: <WorkHistoryIcon />,
+  },
+  {
+    key: 'packed',
+    value: 'Đã đóng gói',
+    icon: <FontAwesomeIcon icon={faBoxArchive} />,
+  },
+  {
+    key: 'shipping',
+    value: 'Đang giao hàng',
+    icon: <FontAwesomeIcon icon={faTruckFast} />,
+  },
+  {
+    key: 'delivered',
+    value: 'Đã giao hàng',
+    icon: <AssignmentTurnedInIcon />,
+  },
+  {
+    key: 'cancelled',
+    value: 'Đã hủy',
+    icon: <FontAwesomeIcon icon={faTriangleExclamation} />,
+  },
+  {
+    key: 'refund',
+    value: 'Trả hàng',
+    icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+  },
 ];
-
 export default function CustomizedSteppers(props) {
-  const { stepActive } = props;
+  const { stepActive, orderStatus } = props;
+  let icons = {};
+  let steps = [];
+  orderStatusList.map((item) => {
+    for (let i = 0; i < orderStatus.length; i++) {
+      if (item.key === orderStatus[i].type) {
+        icons[i + 1] = item.icon;
+        steps.push(item.value);
+      }
+    }
+  });
+  console.log(icons, steps);
+  const ColorlibStepIcon = (props) => {
+    const { active, completed, className } = props;
+
+    return (
+      <ColorlibStepIconRoot
+        ownerState={{ completed, active }}
+        className={className}
+      >
+        {icons[String(props.icon)]}
+      </ColorlibStepIconRoot>
+    );
+  };
   return (
-    <Stepper
-      sx={{ backgroundImage: 'none', backgroundColor: '#ffffff' }}
-      alternativeLabel
-      activeStep={stepActive}
-      connector={<ColorlibConnector />}
-    >
-      {steps.map((label, index) => (
-        <Step key={label}>
-          <StepLabel StepIconComponent={ColorlibStepIcon}>
-            <MDTypography
-              sx={{
-                color: stepActive === index ? '#e91e63' : '#111111',
-                fontSize: '12px',
-                fontWeight: stepActive === index ? '500' : '400',
-              }}
-            >
-              {label}
-            </MDTypography>
-          </StepLabel>
-        </Step>
-      ))}
-    </Stepper>
+    <>
+      <Stepper
+        sx={{ backgroundImage: 'none', backgroundColor: '#ffffff' }}
+        alternativeLabel
+        activeStep={stepActive}
+        connector={<ColorlibConnector />}
+      >
+        {steps.map((label, index) => (
+          <Step key={label}>
+            <StepLabel StepIconComponent={ColorlibStepIcon}>
+              <MDTypography
+                sx={{
+                  color: stepActive === index ? '#e91e63' : '#111111',
+                  fontSize: '12px',
+                  fontWeight: stepActive === index ? '500' : '400',
+                }}
+              >
+                {label}
+              </MDTypography>
+            </StepLabel>
+          </Step>
+        ))}
+    
+      </Stepper>
+    </>
   );
 }
