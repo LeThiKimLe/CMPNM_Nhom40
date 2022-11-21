@@ -308,7 +308,7 @@ function Users() {
             </Row>
             <Row
               gutter={[32, 16]}
-              style={{ marginLeft: '5px', marginBottom: '20px' }}
+              style={{ marginTop: '10px', marginBottom: '20px' }}
             >
               <Col>
                 <Button

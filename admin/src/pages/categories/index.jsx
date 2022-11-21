@@ -9,6 +9,7 @@ import {
   notification,
   Form,
   Spin,
+  Tag,
 } from 'antd';
 import {
   PlusOutlined,
@@ -220,14 +221,9 @@ function ListCategories() {
               <>
                 {category.parentId ? (
                   <div className="author-info">
-                    <Button
-                      style={{
-                        borderRadius: '20px',
-                        backgroundColor: '#F0F8FF',
-                      }}
-                    >
+                    <Tag color="volcano">
                       {getCategoryById(listCategory, category.parentId)}
-                    </Button>
+                    </Tag>
                   </div>
                 ) : null}
               </>
@@ -310,14 +306,9 @@ function ListCategories() {
             <Title level={3}>Danh sách Thương hiệu</Title>
           </Col>
           <Col xs="24" xl={24}>
-            <Row>
-              <Col span={12}>
-                <p>Tiep</p>
-              </Col>
-            </Row>
             <Row
               gutter={[32, 16]}
-              style={{ marginLeft: '5px', marginBottom: '20px' }}
+              style={{ marginTop: '10px', marginBottom: '20px' }}
             >
               <Col>
                 <Button

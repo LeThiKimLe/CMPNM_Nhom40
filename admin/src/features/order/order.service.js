@@ -26,8 +26,30 @@ const getOrder = createAsyncThunk('get-order', async (orderId, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+const updateOrderStatus = createAsyncThunk(
+  'update-order-status',
+  async (orderData, thunkAPI) => {
+    try {
+      //
+      const response = await axiosClient.post(
+        `/admin/update-order-status`,
+        JSON.stringify({ data: orderData })
+      );
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 const orderThunk = {
   getAllOrder,
   getOrder,
+  updateOrderStatus,
 };
 export default orderThunk;

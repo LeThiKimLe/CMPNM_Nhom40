@@ -2,12 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
 import { formatThousand } from '../../utils';
-import { Button, Row, Col, Typography, Table, Spin } from 'antd';
+import { Button, Row, Col, Typography, Table, Spin, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { customListOrder } from '../../utils/custom-order';
-const { Title } = Typography;
+
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+
+const { Text, Title } = Typography;
 const paymentStatusList = [
   {
     name: 'Chưa thanh toán',
@@ -37,8 +45,8 @@ const orderStatusList = [
     color: '#eeeeee',
   },
   {
-    key: 'waiting',
-    value: 'Chờ lấy hàng',
+    key: 'packed',
+    value: 'Đã đóng gói',
     color: '#6fa8dc',
   },
   {
@@ -104,12 +112,6 @@ const columns = [
     dataIndex: 'totalAmount',
     width: '10%',
   },
-  {
-    title: '',
-    key: 'action',
-    dataIndex: 'action',
-    width: '7%',
-  },
 ];
 
 function Orders() {
@@ -130,17 +132,35 @@ function Orders() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  useEffect(() => {
-    if (Object.keys(listOrder).length === 0) {
-      dispatch(orderThunk.getAllOrder())
-        .unwrap()
-        .then((value) => {
-          const newListOrder = customListOrder(value.list[1], value.list[0]);
-          setLoading(false);
-          setListOrder(newListOrder);
-        });
+
+  const handleEditOrder = () => {
+    console.log(selectedRowKeys);
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
+        placement: 'top',
+      });
+    } else if (selectedRowKeys.length > 1) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
+        placement: 'top',
+      });
+    } else {
+      navigate(`/orders/edit/${selectedRowKeys[0]}`);
     }
-  }, [dispatch, listOrder]);
+  };
+
+  useEffect(() => {
+    dispatch(orderThunk.getAllOrder())
+      .unwrap()
+      .then((value) => {
+        console.log(value);
+        const newListOrder = customListOrder(value.list[1], value.list[0]);
+        console.log(newListOrder);
+        setLoading(false);
+        setListOrder(newListOrder);
+      });
+  }, [dispatch]);
   useEffect(() => {
     if (listOrder.length > 0) {
       setLoading(false);
@@ -153,39 +173,37 @@ function Orders() {
             id: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>{item._id}</Typography.Title>
+                  <Text>{item._id}</Text>
                 </div>
               </>
             ),
             amount: (
               <div>
-                <Typography.Title level={5}>{items.length}</Typography.Title>
+                <Text>{items.length}</Text>
               </div>
             ),
             orderDate: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>
+                  <Text>
                     {new Date(orderStatus[0].date).toLocaleDateString()}
-                  </Typography.Title>
+                  </Text>
                 </div>
               </>
             ),
             address: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>
+                  <Text>
                     {wardName}, {districtName}, {provinceName}
-                  </Typography.Title>
+                  </Text>
                 </div>
               </>
             ),
             totalAmount: (
               <>
                 <div className="ant-employed">
-                  <Typography.Title level={5}>
-                    {formatThousand(totalAmount)}đ
-                  </Typography.Title>
+                  <Text>{formatThousand(totalAmount)}đ</Text>
                 </div>
               </>
             ),
@@ -229,23 +247,6 @@ function Orders() {
                 })}
               </>
             ),
-            action: (
-              <>
-                <FontAwesomeIcon
-                  icon={faPenToSquare}
-                  className="fa-lg"
-                  color="#3d85c6"
-                  style={{ marginRight: '10px', cursor: 'pointer' }}
-                  onClick={() => navigate(`/orders/edit/${item._id}`)}
-                />
-                <FontAwesomeIcon
-                  icon={faTrash}
-                  className="fa-lg"
-                  color="#f44336"
-                  style={{ cursor: 'pointer' }}
-                />
-              </>
-            ),
           };
         })
       );
@@ -260,6 +261,64 @@ function Orders() {
         <Col xs="24" xl={24}>
           <Title level={3}>Danh sách đơn hàng</Title>
         </Col>
+        <Col xs="24" xl={24}>
+          <Row
+            gutter={[32, 16]}
+            style={{ marginTop: '10px', marginBottom: '20px' }}
+          >
+            <Col>
+              <Button
+                style={{
+                  background: '#FFB266',
+                  color: 'white',
+                  borderRadius: '10px',
+                }}
+                icon={<SearchOutlined />}
+              >
+                Tìm kiếm
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                style={{
+                  background: '#00994C',
+                  color: 'white',
+                  borderRadius: '10px',
+                }}
+                onClick={() => setVisibleAdd(true)}
+                icon={<PlusOutlined />}
+              >
+                Thêm
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                style={{
+                  background: '#0066CC',
+                  color: 'white',
+                  borderRadius: '10px',
+                }}
+                icon={<EditOutlined />}
+                onClick={handleEditOrder}
+              >
+                Chỉnh sửa
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                style={{
+                  background: '#FF3333',
+                  color: 'white',
+                  borderRadius: '10px',
+                }}
+                icon={<DeleteOutlined />}
+              >
+                Xóa
+              </Button>
+            </Col>
+          </Row>
+        </Col>
+
         <Col xs="24" xl={24}>
           <div className="table-responsive" style={{ borderRadius: '10px' }}>
             {loading ? (
@@ -279,7 +338,6 @@ function Orders() {
                 columns={columns}
                 dataSource={data}
                 pagination={true}
-                className="ant-border-space"
               />
             )}
           </div>

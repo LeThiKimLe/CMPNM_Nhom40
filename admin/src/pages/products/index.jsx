@@ -10,6 +10,7 @@ import {
   Avatar,
   Table,
   Spin,
+  Tag,
 } from 'antd';
 import AddProductModal from './components/modal-add';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,13 +27,13 @@ import {
 const { Title } = Typography;
 
 function Products() {
-  const category = useSelector((state) => state.category);
   const product = useSelector((state) => state.product);
   const auth = useSelector((state) => state.auth);
-  const { products } = auth.data;
+  const { products, categories } = auth.data;
+
   const getCategoryById = (id) => {
     let name;
-    category.categories.map((cat) => {
+    categories.map((cat) => {
       if (cat._id === id) {
         name = cat.name;
       }
@@ -252,14 +253,7 @@ function Products() {
             category: (
               <>
                 <div className="author-info">
-                  <Button
-                    style={{
-                      borderRadius: '20px',
-                      backgroundColor: '#F0F8FF',
-                    }}
-                  >
-                    {getCategoryById(product.category)}
-                  </Button>
+                  <Tag color="cyan">{getCategoryById(product.category)}</Tag>
                 </div>
               </>
             ),
@@ -312,7 +306,7 @@ function Products() {
     } else {
       setData([]);
     }
-  }, [listProduct]);
+  }, [listProduct, getCategoryById]);
   return (
     <>
       <AddProductModal
@@ -350,7 +344,7 @@ function Products() {
             </Row>
             <Row
               gutter={[32, 16]}
-              style={{ marginLeft: '5px', marginBottom: '20px' }}
+              style={{ marginTop: '10px', marginBottom: '20px' }}
             >
               <Col>
                 <Button

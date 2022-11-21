@@ -75,10 +75,10 @@ const signup = (req, res) => {
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).exec();
-  if (!user) return Unauthenticated(res, 'Email chưa được đăng ký tài khoản');
+  if (!user) return NotFound(res, 'Email chưa được đăng ký tài khoản');
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return Unauthenticated(res, 'Vui lòng xem lại mật khẩu');
+    return BadRequest(res, 'Vui lòng xem lại mật khẩu');
   }
   if (!user.isVerified) {
     return Unauthenticated(res, 'Tài khoản chưa được kích hoạt');
@@ -266,7 +266,7 @@ const getAllData = async (req, res) => {
   );
 
   const listProduct = await Product.find({ active: true }).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description'
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
   );
   const listColor = await Color.find({});
   return Response(res, { list: [listCategory, listProduct, listColor] });

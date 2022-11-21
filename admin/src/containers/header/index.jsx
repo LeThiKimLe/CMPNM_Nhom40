@@ -21,9 +21,9 @@ function Header({ name, subname }) {
   const navigate = useNavigate();
   return (
     <>
-      <Row gutter={[24, 0]}>
+      <Row gutter={[24, 0]} style={{ padding: '30px 20px' }}>
         <Col span={24} md={6}>
-          <Breadcrumb>
+          <Breadcrumb style={{ paddingLeft: '0px' }}>
             <Breadcrumb.Item>
               <NavLink to="/">Trang chủ</NavLink>
             </Breadcrumb.Item>

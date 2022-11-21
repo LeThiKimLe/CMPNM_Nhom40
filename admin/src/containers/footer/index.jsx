@@ -11,7 +11,7 @@ const FooterComponent = () => {
         <Col xs={24} md={12} lg={12}>
           <div className="copyright">
             © 2022, made with
-            {<HeartFilled />} by
+            <HeartFilled /> by
             <a href="#pablo" className="font-weight-bold" target="_blank">
               Nhóm 9
             </a>
@@ -22,17 +22,29 @@ const FooterComponent = () => {
           <div className="footer-menu">
             <ul>
               <li className="nav-item">
-                <a href="#pablo" className="nav-link text-muted" target="_blank">
+                <a
+                  href="#pablo"
+                  className="nav-link text-muted"
+                  target="_blank"
+                >
                   Nhóm 9
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#pablo" className="nav-link text-muted" target="_blank">
+                <a
+                  href="#pablo"
+                  className="nav-link text-muted"
+                  target="_blank"
+                >
                   About Us
                 </a>
               </li>
               <li className="nav-item">
-                <a href="#pablo" className="nav-link text-muted" target="_blank">
+                <a
+                  href="#pablo"
+                  className="nav-link text-muted"
+                  target="_blank"
+                >
                   Blog
                 </a>
               </li>

@@ -7,6 +7,7 @@ const initialState = {
   orderList: [],
   error: null,
   loading: false,
+  updateLoading: false,
 };
 
 const orderSlice = createSlice({
@@ -17,6 +18,7 @@ const orderSlice = createSlice({
       state.orderList = [];
       state.loading = false;
       state.error = null;
+      state.updateLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -46,6 +48,16 @@ const orderSlice = createSlice({
       .addCase(orderThunk.getOrder.rejected, (state, action) => {
         state.error = true;
         state.loading = false;
+      })
+      .addCase(orderThunk.updateOrderStatus.pending, (state) => {
+        state.updateLoading = true;
+      })
+      .addCase(orderThunk.updateOrderStatus.fulfilled, (state, action) => {
+        state.updateLoading = false;
+      })
+      .addCase(orderThunk.updateOrderStatus.rejected, (state, action) => {
+        state.error = true;
+        state.updateLoading = false;
       });
   },
 });

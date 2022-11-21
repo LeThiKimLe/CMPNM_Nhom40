@@ -6,10 +6,10 @@ h3 {
   border-bottom-left-radius: '10px';
   border-bottom-right-radius: '10px';
   max-height: 400px;
-  max-width: 790px;
+  max-width: 716px;
 }
 .content img {
-  max-width: 790px;
+  max-width: 716px;
 }
 .content.gradient {
   -webkit-mask-image: linear-gradient(
@@ -256,7 +256,7 @@ h3 {
 .detail__img-small {
   height: 100%;
   padding: 0;
-  width: 100%;
+  width: 100px;
 }
 
 /* Điều hướng về home */

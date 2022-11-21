@@ -14,8 +14,8 @@ const statusValue = [
     color: 'light',
   },
   {
-    key: 'waiting',
-    value: 'Chờ lấy hàng',
+    key: 'packed',
+    value: 'Đã đóng gói',
     color: 'secondary',
   },
   {

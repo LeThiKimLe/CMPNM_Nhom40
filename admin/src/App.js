@@ -1,5 +1,6 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import './App.less';
+import './App.css';
+import 'antd/dist/reset.css';
 import './assets/styles/main.less';
 import './assets/styles/responsive.less';
 import Main from './containers/layout';
@@ -19,6 +20,7 @@ import ReSendEmail from './pages/resend-email';
 import authThunk from './features/auth/auth.service';
 import EditOrder from './pages/orders/edit-order';
 import DetailOrder from './pages/orders/detail-order';
+
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);

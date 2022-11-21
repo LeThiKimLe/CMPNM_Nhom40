@@ -27,8 +27,8 @@ const UserPage = ({ children }) => {
       width="100%"
       minHeight="75vh"
     >
-      <Container>
-        <Grid sx={{ paddingTop: '15px' }} container item xs={12} spacing={2}>
+      <Container disableGutters maxWidth={false}>
+        <Grid sx={{ padding: '10px 0px' }} container item xs={12} spacing={2}>
           <Grid item xs={2} justifyContent="flex-start" alignItems="center">
             <MDBox
               borderRadius="lg"
