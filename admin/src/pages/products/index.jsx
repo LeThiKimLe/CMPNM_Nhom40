@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
   Button,
@@ -25,12 +26,49 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 const { Title } = Typography;
+const columns = [
+  {
+    title: 'Tên sản phẩm',
+    dataIndex: 'name',
+    key: 'name',
+    width: '32%',
+  },
+  {
+    title: 'Giá gốc',
+    key: 'regularPrice',
+    dataIndex: 'regularPrice',
+  },
+  {
+    title: 'Thương hiệu',
+    dataIndex: 'category',
+    key: 'category',
+  },
 
+  {
+    title: 'Màu sắc',
+    key: 'color',
+    dataIndex: 'color',
+  },
+  {
+    title: 'Số lượng',
+    key: 'stock',
+    dataIndex: 'stock',
+  },
+  {
+    title: 'Trạng thái',
+    key: 'active',
+    dataIndex: 'active',
+  },
+  {
+    title: 'Ngày tạo',
+    key: 'created',
+    dataIndex: 'created',
+  },
+];
 function Products() {
   const product = useSelector((state) => state.product);
   const auth = useSelector((state) => state.auth);
-  const { products, categories } = auth.data;
-
+  const { categories } = auth.data;
   const getCategoryById = (id) => {
     let name;
     categories.map((cat) => {
@@ -40,49 +78,11 @@ function Products() {
     });
     return name;
   };
-  const columns = [
-    {
-      title: 'Tên sản phẩm',
-      dataIndex: 'name',
-      key: 'name',
-      width: '32%',
-    },
-    {
-      title: 'Giá gốc',
-      key: 'regularPrice',
-      dataIndex: 'regularPrice',
-    },
-    {
-      title: 'Thương hiệu',
-      dataIndex: 'category',
-      key: 'category',
-    },
 
-    {
-      title: 'Màu sắc',
-      key: 'color',
-      dataIndex: 'color',
-    },
-    {
-      title: 'Số lượng',
-      key: 'stock',
-      dataIndex: 'stock',
-    },
-    {
-      title: 'Trạng thái',
-      key: 'active',
-      dataIndex: 'active',
-    },
-    {
-      title: 'Ngày tạo',
-      key: 'created',
-      dataIndex: 'created',
-    },
-  ];
   // * useDispatch
   const dispatch = useDispatch();
-  const [listProduct, setListProduct] = useState(products);
-  const [visibleAdd, setVisibleAdd] = useState(false);
+  const [listProduct, setListProduct] = useState(product.products);
+  const [openAdd, setOpenAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   // *tab mô tả
   const [description, setDescription] = useState('');
@@ -93,7 +93,6 @@ function Products() {
   const [formTabDigital] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -102,7 +101,7 @@ function Products() {
     onChange: onSelectChange,
   };
   const onCancel = () => {
-    setVisibleAdd(false);
+    setOpenAdd(false);
   };
 
   const handleChangeUpload = ({ fileList: newFileList }) =>
@@ -110,7 +109,7 @@ function Products() {
 
   const handleAddProduct = async () => {
     if (fileList.length === 0) {
-      notification.warn({
+      notification.error({
         message: 'Vui lòng chọn ảnh',
         placement: 'top',
       });
@@ -123,7 +122,6 @@ function Products() {
 
     fileList.forEach((file, index) => {
       const image = getBase64(file.originFileObj);
-      console.log(typeof image);
       listImage.push(image);
     });
 
@@ -141,7 +139,9 @@ function Products() {
 
         infoValues.color = colorSubmit;
         if (!infoValues.sale) {
-          infoValues.sale = '0';
+          infoValues.sale = 0;
+        } else {
+          infoValues.sale = parseInt(infoValues.sale);
         }
         infoValues.productPictures = productPictures;
 
@@ -157,20 +157,26 @@ function Products() {
         });
       })
       .then((result) => {
-        return dispatch(productThunk.createAPI(result)).unwrap();
+        return dispatch(productThunk.createAPI(result))
+          .unwrap()
+          .then(() => {
+            notification.success({
+              message: 'Tạo sản phẩm thành công',
+              placement: 'top',
+            });
+            setTimeout(() => {
+              setOpenAdd(false);
+              dispatch(productThunk.getAllAPI())
+                .unwrap()
+                .then((value) => {
+                  setListProduct(value.list);
+                });
+            }, 1000);
+          });
       })
-      .then(() => {
-        notification.warn({
-          message: 'Tạo sản phẩm thành công',
-          placement: 'top',
-        });
-        setTimeout(() => {
-          setVisibleAdd(false);
-          dispatch(productThunk.getAllAPI());
-        }, 1000);
-      })
+
       .catch((error) => {
-        notification.warn({
+        notification.error({
           message: error,
           placement: 'top',
         });
@@ -198,7 +204,11 @@ function Products() {
         });
         setTimeout(() => {
           setVisibleDelete(false);
-          dispatch(productThunk.getAllAPI());
+          dispatch(productThunk.getAllAPI())
+            .unwrap()
+            .then((value) => {
+              setListProduct(value.list);
+            });
         }, 1000);
       })
       .catch((error) => {
@@ -206,19 +216,17 @@ function Products() {
       });
   };
   useEffect(() => {
-    if (listProduct.length === 0) {
+    if (Object.keys(listProduct).length === 0) {
       dispatch(productThunk.getAllAPI())
         .unwrap()
         .then((value) => {
-          setLoading(false);
           setListProduct(value.list);
         });
     }
-  }, [dispatch, listProduct]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (listProduct.length > 0) {
-      setLoading(false);
       setData(
         listProduct.map((product) => {
           return {
@@ -306,14 +314,14 @@ function Products() {
     } else {
       setData([]);
     }
-  }, [listProduct, getCategoryById]);
+  }, [listProduct]);
   return (
     <>
       <AddProductModal
         loading={product.loading}
-        visible={visibleAdd}
+        open={openAdd}
         onCancel={onCancel}
-        handleCancel={() => setVisibleAdd(false)}
+        handleCancel={() => setOpenAdd(false)}
         handleChangeUpload={handleChangeUpload}
         handleAddProduct={handleAddProduct}
         formTabInfo={formTabInfo}
@@ -325,7 +333,7 @@ function Products() {
         setDescription={setDescription}
       />
       <ConfirmDelete
-        visible={visibleDelete}
+        open={visibleDelete}
         onCancel={() => setVisibleDelete(false)}
         loading={product.loading}
         handleDelete={handleConfirmDelete}
@@ -365,7 +373,7 @@ function Products() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
-                  onClick={() => setVisibleAdd(true)}
+                  onClick={() => setOpenAdd(true)}
                   icon={<PlusOutlined />}
                 >
                   Thêm
@@ -398,7 +406,7 @@ function Products() {
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              {loading ? (
+              {product.getLoading ? (
                 <div
                   style={{
                     display: 'flex',

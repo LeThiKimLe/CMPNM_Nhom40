@@ -86,6 +86,27 @@ const userSlice = createSlice({
         state.loading = false;
         state.message = action.payload;
         state.error = true;
+      })
+      .addCase(userThunk.showProfileAPI.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(userThunk.showProfileAPI.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(userThunk.showProfileAPI.rejected, (state, action) => {
+        state.loading = false;
+        state.message = action.payload;
+      })
+
+      .addCase(userThunk.cancelOrderAPI.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(userThunk.cancelOrderAPI.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(userThunk.cancelOrderAPI.rejected, (state, action) => {
+        state.loading = false;
+        state.message = action.payload;
       });
   },
 });

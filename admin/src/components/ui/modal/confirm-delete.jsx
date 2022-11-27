@@ -2,7 +2,7 @@ import { Modal, Result, Button, Spin } from 'antd';
 import React from 'react';
 
 const ConfirmDelete = (props) => {
-  const { visible, handleDelete, loading, onCancel, title } = props;
+  const { open, handleDelete, loading, onCancel, title } = props;
   return (
     <div
       style={{
@@ -13,7 +13,7 @@ const ConfirmDelete = (props) => {
     >
       <Modal
         footer={null}
-        visible={visible}
+        open={open}
         title={title}
         onCancel={onCancel}
         width={500}

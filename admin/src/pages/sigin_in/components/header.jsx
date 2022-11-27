@@ -17,7 +17,7 @@ const HeaderSignIn = () => {
       <div className="header-col header-nav">
         <Menu mode="horizontal" defaultSelectedKeys={['1']}>
           <Menu.Item key="dashboard">
-            <Link to="/dashboard">
+            <Link to="/">
               <FontAwesomeIcon icon={faToolbox} />
               <span>Trang chủ</span>
             </Link>

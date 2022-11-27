@@ -77,12 +77,11 @@ const ColorInput = (props) => {
   });
   return (
     <div>
-      <Row gutter={[16, 16]}>
-        <Col>
+      <Row align="middle" justify="start">
+        <Col span={2}>
           {addBtn || removeBtn ? null : (
             <Button
               style={{
-                borderRadius: '50%',
                 width: '40px',
                 height: '40px',
                 paddingLeft: '3px',
@@ -94,115 +93,82 @@ const ColorInput = (props) => {
             />
           )}
         </Col>
-        <Col>
-          <Row>
-            <Col span={24}>
-              {!removeBtn ? (
-                <List
-                  grid={{
-                    gutter: 32,
-                    column: 8,
+        <Col span={20}>
+          <Row align="middle" justify="start">
+            {!removeBtn ? (
+              data.map((item, index) => {
+                return (
+                  <Button
+                    key={index}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      background: item.color,
+                      border:
+                        colorSubmit === item.color ? '2px solid #000000' : '',
+                      marginLeft: '20px',
+                    }}
+                    onClick={(e) => handleSelectColor(e, item.color)}
+                  >
+                    {' '}
+                  </Button>
+                );
+              })
+            ) : (
+              <>
+                {data.map((item, index) => {
+                  return (
+                    <Col span={2}>
+                      <Button
+                        style={{
+                          background: item.color,
+                          width: '40px',
+                          height: '40px',
+                          cursor: 'pointer',
+                          marginBottom: '10px',
+                        }}
+                      >
+                        {' '}
+                      </Button>
+                      <Button
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                        }}
+                        danger
+                      >
+                        {deletebtn}
+                      </Button>
+                    </Col>
+                  );
+                })}
+                <Button
+                  style={{
+                    border: '1px solid #C0C0C0',
+                    borderRadius: '10px',
+                    background: '#FF6347',
+                    color: 'white',
+                    width: '80px',
+                    height: '40px',
                   }}
-                  dataSource={data}
-                  renderItem={(item) => {
-                    return (
-                      <List.Item key={item.color}>
-                        <Button
-                          style={{
-                            background: item.color,
-                            borderRadius: '50%',
-                            width: '40px',
-                            height: '40px',
-                            border:
-                              colorSubmit === item.color
-                                ? '2px solid #000000'
-                                : '',
-                          }}
-                          onClick={(e) => handleSelectColor(e, item.color)}
-                        >
-                          {' '}
-                        </Button>
-                      </List.Item>
-                    );
-                  }}
-                />
-              ) : (
-                <List
-                  dataSource={data}
-                  grid={{
-                    gutter: 64,
-                    column: 4,
-                  }}
-                  renderItem={(item) => (
-                    <div>
-                      <List.Item key={item.color}>
-                        <Row
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                          gutter={[16, 8]}
-                        >
-                          <Col>
-                            <Button
-                              style={{
-                                background: item.color,
-                                borderRadius: '50%',
-                                width: '40px',
-                                height: '40px',
-                              }}
-                            >
-                              {' '}
-                            </Button>
-                          </Col>
-                          <Col>
-                            <Button
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                              }}
-                              danger
-                            >
-                              {deletebtn}
-                            </Button>
-                          </Col>
-                        </Row>
-                      </List.Item>
-                    </div>
-                  )}
-                  footer={
-                    <Button
-                      style={{
-                        border: '1px solid #C0C0C0',
-                        borderRadius: '10px',
-                        background: '#FF6347',
-                        color: 'white',
-                        width: '80px',
-                      }}
-                      size="small"
-                      onClick={handleCloseRemove}
-                    >
-                      Hủy
-                    </Button>
-                  }
-                />
-              )}
-            </Col>
+                  onClick={handleCloseRemove}
+                >
+                  Hủy
+                </Button>
+              </>
+            )}
           </Row>
         </Col>
-        <Col>
+        <Col span={2}>
           {addBtn || removeBtn ? null : (
             <Button
               style={{
-                borderRadius: '50%',
                 width: '40px',
                 height: '40px',
                 paddingLeft: '3px',
                 marginLeft: '3px',
               }}
               icon={<PlusOutlined />}
-              size="small"
               onClick={addBtnOpen}
             ></Button>
           )}
@@ -247,14 +213,11 @@ const ColorInput = (props) => {
           >
             <Button
               onClick={handleAddColor}
-              size="small"
               style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
                 background: '#40E0D0',
                 color: 'white',
-                width: '20%',
                 marginRight: '10px',
+                minWidth: '80px',
               }}
             >
               Thêm
@@ -262,13 +225,10 @@ const ColorInput = (props) => {
             <Button
               onClick={handleCloseAdd}
               style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
                 background: '#FF6347',
                 color: 'white',
-                width: '20%',
+                minWidth: '80px',
               }}
-              size="small"
             >
               Hủy
             </Button>

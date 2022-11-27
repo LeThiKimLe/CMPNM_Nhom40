@@ -13,14 +13,14 @@ const productSchema = new mongoose.Schema(
     },
 
     regularPrice: {
-      type: String,
+      type: Number,
       required: true,
     },
     sale: {
-      type: String,
+      type: Number,
     },
     salePrice: {
-      type: String,
+      type: Number,
     },
     description: {
       type: String,
@@ -71,7 +71,7 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     stock: {
-      type: String,
+      type: Number,
     },
     productPictures: [String],
     category: {

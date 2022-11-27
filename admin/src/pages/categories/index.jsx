@@ -69,7 +69,6 @@ function ListCategories() {
   const category = useSelector((state) => state.category);
   const auth = useSelector((state) => state.auth);
   const { categories } = auth.data;
-  const { getLoading } = category;
 
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
@@ -134,7 +133,7 @@ function ListCategories() {
       const picture = await getBase64(fileList[0].originFileObj);
       categoryData.picture = picture;
     }
-
+    setLoading(true);
     dispatch(categoryThunk.createAPI(categoryData))
       .unwrap()
       .then(() => {
@@ -143,10 +142,16 @@ function ListCategories() {
         dispatch(categoryActions.reset());
         setTimeout(() => {
           setVisibleAdd(false);
-          dispatch(categoryThunk.getAllAPI());
+          dispatch(categoryThunk.getAllAPI())
+            .unwrap()
+            .then((value) => {
+              setListCategory(value.list);
+              setLoading(false);
+            });
         }, 1000);
       })
       .catch((error) => {
+        setLoading(false);
         formAdd.setFields([
           {
             name: 'name',
@@ -173,7 +178,7 @@ function ListCategories() {
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Xóa tài khoản thành công!',
+          message: 'Xóa thương hiệu thành công!',
           placement: 'top',
         });
         setTimeout(() => {
@@ -281,6 +286,7 @@ function ListCategories() {
         loading={loading}
         onFinish={handleAddCategory}
         visible={visibleAdd}
+        setListCategory={setListCategory}
         onCancel={() => setVisibleAdd(false)}
         setCategoryParent={setCategoryParent}
         categoriesParent={categoryParentList}

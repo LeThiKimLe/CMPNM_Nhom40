@@ -15,6 +15,7 @@ const AddCategoryModal = (props) => {
   } = props;
   // form.submit
   const handleCategoryParent = (value) => {
+    console.log(value);
     setCategoryParent(value);
   };
   const onSearch = (value) => {
@@ -63,6 +64,7 @@ const AddCategoryModal = (props) => {
             className="username"
             label="Thương hiệu"
             style={{ fontWeight: '600' }}
+            name="parentId"
           >
             <Select
               showSearch
@@ -93,7 +95,7 @@ const AddCategoryModal = (props) => {
           </Form.Item>
           <Form.Item
             className="username"
-            label="Image"
+            label="Hình ảnh"
             style={{ fontWeight: '600' }}
             name="image"
           >
@@ -107,7 +109,7 @@ const AddCategoryModal = (props) => {
                 style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
                 icon={<UploadOutlined />}
               >
-                Click to Upload
+                Click để tải ảnh
               </Button>
             </Upload>
           </Form.Item>

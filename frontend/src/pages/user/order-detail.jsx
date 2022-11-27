@@ -12,6 +12,8 @@ import { formatThousand } from '../../utils/custom-price';
 import { useDispatch } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
 import OrderDetailItem from './order-detail-item';
+import { notification } from 'antd';
+import userThunk from '../../features/user/user.service';
 function getTotalPrice(items) {
   let total = 0;
   items.map((item, index) => {
@@ -29,6 +31,31 @@ const OrderDetails = () => {
   const [orderSelected, setOrderSelected] = useState({});
   const [dateDelivered, setDateDelivered] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const handleCancelOrder = () => {
+    setLoading(true);
+    dispatch(userThunk.cancelOrderAPI({ orderId, status: 'cancelled' }))
+      .unwrap()
+      .then(() => {
+        notification.success({
+          message: 'Cập nhật trạng thái đơn hàng thành công',
+          placement: 'top',
+        });
+        dispatch(orderThunk.getOrder(orderId))
+          .unwrap()
+          .then((value) => {
+            console.log(value.order);
+            setDateDelivered(
+              new Date(
+                value.order.orderStatus[value.order.orderStatus.length - 1].date
+              )
+            );
+            setLoading(false);
+            setOrderSelected(value.order);
+          });
+      });
+  };
+
   useEffect(() => {
     if (orderId) {
       dispatch(orderThunk.getOrder(orderId))
@@ -48,24 +75,19 @@ const OrderDetails = () => {
 
   return (
     <UserPage>
-      <Grid
-        container
-        display="flex"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        spacing={1.5}
-      >
-        {loading ? (
-          <MDBox
+      {loading ? (
+        <MDBox display="flex" justifyContent="center" alignItems="center" p={2}>
+          <CircularProgress />
+        </MDBox>
+      ) : orderSelected ? (
+        <>
+          <Grid
+            container
             display="flex"
-            justifyContent="center"
-            alignItems="center"
-            p={2}
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            spacing={1.5}
           >
-            <CircularProgress />
-          </MDBox>
-        ) : orderSelected ? (
-          <>
             <Grid item xs={12}>
               <Stack
                 direction="row"
@@ -94,17 +116,21 @@ const OrderDetails = () => {
                     Chi tiết đơn hàng
                   </MDTypography>
                 </Stack>
-                <MDButton
-                  size="medium"
-                  color="warning"
-                  sx={{
-                    textTransform: 'initial !important',
-                    fontWeight: '500',
-                    padding: '2px 10px',
-                  }}
-                >
-                  Mua lần nữa
-                </MDButton>
+                {orderSelected.orderStatus &&
+                orderSelected.orderStatus[orderSelected.orderStatus.length - 1]
+                  .type == 'delivered' ? (
+                  <MDButton
+                    size="medium"
+                    color="warning"
+                    sx={{
+                      textTransform: 'initial !important',
+                      fontWeight: '500',
+                      padding: '2px 10px',
+                    }}
+                  >
+                    Mua lần nữa
+                  </MDButton>
+                ) : null}
               </Stack>
             </Grid>
             <Grid item xs={12}>
@@ -475,6 +501,7 @@ const OrderDetails = () => {
                           textTransform: 'initial !important',
                           fontWeight: '500',
                         }}
+                        onClick={handleCancelOrder}
                       >
                         Hủy đơn
                       </MDButton>
@@ -483,9 +510,9 @@ const OrderDetails = () => {
                 </MDBox>
               </Grid>
             </Grid>
-          </>
-        ) : null}
-      </Grid>
+          </Grid>
+        </>
+      ) : null}
     </UserPage>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react';
 import {
   Container,
@@ -7,6 +8,7 @@ import {
   Chip,
   CircularProgress,
 } from '@mui/material';
+import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
@@ -23,6 +25,7 @@ import addressThunk from '../../features/address/address.service';
 import { customListOrderProducts } from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
+import ModalAddAddress from './modal-add-address';
 const columns = [
   {
     key: 'name',
@@ -90,6 +93,14 @@ const CheckOutPage = () => {
   const [methodShip, setMethodShip] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [freeShip, setFreeShip] = useState(0);
+
+  //* modal add new Address
+
+  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const onCancelModalAdd = () => {
+    setOpenModalAdd(false);
+  };
+
   const getMethodShip = async (to_district) => {
     const response = await fetch(
       `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
@@ -148,22 +159,28 @@ const CheckOutPage = () => {
     setOpenModalAddress(false);
   };
   const handleOrder = () => {
-    let orderData = {
-      addressId: addressSelected._id,
-      totalAmount,
-      shipAmount,
-      freeShip,
-      items: customListOrderProducts(items),
-    };
-    console.log(orderData);
-    dispatch(orderThunk.addOrderAPI(orderData))
-      .unwrap()
-      .then((value) => {
-        // navigation order-confirmation
-        dispatch(cartActions.reset());
-        navigate('/order-confirmation', { state: { id: value.order._id } });
-      });
+    if (Object.keys(addressSelected).length === 0) {
+      notification.error({ message: 'Vui lòng chọn địa chỉ giao hàng!' });
+      return;
+    } else {
+      let orderData = {
+        addressId: addressSelected._id,
+        totalAmount,
+        shipAmount,
+        freeShip,
+        items: customListOrderProducts(items),
+      };
+      console.log(orderData);
+      dispatch(orderThunk.addOrderAPI(orderData))
+        .unwrap()
+        .then((value) => {
+          // navigation order-confirmation
+          dispatch(cartActions.reset());
+          navigate('/order-confirmation', { state: { id: value.order._id } });
+        });
+    }
   };
+
   useEffect(() => {
     setItems(cartItems);
     dispatch(addressThunk.getAllAPI())
@@ -233,6 +250,12 @@ const CheckOutPage = () => {
         width="100%"
         minHeight="75vh"
       >
+        <ModalAddAddress
+          open={openModalAdd}
+          setOpen={setOpenModalAdd}
+          onCancel={onCancelModalAdd}
+          setListAddress={setListAddress}
+        />
         <ModalAddress
           open={openModalAddress}
           onCancel={handleCancel}
@@ -242,6 +265,7 @@ const CheckOutPage = () => {
           handleChangeAddress={handleChangeAddress}
           addressIndex={addressIndex}
           setAddressIndex={setAddressIndex}
+          setListAddress={setListAddress}
         />
         <Container>
           <Grid
@@ -287,59 +311,115 @@ const CheckOutPage = () => {
                           Địa chỉ nhận hàng
                         </MDTypography>
                       </Stack>
-                      {addressSelected ? (
-                        <Stack
-                          direction="row"
-                          justifyContent="flex-start"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <MDTypography
-                            color="dark"
-                            sx={{
-                              fontSize: '14px',
-                              fontWeight: '500',
-                            }}
+
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                        spacing={2}
+                      >
+                        {addressUser.getLoading ? (
+                          <MDBox
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            p={2}
                           >
-                            {`${addressSelected.name} | ${addressSelected.mobileNumber}`}
-                          </MDTypography>
-                          <MDTypography
-                            color="dark"
-                            sx={{
-                              fontSize: '14px',
-                              fontWeight: '400',
-                            }}
-                          >
-                            {`${addressSelected.address}, ${addressSelected.wardName}, ${addressSelected.districtName}, ${addressSelected.provinceName}`}
-                          </MDTypography>
-                          {addressSelected.isDefault ? (
-                            <Chip
-                              size="small"
-                              label="Mặc định"
-                              color="primary"
-                            />
-                          ) : null}
-                        </Stack>
-                      ) : null}
+                            <CircularProgress />
+                          </MDBox>
+                        ) : (
+                          <>
+                            {listAddress.length === 0 ? (
+                              <MDTypography
+                                color="dark"
+                                sx={{
+                                  fontSize: '14px',
+                                  fontWeight: '500',
+                                }}
+                              >
+                                Chưa có địa chỉ
+                              </MDTypography>
+                            ) : (
+                              <>
+                                {Object.keys(addressSelected).length === 0 ? (
+                                  <MDTypography
+                                    color="dark"
+                                    sx={{
+                                      fontSize: '14px',
+                                      fontWeight: '500',
+                                    }}
+                                  >
+                                    Vui lòng chọn địa chỉ
+                                  </MDTypography>
+                                ) : (
+                                  <>
+                                    <MDTypography
+                                      color="dark"
+                                      sx={{
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                      }}
+                                    >
+                                      {`${addressSelected.name} | ${addressSelected.mobileNumber}`}
+                                    </MDTypography>
+                                    <MDTypography
+                                      color="dark"
+                                      sx={{
+                                        fontSize: '14px',
+                                        fontWeight: '400',
+                                      }}
+                                    >
+                                      {`${addressSelected.address}, ${addressSelected.wardName}, ${addressSelected.districtName}, ${addressSelected.provinceName}`}
+                                    </MDTypography>
+                                    {addressSelected.isDefault ? (
+                                      <Chip
+                                        size="small"
+                                        label="Mặc định"
+                                        color="primary"
+                                      />
+                                    ) : null}
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </>
+                        )}
+                      </Stack>
                     </Stack>
                     <Stack
                       justifyContent="flex-end"
                       alignItems="center"
                       spacing={2}
                     >
-                      <MDButton
-                        size="small"
-                        color="dark"
-                        variant="outlined"
-                        sx={{
-                          textTransform: 'initial !important',
-                          fontWeight: '500',
-                        }}
-                        onClick={() => setOpenModalAddress(true)}
-                      >
-                        <EditIcon sx={{ marginRight: '4px' }} />
-                        Thay đổi
-                      </MDButton>
+                      {listAddress.length === 0 ? (
+                        <MDButton
+                          size="small"
+                          color="dark"
+                          variant="outlined"
+                          sx={{
+                            textTransform: 'initial !important',
+                            fontWeight: '500',
+                          }}
+                          onClick={() => setOpenModalAdd(true)}
+                        >
+                          <EditIcon sx={{ marginRight: '4px' }} />
+                          Thêm địa chỉ mới
+                        </MDButton>
+                      ) : (
+                        <MDButton
+                          size="small"
+                          color="dark"
+                          variant="outlined"
+                          sx={{
+                            textTransform: 'initial !important',
+                            fontWeight: '500',
+                          }}
+                          onClick={() => setOpenModalAddress(true)}
+                        >
+                          <EditIcon sx={{ marginRight: '4px' }} />
+                          Thay đổi
+                        </MDButton>
+                      )}
                     </Stack>
                   </Stack>
                 </Paper>

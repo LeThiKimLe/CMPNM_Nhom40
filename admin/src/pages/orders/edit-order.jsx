@@ -283,7 +283,6 @@ const EditOrder = () => {
               )}
               {orderSelected.items
                 ? orderSelected.items.map((item, index) => {
-                    console.log(item);
                     return (
                       <Row
                         gutter={[8, 0]}

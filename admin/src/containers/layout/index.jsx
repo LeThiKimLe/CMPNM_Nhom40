@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layout } from 'antd';
 import Sidenav from '../side-navigation';
-import FooterComponent from '../footer';
 import HeaderAnt from '../header';
 import { useLocation } from 'react-router-dom';
 const namePage = [
@@ -21,6 +20,10 @@ const namePage = [
     key: 'orders',
     value: 'Đơn hàng',
   },
+  {
+    key: 'banner',
+    value: 'Quảng cáo',
+  },
 ];
 const getPathName = (pathName) => {
   let name = '';
@@ -36,11 +39,7 @@ const Main = ({ children }) => {
   let { pathname } = useLocation();
   pathname = pathname.replace('/', '');
   const namePage = getPathName(pathname);
-  if (
-    pathname === 'sign-in' ||
-    pathname === 'verify-email' ||
-    pathname === 'resend-verify-email'
-  ) {
+  if (pathname === 'sign-in') {
     return <>{children}</>;
   } else {
     return (
@@ -61,7 +60,6 @@ const Main = ({ children }) => {
         <Layout className="layout-dashboard">
           <HeaderAnt name={namePage} subname={namePage} />
           <Content className="content-ant">{children}</Content>
-          <FooterComponent />
         </Layout>
       </Layout>
     );

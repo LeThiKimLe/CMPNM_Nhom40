@@ -113,18 +113,21 @@ const SingleProduct = () => {
   //* useEffect handle init page
 
   useEffect(() => {
-    // setColorSelected(
-    //   colorSelected
-    //     ? colorSelected
-    //     : colorGroup.`${ramSelected}-${storageSelected}`.[0]
-    // );
+    console.log(option, rams, storages);
     let ramSelect = '';
     let storageSelect = '';
+    // console.log(optionSelected);
     if (option.length === storages.length) {
-      rams.map((item, index) => {
-        setRamSelected(item);
-        ramSelect = item;
-      });
+      setRamSelected(rams[0]);
+      ramSelect = rams[0];
+      if (optionSelected < rams.length) {
+        setRamSelected(rams[optionSelected]);
+        ramSelect = rams[optionSelected];
+      }
+      if (optionSelected >= rams.length) {
+        setRamSelected(rams[rams.length - 1]);
+        ramSelect = rams[rams.length - 1];
+      }
       storageSelect = storages[optionSelected];
       setStorageSelected(storages[optionSelected]);
     } else {
@@ -161,6 +164,7 @@ const SingleProduct = () => {
         const productImage = item.productPictures.filter(
           (item, index) => index !== 0
         );
+        console.log(item);
         setProductImages(productImage);
         setProductSelected(item);
         return;

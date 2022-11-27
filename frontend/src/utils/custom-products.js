@@ -88,6 +88,48 @@ export const getListCategory = (listProduct) => {
   });
   return categories;
 };
+
+export const getListProductByCategory = (productGroups, categories, sort) => {
+  let listProduct = [];
+  if (Object.keys(categories).length === 0) {
+    listProduct = productGroups;
+  } else {
+    for (const cate of categories) {
+      productGroups.map((item) => {
+        if (item.categoryOne === cate) {
+          listProduct.push(item);
+        }
+      });
+    }
+  }
+
+  let sortProducts = [];
+  if (Object.keys(listProduct).length !== 0) {
+    switch (sort) {
+      case 1:
+        sortProducts = listProduct.slice().sort(function (a, b) {
+          return a.productSelected.salePrice - b.productSelected.salePrice;
+        });
+        break;
+      case -1:
+        sortProducts = listProduct.slice().sort(function (a, b) {
+          return b.productSelected.salePrice - a.productSelected.salePrice;
+        });
+        break;
+      case 0:
+        sortProducts = listProduct.slice().sort(function (a, b) {
+          return a.productSelected.sale - b.productSelected.sale;
+        });
+        break;
+      case 2:
+        sortProducts = listProduct.slice();
+        break;
+      default:
+        break;
+    }
+  }
+  return sortProducts;
+};
 export const getCategoryLevelOne = (listCategory, category) => {
   let parent;
   listCategory.map((item) => {
@@ -170,4 +212,12 @@ export const customListOrderProducts = (products) => {
     list.push(newItem);
   });
   return list;
+};
+export const getShuffledArr = (arr) => {
+  const newArr = arr.slice();
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const rand = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
+  }
+  return newArr;
 };

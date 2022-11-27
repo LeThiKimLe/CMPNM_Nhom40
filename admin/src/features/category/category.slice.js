@@ -15,7 +15,6 @@ const categorySlice = createSlice({
     reset: (state) => {
       state.message = '';
       state.error = null;
-      state.success = false;
     },
   },
   extraReducers: (builder) => {

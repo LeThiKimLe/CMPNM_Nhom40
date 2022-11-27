@@ -1,5 +1,5 @@
 import { Menu } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,11 +8,10 @@ import {
   faBoxesStacked,
   faBagShopping,
   faTableColumns,
+  faImage,
 } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
-  // const { pathname } = useLocation();
-  // const page = pathname.replace('/', '');
-
+  const navigate = useNavigate();
   return (
     <>
       <div className="brand">
@@ -60,6 +59,15 @@ function Sidenav() {
               <FontAwesomeIcon icon={faBagShopping} className="fa-lg" />
             </span>
             <span className="label">Đơn hàng</span>
+          </NavLink>
+        </Menu.Item>
+
+        <Menu.Item key="banner">
+          <NavLink to="/banner">
+            <span className="icon">
+              <FontAwesomeIcon icon={faImage} className="fa-lg" />
+            </span>
+            <span className="label">Quảng cáo</span>
           </NavLink>
         </Menu.Item>
       </Menu>

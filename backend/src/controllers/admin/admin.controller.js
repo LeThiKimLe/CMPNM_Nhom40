@@ -142,10 +142,6 @@ const deleteUser = (req, res) => {
 };
 const getAllData = (req, res) => {
   let listPromise = [];
-  const listUser = User.find({}).select(
-    '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
-  );
-  listPromise.push(listUser);
   const listUserAddress = UserAddress.find({})
     .select('user address')
     .populate('user', '_id');
@@ -154,10 +150,6 @@ const getAllData = (req, res) => {
     '_id name slug isActive level parentId categoryImage createdAt'
   );
   listPromise.push(listCategory);
-  const listProduct = Product.find({ active: true }).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description'
-  );
-  listPromise.push(listProduct);
   const listOrder = Order.find({})
     .select(
       '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
@@ -172,7 +164,7 @@ const getAllData = (req, res) => {
   Promise.all(listPromise)
     .then((value) => {
       Response(res, {
-        list: [value[0], value[1], value[2], value[3], value[4], value[5]],
+        list: [value[0], value[1], value[2], value[3]],
       });
     })
     .catch((error) => {

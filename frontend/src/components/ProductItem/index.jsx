@@ -38,13 +38,26 @@ function ProductCard({
     sale,
     detailsProduct,
   } = product;
+
   const [ramSelected, setRamSelected] = useState(detailsProduct.ram);
   const [storageSelected, setStorageSelected] = useState(
     detailsProduct.storage
   );
   const screenCustom = renderScreen(detailsProduct.screen);
-  const customOptions =
-    rams.length > 1 && storages.length > 1 ? options : storages;
+  let customOptions = [];
+  if (
+    rams.length > 1 &&
+    storages.length > 1 &&
+    rams.length <= 2 &&
+    storages.length <= 2
+  ) {
+    customOptions = options;
+  } else if (rams.length === 1 || storages.length === 1) {
+    customOptions = storages;
+  } else {
+    customOptions = Object.keys(groupColors);
+  }
+
   useEffect(() => {
     if (customOptions.length === storages.length) {
       rams.map((item, index) => {
@@ -103,8 +116,13 @@ function ProductCard({
       >
         <MDBox
           position="relative"
-          width="100.25%"
-          sx={{ marginBottom: '10px' }}
+          width="100%"
+          sx={{
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           <CardMedia
             src={productPictures[0]}
@@ -159,22 +177,30 @@ function ProductCard({
           justifyContent="flex-start"
           alignItems="center"
         >
-          {/* thông tin màn hình */}
-          {screenCustom.map((item, index) => {
-            return (
-              <Chip
-                key={index}
-                size="medium"
-                sx={{
-                  fontSize: '0.65rem',
-                  fontWeight: '500',
-                  borderRadius: '0.3rem',
-                  marginRight: '3px',
-                }}
-                label={item}
-              />
-            );
-          })}
+          <Grid
+            container
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            xs={12}
+          >
+            {/* thông tin màn hình */}
+            {screenCustom.map((item, index) => {
+              return (
+                <Chip
+                  key={index}
+                  size="medium"
+                  sx={{
+                    fontSize: '0.65rem',
+                    fontWeight: '500',
+                    borderRadius: '0.3rem',
+                    marginRight: '3px',
+                    marginBottom: '3px',
+                  }}
+                  label={item}
+                />
+              );
+            })}
+          </Grid>
         </MDBox>
         <MDBox
           mb={1}

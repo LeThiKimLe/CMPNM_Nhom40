@@ -170,7 +170,6 @@ function Users() {
       delete values.image;
       userData = { ...values };
     }
-    console.log(userData);
     dispatch(userThunk.createUserAPI(userData))
       .unwrap()
       .then(() => {
@@ -199,8 +198,10 @@ function Users() {
   };
   //* get all users initial
   useEffect(() => {
-    dispatch(userThunk.getAllUserAPI());
-  }, [dispatch]);
+    if (users.length === 0) {
+      dispatch(userThunk.getAllUserAPI());
+    }
+  }, [dispatch, users]);
   useEffect(() => {
     if (users.length > 0) {
       setData(

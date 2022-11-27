@@ -3,6 +3,7 @@ import dataThunk from './data.service';
 import {
   getListCategory,
   getAllGroupProducts,
+  getShuffledArr,
 } from '../../utils/custom-products';
 //
 
@@ -10,6 +11,7 @@ const initialState = {
   categories: [],
   products: [],
   colors: [],
+  banners: [],
   productGroups: [],
   categoryGroups: [],
   message: '',
@@ -39,10 +41,15 @@ const dataSlice = createSlice({
         );
         state.loading = false;
         state.categoryGroups = listCategory;
-        state.productGroups = allGroupProducts;
+        state.productGroups = getShuffledArr(allGroupProducts);
         state.categories = action.payload.list[0];
+        localStorage.setItem(
+          'categories',
+          JSON.stringify(action.payload.list[0])
+        );
         state.products = action.payload.list[1];
         state.colors = action.payload.list[2];
+        state.banners = action.payload.list[3];
       })
       .addCase(dataThunk.getAllAPI.rejected, (state, action) => {
         console.log(action.payload);

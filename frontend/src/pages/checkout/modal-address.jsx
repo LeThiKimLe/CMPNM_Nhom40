@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, List, Divider, Button } from 'antd';
+import ModalAddAddress from './modal-add-address';
 import AddressItem from './addressItem';
 
 const ModalAddress = (props) => {
@@ -13,8 +14,9 @@ const ModalAddress = (props) => {
     handleChangeAddress,
     addressIndex,
     setAddressIndex,
+    setListAddress,
   } = props;
-
+  const [openModalAdd, setOpenModalAdd] = useState(false);
   useEffect(() => {
     setAddressIndex(addressIndexSelected);
   }, []);
@@ -26,6 +28,12 @@ const ModalAddress = (props) => {
       title="Địa chỉ của tôi"
       width={600}
     >
+      <ModalAddAddress
+        open={openModalAdd}
+        setOpen={setOpenModalAdd}
+        onCancel={() => setOpenModalAdd(false)}
+        setListAddress={setListAddress}
+      />
       <List
         itemLayout="horizontal"
         dataSource={listAddress}
@@ -59,6 +67,7 @@ const ModalAddress = (props) => {
             marginRight: '10px',
             marginTop: '20px',
           }}
+          onClick={() => setOpenModalAdd(true)}
         >
           Thêm địa chỉ mới
         </Button>

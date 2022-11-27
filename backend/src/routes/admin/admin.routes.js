@@ -14,6 +14,7 @@ const {
   getOrder,
   updateOrderStatus,
 } = require('../../controllers/order/order.controller');
+const { updateAll } = require('../../controllers/product/product.controller');
 const {
   reSendRefreshToken,
   uploadImage,
@@ -24,6 +25,7 @@ const { authenticateAdmin, adminCheckRole } = require('../../middlewares');
 router.post('/signin', signin);
 router.post('/refresh-token', reSendRefreshToken);
 router.use(authenticateAdmin, adminCheckRole);
+router.post('/update-all', updateAll);
 router.get('/get-all-data', getAllData);
 router.post('/create-user', createUser);
 router.get('/get-users', getAllUser);

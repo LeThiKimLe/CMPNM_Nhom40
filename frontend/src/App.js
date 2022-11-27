@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import { Routes, Route } from 'react-router-dom';
 import 'antd/dist/reset.css';
 import MainLayout from './containers/layout';
@@ -24,11 +25,11 @@ import './App.css';
 import AddressPage from './pages/user/address';
 import OrderPage from './pages/user/order';
 import PasswordPage from './pages/user/password';
-import addressThunk from './features/address/address.service';
 import CheckOutPage from './pages/checkout';
 import OrderConfirmation from './pages/checkout/order-confirmation';
-import orderThunk from './features/order/order.service';
 import OrderDetails from './pages/user/order-detail';
+import addressThunk from './features/address/address.service';
+import AllProductPage from './pages/all-products';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -39,7 +40,11 @@ function App() {
 
   // thêm input để khi auth.aut, henticate thay đổi thì useEffect() chạy
   useEffect(() => {
-    dispatch(dataThunk.getAllAPI());
+    dispatch(dataThunk.getAllAPI())
+      .unwrap()
+      .then((value) => {
+        localStorage.setItem('categories', JSON.stringify(value.list[0]));
+      });
   }, [dispatch]);
   useEffect(() => {
     if (!user.isLoggedIn) {
@@ -48,10 +53,9 @@ function App() {
   }, [dispatch, user.isLoggedIn]);
   useEffect(() => {
     if (user.isLoggedIn) {
-      dispatch(addressThunk.getAllAPI());
       const { userId } = user.user;
       dispatch(cartThunk.getAllItemsAPI());
-      dispatch(orderThunk.getAllOrder());
+
       // get cart in mongoose
       // * cartItems in state change
       if (cartItemsLocal !== null) {
@@ -99,8 +103,9 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckOutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/products" exact element={<AllProductPage />} />
             <Route path="/products/*" element={<SingleProduct />} />
-            <Route path="/finish-signup/:slug" element={<FinishSignUp />} />
+            <Route path="/finish-signup" element={<FinishSignUp />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

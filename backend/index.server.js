@@ -23,6 +23,7 @@ const productRouter = require('./src/routes/product.routes');
 const cartRouter = require('./src/routes/cart.routes');
 const addressRouter = require('./src/routes/address.routes');
 const orderRouter = require('./src/routes/order.routes');
+const bannerRouter = require('./src/routes/banner.routes');
 
 app.use(cookieParser());
 app.use(helmet());
@@ -42,6 +43,7 @@ app.use('/api/color', colorRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/order/', orderRouter);
+app.use('/api/banner/', bannerRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', userRouter);
 

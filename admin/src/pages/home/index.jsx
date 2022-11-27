@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row, Typography, Card, Button } from 'antd';
+import { Col, Row, Typography, Card, Button, Spin } from 'antd';
 import {
   faSackDollar,
   faBagShopping,
@@ -118,88 +118,104 @@ function Home() {
   return (
     <>
       <div className="layout-content">
-        <div className="tabled">
-          <Title
+        {auth.loading ? (
+          <div
             style={{
-              fontSize: '24px',
-              color: '#4e97fd',
-              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '20px',
             }}
           >
-            Chào buổi sáng, Tiệp!
-          </Title>
-          <Row className="rowgap-vbox" gutter={[24, 0]}>
-            {count.map((c, index) => (
-              <Col
-                key={index}
-                xs={24}
-                sm={24}
-                md={12}
-                lg={6}
-                xl={6}
-                className="mb-24"
-              >
-                <Card bordered={false} className="criclebox ">
-                  <div className="number">
-                    <Row align="middle" gutter={[24, 0]}>
-                      <Col xs={18}>
-                        <span>{c.today}</span>
-                        <Title style={{ fontSize: '20px', fontWeight: '700' }}>
-                          {c.title} <small className={c.bnb}>{c.persent}</small>
-                        </Title>
-                      </Col>
-                      <Col xs={6}>
-                        <div
-                          className="icon-box"
-                          style={{
-                            backgroundColor: '#3d85c6',
-                          }}
-                        >
-                          {c.icon}
-                        </div>
-                      </Col>
-                    </Row>
+            <Spin size="large" />
+          </div>
+        ) : (
+          <div className="tabled">
+            <Title
+              style={{
+                fontSize: '24px',
+                color: '#4e97fd',
+                fontWeight: '600',
+              }}
+            >
+              Chào buổi sáng, Tiệp!
+            </Title>
+            <Row className="rowgap-vbox" gutter={[24, 0]}>
+              {count.map((c, index) => (
+                <Col
+                  key={index}
+                  xs={24}
+                  sm={24}
+                  md={12}
+                  lg={6}
+                  xl={6}
+                  className="mb-24"
+                >
+                  <Card bordered={false} className="criclebox ">
+                    <div className="number">
+                      <Row align="middle" gutter={[24, 0]}>
+                        <Col xs={18}>
+                          <span>{c.today}</span>
+                          <Title
+                            style={{ fontSize: '20px', fontWeight: '700' }}
+                          >
+                            {c.title}{' '}
+                            <small className={c.bnb}>{c.persent}</small>
+                          </Title>
+                        </Col>
+                        <Col xs={6}>
+                          <div
+                            className="icon-box"
+                            style={{
+                              backgroundColor: '#3d85c6',
+                            }}
+                          >
+                            {c.icon}
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            <Row gutter={[24, 0]}>
+              <Col xs={24} sm={24} md={12} lg={12} xl={14} className="mb-24">
+                <Card bordered={false} className="criclebox cardbody h-full">
+                  <div className="project-ant">
+                    <div>
+                      <Title level={5}>Đơn hàng gần đây</Title>
+                    </div>
+                    <div className="ant-filtertabs">
+                      <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
+                        <Button>Xem tất cả</Button>
+                      </div>
+                    </div>
                   </div>
                 </Card>
               </Col>
-            ))}
-          </Row>
-          <Row gutter={[24, 0]}>
-            <Col xs={24} sm={24} md={12} lg={12} xl={14} className="mb-24">
-              <Card bordered={false} className="criclebox cardbody h-full">
-                <div className="project-ant">
-                  <div>
-                    <Title level={5}>Đơn hàng gần đây</Title>
-                  </div>
-                  <div className="ant-filtertabs">
-                    <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
-                      <Button>Xem tất cả</Button>
+              <Col xs={24} sm={24} md={12} lg={12} xl={10} className="mb-24">
+                <Card bordered={false} className="criclebox cardbody h-full">
+                  <div className="project-ant">
+                    <Title
+                      level={5}
+                      style={{
+                        color: '#2b3445',
+                      }}
+                    >
+                      Sản phẩm sắp hết
+                    </Title>
+                    <div className="ant-filtertabs">
+                      <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
+                        <Button>Xem tất cả</Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={24} md={12} lg={12} xl={10} className="mb-24">
-              <Card bordered={false} className="criclebox cardbody h-full">
-                <div className="project-ant">
-                  <Title
-                    level={5}
-                    style={{
-                      color: '#2b3445',
-                    }}
-                  >
-                    Sản phẩm sắp hết
-                  </Title>
-                  <div className="ant-filtertabs">
-                    <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
-                      <Button>Xem tất cả</Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        )}
       </div>
     </>
   );

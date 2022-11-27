@@ -19,6 +19,7 @@ import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
+import SideNavigation from '../../containers/side-navigation';
 const VerifyEmail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const VerifyEmail = () => {
         <MDBox width="100%" height="100vh" mx="auto">
           <Header />
           <Navbar />
+          <SideNavigation />
           <Grid
             container
             spacing={1}
@@ -92,6 +94,7 @@ const VerifyEmail = () => {
       <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
+        <SideNavigation />
         <Grid
           container
           spacing={1}
