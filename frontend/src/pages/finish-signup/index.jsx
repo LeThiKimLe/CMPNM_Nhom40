@@ -13,7 +13,7 @@ import finishSignup from '../../assets/images/finish-signup.png';
 
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
-
+import SideNavigation from '../../containers/side-navigation';
 const FinishSignUp = () => {
   const { state } = useLocation();
   console.log(state);
@@ -28,6 +28,7 @@ const FinishSignUp = () => {
       <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
+        <SideNavigation />
         <Grid
           container
           spacing={1}

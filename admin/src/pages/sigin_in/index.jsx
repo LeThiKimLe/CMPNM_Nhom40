@@ -5,7 +5,6 @@ import {
   Col,
   Typography,
   Form,
-  Switch,
   Input,
   Spin,
   Alert,
@@ -15,7 +14,6 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import HeaderSignIn from './components/header';
-import FooterSignIn from './components/footer';
 import authThunk from '../../features/auth/auth.service';
 import { authActions } from '../../features/auth/auth.slice';
 const { Title } = Typography;
@@ -142,7 +140,6 @@ function SignIn() {
           </Col>
         </Row>
       </Content>
-      <FooterSignIn />
     </Layout>
   );
 }

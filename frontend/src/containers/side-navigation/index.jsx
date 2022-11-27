@@ -18,9 +18,10 @@ import { useSelector } from 'react-redux';
 
 const SideNavigation = () => {
   const [icon, setIcon] = useState(false);
-
-  const data = useSelector((state) => state.data);
-  const { categories } = data;
+  const categories =
+    localStorage.getItem('categories') == null
+      ? null
+      : JSON.parse(localStorage.getItem('categories'));
   let categoryLevelOne = categories.filter((item) => item.level === 1);
   let categoryCustom = categoryLevelOne.map((item) => {
     return {

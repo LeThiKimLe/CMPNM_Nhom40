@@ -9,13 +9,14 @@ import UserPage from './user-page';
 import { useDispatch, useSelector } from 'react-redux';
 import addressThunk from '../../features/address/address.service';
 import AddressItem from './address-item';
+import { Link } from 'react-router-dom';
 const AddressPage = () => {
   const dispatch = useDispatch();
   const addressUser = useSelector((state) => state.addressUser);
 
   // * state modal
   const [open, setOpen] = useState(false);
-  const [listAddress, setListAddress] = useState(addressUser.addresses);
+  const [listAddress, setListAddress] = useState([]);
   const onCancel = () => setOpen(false);
   // * state modal
   useEffect(() => {
@@ -95,17 +96,16 @@ const AddressPage = () => {
             );
           })
         ) : (
-          <MDTypography
-            sx={{
-              fontSize: '14px',
-              fontWeight: '400',
-              color: '#444444',
-              marginLeft: '10px',
-              paddingRight: '4px',
-            }}
+          <Stack
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            spacing={2}
           >
-            Chưa có địa chỉ
-          </MDTypography>
+            <MDTypography variant="h4" color="primary">
+              {`Bạn chưa có địa chỉ nào!`}
+            </MDTypography>
+          </Stack>
         )
       ) : (
         <MDBox display="flex" justifyContent="center" alignItems="center" p={2}>

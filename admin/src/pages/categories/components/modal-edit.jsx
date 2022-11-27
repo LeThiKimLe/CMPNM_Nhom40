@@ -105,8 +105,8 @@ const EditCategoryModal = (props) => {
             {loading ? <Spin /> : null}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-              Edit
+            <Button type="primary" style={{ width: '100%' }}>
+              Chỉnh sửa
             </Button>
           </Form.Item>
         </Form>

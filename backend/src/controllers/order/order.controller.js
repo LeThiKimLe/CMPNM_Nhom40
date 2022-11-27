@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable eqeqeq */
 /* eslint-disable array-callback-return */
 /* eslint-disable prefer-const */
 /* eslint-disable no-unused-vars */
@@ -96,88 +98,122 @@ const getOrder = (req, res) => {
 const updateOrderStatus = (req, res) => {
   const orderStatusData = req.body.data;
   const { orderId, status } = orderStatusData;
-  console.log('status', status);
-  let promiseArray = [];
-  // todo Trạng thái đóng gói thì giảm số lượng trong kho
-  if (status == 'packed') {
-    //* get product
-
-    Order.findOne({ _id: orderId })
-      .populate(
-        'items.productId',
-        '_id name productPictures salePrice color detailsProduct regularPrice category'
-      )
-      .lean()
-      .exec((error, order) => {
-        if (error) return res.status(400).json({ error });
-        if (order) {
-          order.items.map((item, index) => {
-            const id = item.productId._id;
-            const quantity = item.purchasedQty;
-            const productUpdate = Product.findOneAndUpdate(
-              { _id: id },
-              { $inc: { quantitySold: +quantity } }
-            );
-            console.log('productUpdate', productUpdate);
-            promiseArray.push(productUpdate);
+  const newStatus = {
+    type: status,
+    date: new Date(),
+    isCompleted: true,
+  };
+  const updateOrder = Order.updateOne(
+    { _id: orderId },
+    {
+      $push: {
+        orderStatus: newStatus,
+      },
+    },
+    {
+      upsert: true,
+    }
+  ).exec((error, data) => {
+    if (data) {
+      let promiseArray = [];
+      // todo Trạng thái đóng gói thì giảm số lượng trong kho
+      if (status == 'packed') {
+        //* get product
+        Order.findOne({ _id: orderId })
+          .populate(
+            'items.productId',
+            '_id name productPictures salePrice color detailsProduct regularPrice category quantitySold'
+          )
+          .lean()
+          .exec((error, order) => {
+            if (error) return res.status(400).json({ error });
+            if (order) {
+              order.items.map((item, index) => {
+                const id = item.productId._id;
+                const quantity = item.purchasedQty;
+                const productUpdate = Product.updateOne(
+                  { _id: id },
+                  { $inc: { quantitySold: +quantity, stock: -quantity } }
+                );
+                promiseArray.push(productUpdate);
+              });
+              Promise.all(promiseArray)
+                .then((value) => {
+                  Response(res);
+                })
+                .catch((err) => {
+                  ServerError(res, err);
+                });
+            }
           });
-        }
-      });
-    //* giảm số lương
-    //* save
-  }
-  // todo Nếu Trạng thái length > 3 và status === cancelled thì tăng số lượng lại
-  if (status == 'cancelled' || status == 'refund') {
-    //* get product
-    //* hoàn lai số lương
-    //* save
-    Order.findOne({ _id: orderId })
-      .populate(
-        'items.productId',
-        '_id name productPictures salePrice color detailsProduct regularPrice category'
-      )
-      .lean()
-      .exec((error, order) => {
-        if (error) return res.status(400).json({ error });
-        if (order) {
-          order.items.map((item, index) => {
-            const id = item.productId._id;
-            const quantity = item.purchasedQty;
-            const productUpdate = Product.findOneAndUpdate(
-              { _id: id },
-              { $inc: { quantitySold: -quantity } }
-            );
-            promiseArray.push(productUpdate);
+        //* giảm số lương
+        //* save
+      }
+      // todo Nếu Trạng thái length > 3 và status === cancelled thì tăng số lượng lại
+      else if (status == 'refund') {
+        //* get product
+        //* hoàn lai số lương
+        //* save
+        Order.findOne({ _id: orderId })
+          .populate(
+            'items.productId',
+            '_id name productPictures salePrice color detailsProduct regularPrice category'
+          )
+          .lean()
+          .exec((error, order) => {
+            if (error) return res.status(400).json({ error });
+            if (order) {
+              order.items.map((item, index) => {
+                const id = item.productId._id;
+                const quantity = Number(item.purchasedQty);
+                const productUpdate = Product.updateOne(
+                  { _id: id },
+                  { $inc: { quantitySold: -quantity, stock: +quantity } }
+                );
+                promiseArray.push(productUpdate);
+              });
+              Promise.all(promiseArray)
+                .then((value) => {
+                  Response(res);
+                })
+                .catch((err) => {
+                  ServerError(res, err);
+                });
+            }
           });
-        }
-      });
-  }
-  // const newStatus = {
-  //   type: status,
-  //   date: new Date(),
-  //   isCompleted: true,
-  // };
-  // const updateOrder = Order.updateOne(
-  //   { _id: orderId },
-  //   {
-  //     $push: {
-  //       orderStatus: newStatus,
-  //     },
-  //   },
-  //   {
-  //     upsert: true,
-  //   }
-  // );
-  // promiseArray.push(updateOrder);
-  console.log('promiseArray', promiseArray);
-  Promise.all(promiseArray)
-    .then((value) => {
-      console.log('tiep', value);
-      Response(res);
-    })
-    .catch((error) => {
+      } else {
+        Response(res);
+      }
+    } else {
       ServerError(res, error);
-    });
+    }
+  });
+};
+const cancelOrder = (req, res) => {
+  const orderStatusData = req.body.data;
+  const { orderId, status } = orderStatusData;
+  const newStatus = {
+    type: status,
+    date: new Date(),
+    isCompleted: true,
+  };
+  Order.updateOne(
+    { _id: orderId },
+    {
+      $push: {
+        orderStatus: newStatus,
+      },
+    },
+    {
+      upsert: true,
+    }
+  ).exec((error, data) => {
+    if (data) {
+      Response(res);
+    } else {
+      ServerError(res, error);
+    }
+  });
 };
 module.exports = {
   addOrder,
@@ -185,4 +221,5 @@ module.exports = {
   getOrder,
   getAllOrderOfUser,
   updateOrderStatus,
+  cancelOrder,
 };

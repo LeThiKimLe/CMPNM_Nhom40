@@ -18,7 +18,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import MuiLink from '@mui/material/Link';
+import logo from '../../assets/images/tmshop.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
 import { cartActions } from '../../features/cart/cart.slice';
@@ -84,24 +84,7 @@ const Navbar = () => {
             spacing={3}
             onClick={() => navigate('/')}
           >
-            <MDTypography
-              variant="body1"
-              sx={{
-                color: '#111111',
-                paddingTop: '3px',
-              }}
-            >
-              <AdbIcon color="inherit" />
-            </MDTypography>
-            <MDTypography
-              variant="h4"
-              fontWeight="bold"
-              sx={{
-                color: '#111111',
-              }}
-            >
-              LOGO
-            </MDTypography>
+            <img src={logo} alt="logo" width="100px" height="50px" />
           </Stack>
           <Grid xs={8}>
             <Stack

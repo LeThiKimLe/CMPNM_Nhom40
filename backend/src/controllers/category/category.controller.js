@@ -15,33 +15,12 @@ const {
   BadRequest,
 } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
-// create category
-// eslint-disable-next-line no-unused-vars
-// function createCategories(categories, parentId = null) {
-//   const categoryList = [];
-//   let category;
-//   if (parentId == null) {
-//     category = categories.filter((cat) => cat.parentId === undefined);
-//   } else {
-//     category = categories.filter((cat) => cat.parentId === parentId);
-//   }
-//   for (let cate of category) {
-//     categoryList.push({
-//       _id: cate._id,
-//       name: cate.name,
-//       slug: cate.slug,
-//       parentId: cate.parentId,
-//       type: cate.type,
-//       children: createCategories(categories, cate._id),
-//     });
-//   }
-//   return categoryList;
-// }
+
 const create = async (req, res) => {
   const { name } = req.body.data;
   const categoryExists = await Category.find({ name }).exec();
   if (categoryExists.length > 0) {
-    return BadRequest(res, 'Name already exists');
+    return BadRequest(res, 'Tên nhãn hiệu đã được tạo');
   }
   let categoryImage = '';
   if (req.body.data.picture) {
@@ -62,16 +41,13 @@ const create = async (req, res) => {
     createdBy: req.user.userId,
     categoryImage,
   };
+
   if (req.body.data.parentId) {
     const { parentId } = req.body.data;
-    const catParent = await Category.findOne({ id: parentId });
-    console.log(catParent);
-    categoryObj.parentId = req.body.data.parentId;
-    if (catParent.level === 1) {
-      categoryObj.level = 2;
-    } else {
-      categoryObj.level = 3;
-    }
+    console.log(parentId);
+    const cateParent = await Category.findOne({ _id: parentId });
+    categoryObj.parentId = parentId;
+    categoryObj.level = cateParent.level + 1;
   }
   const category = new Category(categoryObj);
   category.save(async (error, cat) => {

@@ -1,3 +1,5 @@
+/* eslint-disable radix */
+/* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-plusplus */
@@ -30,6 +32,7 @@ const createProduct = async (req, res) => {
       info.productPictures = productPictures;
       const product = new Product({
         ...info,
+        stock: Number(info.stock),
         description,
         detailsProduct: {
           ...digital,
@@ -61,8 +64,23 @@ const deleteProduct = async (req, res) => {
   });
   return Response(res);
 };
+const updateAll = async (req, res) => {
+  Product.find().forEach((x) => {
+    x.stock = parseInt(x.stock);
+    Product.save(x);
+  });
+  return Response(res);
+};
+const getProductsOption = async (req, res) => {
+  const listProduct = await Product.find({ active: true }).select(
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
+  );
+  return Response(res, { list: listProduct });
+};
 module.exports = {
   createProduct,
   getAll,
   deleteProduct,
+  updateAll,
+  getProductsOption,
 };

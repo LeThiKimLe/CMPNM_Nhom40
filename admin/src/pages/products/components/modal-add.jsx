@@ -1,4 +1,4 @@
-import { Modal, Tabs, Button, Spin } from 'antd';
+import { Modal, Tabs, Button, Spin, Row, Col } from 'antd';
 
 import React from 'react';
 import TabDescription from './tab-description';
@@ -7,7 +7,7 @@ import TabInfo from './tab-info';
 
 const AddProductModal = (props) => {
   const {
-    visible,
+    open,
     onCancel,
     handleCancel,
     handleChangeUpload,
@@ -34,7 +34,7 @@ const AddProductModal = (props) => {
         bodyStyle={{ marginLeft: '30px', marginRight: '30px' }}
         width={800}
         footer={null}
-        visible={visible}
+        open={open}
         title="Thêm sản phẩm mới"
         onCancel={onCancel}
       >
@@ -69,42 +69,26 @@ const AddProductModal = (props) => {
           {loading ? <Spin /> : null}
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: '20px',
-          }}
-        >
-          <Button
-            size="small"
-            style={{
-              border: '1px solid #C0C0C0',
-              borderRadius: '10px',
-              background: '#40E0D0',
-              color: 'white',
-              width: '20%',
-              marginRight: '10px',
-            }}
-            onClick={handleAddProduct}
-          >
-            Thêm
-          </Button>
-          <Button
-            style={{
-              border: '1px solid #C0C0C0',
-              borderRadius: '10px',
-              background: '#FF6347',
-              color: 'white',
-              width: '20%',
-            }}
-            size="small"
-            onClick={handleCancel}
-          >
-            Hủy
-          </Button>
-        </div>
+        <Row align="center" justify="center">
+          <Col>
+            <Button
+              onClick={handleAddProduct}
+              style={{
+                marginRight: '20px',
+                backgroundColor: '#2ad3ff',
+                color: '#ffffff',
+              }}
+            >
+              Thêm
+            </Button>
+            <Button
+              onClick={handleCancel}
+              style={{ backgroundColor: '#e06666', color: '#ffffff' }}
+            >
+              Hủy
+            </Button>
+          </Col>
+        </Row>
       </Modal>
     </div>
   );

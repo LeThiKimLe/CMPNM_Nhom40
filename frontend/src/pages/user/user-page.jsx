@@ -4,15 +4,30 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MDTypography from '../../components/MDTypography';
 import MDBox from '../../components/MDBox';
 import MDAvatar from '../../components/MDAvatar';
-import avatar from '../../assets/images/canvas.png';
+import avatar from '../../assets/images/profile.png';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import LockIcon from '@mui/icons-material/Lock';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import userThunk from '../../features/user/user.service';
 
 import { Link, useNavigate } from 'react-router-dom';
 const UserPage = ({ children }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const [profile, setProfile] = useState({});
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    dispatch(userThunk.showProfileAPI())
+      .unwrap()
+      .then((value) => {
+        setProfile(value.user);
+        setLoading(false);
+      });
+  }, [dispatch]);
   const navigate = useNavigate();
   return (
     <MDBox
@@ -55,7 +70,9 @@ const UserPage = ({ children }) => {
                           fontWeight: '500',
                         }}
                       >
-                        Bùi Tiệp
+                        {profile.lastName && profile.firstName
+                          ? `${profile.lastName} ${profile.firstName}`
+                          : null}
                       </MDTypography>
                       <Stack
                         direction="row"

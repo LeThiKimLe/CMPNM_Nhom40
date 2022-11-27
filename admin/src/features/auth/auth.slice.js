@@ -8,10 +8,8 @@ const initialState = {
   token: null,
   user: null,
   data: {
-    users: [],
     addressUsers: [],
     categories: [],
-    products: [],
     orders: [],
     colors: [],
   },
@@ -80,15 +78,13 @@ const authSlice = createSlice({
       })
       .addCase(authThunk.getAllDataAPI.fulfilled, (state, action) => {
         const newListOrder = customListOrder(
-          action.payload.list[4],
-          action.payload.list[1]
+          action.payload.list[2],
+          action.payload.list[0]
         );
-        state.data.users = action.payload.list[0];
-        state.data.addressUsers = action.payload.list[1];
-        state.data.categories = action.payload.list[2];
-        state.data.products = action.payload.list[3];
+        state.data.addressUsers = action.payload.list[0];
+        state.data.categories = action.payload.list[1];
         state.data.orders = newListOrder;
-        state.data.colors = action.payload.list[5];
+        state.data.colors = action.payload.list[3];
         state.loading = false;
       })
       .addCase(authThunk.getAllDataAPI.rejected, (state, action) => {

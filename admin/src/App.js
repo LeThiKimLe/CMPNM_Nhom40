@@ -20,6 +20,7 @@ import ReSendEmail from './pages/resend-email';
 import authThunk from './features/auth/auth.service';
 import EditOrder from './pages/orders/edit-order';
 import DetailOrder from './pages/orders/detail-order';
+import Banner from './pages/banner';
 
 function App() {
   const dispatch = useDispatch();
@@ -32,7 +33,6 @@ function App() {
   }, [auth.isLoggedIn, dispatch]);
   useEffect(() => {
     if (auth.isLoggedIn) {
-      console.log('chay');
       dispatch(authThunk.getAllDataAPI());
     }
   }, [auth.isLoggedIn, dispatch]);
@@ -96,6 +96,14 @@ function App() {
               element={
                 <PrivateComponent>
                   <Orders />
+                </PrivateComponent>
+              }
+            />
+            <Route
+              path="/banner"
+              element={
+                <PrivateComponent>
+                  <Banner />
                 </PrivateComponent>
               }
             />

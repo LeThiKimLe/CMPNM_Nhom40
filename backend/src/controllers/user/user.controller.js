@@ -11,7 +11,16 @@
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { User, Category, Product, Color } = require('../../models');
+const {
+  User,
+  Category,
+  Product,
+  Color,
+  Banner,
+  Order,
+  UserAddress,
+  Cart,
+} = require('../../models');
 const {
   ServerError,
   BadRequest,
@@ -32,7 +41,6 @@ const {
 const oneDay = 60 * 60 * 24;
 
 const signup = (req, res) => {
-  console.log(req.body);
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
     if (user) return BadRequest(res, 'Email đã được đăng ký tài khoản');
@@ -106,9 +114,7 @@ const verifyEmail = (req, res) => {
     if (!user) return NotFound(res, 'Tài khoản');
     if (user.verificationToken === token) {
       const now = new Date(Date.now());
-      console.log(user.verifyDate);
-      console.log(now);
-      console.log(user.verifyDate < now);
+
       if (user.verifyDate < now) {
         return BadRequest(res, 'Đường dẫn kích hoạt đã hết hạn!');
       }
@@ -204,7 +210,7 @@ const resetPassword = async (req, res) => {
 
 const showProfile = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId }).select(
-    'email firstName lastName contactNumner profilePicture'
+    'email firstName lastName contactNumber profilePicture'
   );
   return Response(res, { user });
 };
@@ -225,7 +231,6 @@ const uploadImage = async (req, res) => {
 const reSendRefreshToken = async (req, res) => {
   const { userId } = req.body;
   const foundUser = await User.findById(userId);
-  console.log('foundUser', foundUser);
   if (foundUser) {
     jwt.verify(
       foundUser.refreshToken,
@@ -264,13 +269,16 @@ const getAllData = async (req, res) => {
   const listCategory = await Category.find({ isActive: true }).select(
     '_id name slug isActive level parentId'
   );
-
+  const listBanner = await Banner.find({});
   const listProduct = await Product.find({ active: true }).select(
     '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
   );
   const listColor = await Color.find({});
-  return Response(res, { list: [listCategory, listProduct, listColor] });
+  return Response(res, {
+    list: [listCategory, listProduct, listColor, listBanner],
+  });
 };
+
 module.exports = {
   signup,
   signin,

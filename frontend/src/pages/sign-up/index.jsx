@@ -33,6 +33,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
+import SideNavigation from '../../containers/side-navigation';
 function SignUp() {
   const [open, setOpen] = useState(false);
   const handleClose = (event, reason) => {
@@ -90,6 +91,7 @@ function SignUp() {
       <MDBox width="100%" height="100vh" mx="auto">
         <Header />
         <Navbar />
+        <SideNavigation />
         <Grid
           container
           spacing={1}

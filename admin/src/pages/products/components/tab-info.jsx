@@ -45,7 +45,7 @@ const TabInfo = (props) => {
   // * color input
   const removeColorBtnOpen = () => {
     if (!form.getFieldValue('category')) {
-      notification.warn({
+      notification.error({
         message: 'Vui lòng chọn nhãn hiệu',
         placement: 'top',
       });
@@ -56,7 +56,7 @@ const TabInfo = (props) => {
   };
   const addColorBtnOpen = () => {
     if (!form.getFieldValue('category')) {
-      notification.warn({
+      notification.error({
         message: 'Vui lòng chọn nhãn hiệu',
         placement: 'top',
       });
