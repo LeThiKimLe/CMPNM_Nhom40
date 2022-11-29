@@ -80,10 +80,10 @@ const createUser = async (req, res) => {
 
   User.findOne({ email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (user) return BadRequest(res, 'Email already registered');
+    if (user) return BadRequest(res, 'Địa chỉ email đã được đăng ký');
 
     let newUser;
-
+    console.log('new user ', req.body.data);
     // eslint-disable-next-line prefer-const
     newUser = new User({
       ...req.body.data,
@@ -95,7 +95,7 @@ const createUser = async (req, res) => {
     newUser.save(async (error, user) => {
       if (error) return ServerError(res, error.message);
       if (user) {
-        return Create(res, 'Create user successfully');
+        return Create(res, 'Tạo tài khoản thành công!');
       }
     });
   });

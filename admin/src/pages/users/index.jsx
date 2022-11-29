@@ -28,6 +28,7 @@ import userThunk from '../../features/users/user.service';
 import { userActions } from '../../features/users/user.slice';
 import MenuSearch from './components/menu-search';
 import EditUserModel from './components/modal-edit';
+import ConfirmDeleteUser from './components/modal-delete';
 
 const { Title } = Typography;
 function Users() {
@@ -99,13 +100,13 @@ function Users() {
       });
   };
   const onClickBtnDelete = () => {
+    setVisibleDelete(true);
     if (selectedRowKeys.length === 0) {
       notification.error({
         message: 'Vui lòng chỉ chọn một trường để xóa',
         placement: 'top',
       });
-    } else {
-      setVisibleDelete(true);
+      return;
     }
   };
   const onClickBtnEdit = () => {
@@ -135,7 +136,6 @@ function Users() {
       ...userEdit,
     });
   };
-  const onFinishEditHandle = () => {};
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -174,7 +174,7 @@ function Users() {
       .unwrap()
       .then(() => {
         notification.success({ message: 'Tạo tài khoản thành công!' });
-        // formAdd.resetFields();
+        formAdd.resetFields();
         dispatch(userActions.reset());
         setTimeout(() => {
           setVisibleAdd(false);
@@ -275,6 +275,13 @@ function Users() {
   }, [users]);
   return (
     <>
+      <ConfirmDeleteUser
+        open={visibleDelete}
+        title="Xóa người dùng"
+        loading={loading}
+        onCancel={() => setVisibleDelete(false)}
+        handleDelete={handleConfirmDelete}
+      />
       <AddUserModal
         handleCancel={onCancelAdd}
         form={formAdd}
@@ -289,13 +296,7 @@ function Users() {
         form={formEdit}
         onCancel={() => setVisibleEdit(false)}
       />
-      <ConfirmDelete
-        visible={visibleDelete}
-        onCancel={() => setVisibleDelete(false)}
-        loading={loading}
-        handleDelete={handleConfirmDelete}
-        title={'Xóa người dùng'}
-      />
+
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -356,7 +357,7 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
-                  onClick={onClickBtnDelete}
+                  onClick={() => setVisibleDelete(true)}
                   icon={<DeleteOutlined />}
                 >
                   Xóa

@@ -26,21 +26,16 @@ const AddUserModal = (props) => {
   } = props;
   const [value, setValue] = useState('admin');
   const onChange = ({ target: { value } }) => {
-    console.log('radio1 checked', value);
     setValue(value);
   };
   const options = [
     {
-      label: 'Admin',
+      label: 'Quảng trị viên',
       value: 'admin',
     },
     {
-      label: 'User',
+      label: 'Người dùng',
       value: 'user',
-    },
-    {
-      label: 'Shipper',
-      value: 'shipper',
     },
   ];
 
@@ -56,7 +51,7 @@ const AddUserModal = (props) => {
         bodyStyle={{ marginLeft: '30px', marginRight: '30px' }}
         width={600}
         footer={null}
-        visible={visible}
+        open={visible}
         title="Thêm mới tài khoản"
         onCancel={onCancel}
       >
@@ -78,7 +73,7 @@ const AddUserModal = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please input first name!',
+                    message: 'Vui lòng nhập tên!',
                   },
                 ]}
                 hasFeedback
@@ -98,7 +93,7 @@ const AddUserModal = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please input last name!',
+                    message: 'Vui lòng nhập họ!',
                   },
                 ]}
                 hasFeedback
@@ -119,11 +114,11 @@ const AddUserModal = (props) => {
             rules={[
               {
                 required: true,
-                message: 'Please input your email!',
+                message: 'Vui lòng nhập địa chỉ email!',
               },
               {
                 type: 'email',
-                message: 'Please enter a valid email',
+                message: 'Vui lòng nhập đúng địa chỉ email',
               },
             ]}
             hasFeedback
@@ -141,7 +136,11 @@ const AddUserModal = (props) => {
             rules={[
               {
                 required: true,
-                message: 'Please input contact number!',
+                message: 'Vui lòng nhập số điện thoại!',
+              },
+              {
+                message: 'Vui lòng nhập đúng số điện thoại',
+                pattern: new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g),
               },
             ]}
             hasFeedback
@@ -261,7 +260,7 @@ const AddUserModal = (props) => {
                 marginRight: '10px',
               }}
             >
-              Create
+              Tạo
             </Button>
             <Button
               onClick={handleCancel}
@@ -273,7 +272,7 @@ const AddUserModal = (props) => {
                 width: '30%',
               }}
             >
-              Cancel
+              Hủy
             </Button>
           </div>
         </Form>

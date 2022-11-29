@@ -178,7 +178,11 @@ function SignUp() {
                   role="form"
                   justifyContent="space-between"
                 >
-                  <Stack direction="row" spacing={3}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    justifyContent="space-between"
+                  >
                     <MDBox mb={2}>
                       <MDInput
                         required
@@ -188,7 +192,7 @@ function SignUp() {
                         {...register('firstName')}
                         error={errors.firstName ? true : false}
                         label="Tên"
-                        fullWidth
+                        sx={{ width: '200px' }}
                       />
                       <Typography
                         fontSize="14px"
@@ -207,7 +211,7 @@ function SignUp() {
                         error={errors.lastName ? true : false}
                         type="text"
                         label="Họ"
-                        fullWidth
+                        sx={{ width: '200px' }}
                       />
                       <Typography
                         variant="inherit"
