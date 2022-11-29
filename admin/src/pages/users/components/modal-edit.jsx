@@ -1,4 +1,15 @@
-import { Modal, Form, Button, Upload, Input, Spin, Row, Col, Radio, Typography } from 'antd';
+import {
+  Modal,
+  Form,
+  Button,
+  Upload,
+  Input,
+  Spin,
+  Row,
+  Col,
+  Radio,
+  Typography,
+} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
@@ -11,19 +22,14 @@ const EditUserModel = (props) => {
   };
   const options = [
     {
-      label: 'Admin',
+      label: 'Quảng trị viên',
       value: 'admin',
     },
     {
-      label: 'User',
+      label: 'Người dùng',
       value: 'user',
     },
-    {
-      label: 'Shipper',
-      value: 'shipper',
-    },
   ];
-
   return (
     <div
       style={{
@@ -32,8 +38,21 @@ const EditUserModel = (props) => {
         justifyContent: 'center',
       }}
     >
-      <Modal bodyStyle={{ marginLeft: '30px', marginRight: '30px' }} width={600} footer={null} visible={visible} title="Create New User" onCancel={onCancel}>
-        <Form form={form} onFinish={onFinish} layout="vertical" className="row-col" autoComplete="off">
+      <Modal
+        bodyStyle={{ marginLeft: '30px', marginRight: '30px' }}
+        width={600}
+        footer={null}
+        open={visible}
+        title="Create New User"
+        onCancel={onCancel}
+      >
+        <Form
+          form={form}
+          onFinish={onFinish}
+          layout="vertical"
+          className="row-col"
+          autoComplete="off"
+        >
           <Row gutter={[16, 8]}>
             <Col span={12}>
               {' '}
@@ -50,7 +69,10 @@ const EditUserModel = (props) => {
                 ]}
                 hasFeedback
               >
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Tên" />
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Tên"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -67,7 +89,10 @@ const EditUserModel = (props) => {
                 ]}
                 hasFeedback
               >
-                <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Họ" />
+                <Input
+                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                  placeholder="Họ"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -89,7 +114,10 @@ const EditUserModel = (props) => {
             ]}
             hasFeedback
           >
-            <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Email" />
+            <Input
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Email"
+            />
           </Form.Item>
           <Form.Item
             className="username"
@@ -104,17 +132,47 @@ const EditUserModel = (props) => {
             ]}
             hasFeedback
           >
-            <Input style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} placeholder="Số điện thoại" />
+            <Input
+              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+              placeholder="Số điện thoại"
+            />
           </Form.Item>
-          <Form.Item className="username" label="Quyền" name="roles" style={{ fontWeight: '600' }} hasFeedback>
-            <Radio.Group onChange={onChange} defaultValue="admin" options={options} optionType="button" />
+          <Form.Item
+            className="username"
+            label="Quyền"
+            name="roles"
+            style={{ fontWeight: '600' }}
+            hasFeedback
+          >
+            <Radio.Group
+              onChange={onChange}
+              defaultValue="admin"
+              options={options}
+              optionType="button"
+            />
           </Form.Item>
-          <Form.Item className="username" label="Ngày tạo" name="createdAt" style={{ fontWeight: '600' }} hasFeedback>
-            <Typography.Title level={5}>{new Date(createdAt).toLocaleDateString()}</Typography.Title>
+          <Form.Item
+            className="username"
+            label="Ngày tạo"
+            name="createdAt"
+            style={{ fontWeight: '600' }}
+            hasFeedback
+          >
+            <Typography.Title level={5}>
+              {new Date(createdAt).toLocaleDateString()}
+            </Typography.Title>
           </Form.Item>
-          <Form.Item className="username" label="Avatar" style={{ fontWeight: '600' }} name="image">
+          <Form.Item
+            className="username"
+            label="Avatar"
+            style={{ fontWeight: '600' }}
+            name="image"
+          >
             <Upload accept=".png, .jpeg, .jpg">
-              <Button style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }} icon={<UploadOutlined />}>
+              <Button
+                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                icon={<UploadOutlined />}
+              >
                 Click to Upload
               </Button>
             </Upload>
@@ -136,10 +194,29 @@ const EditUserModel = (props) => {
               justifyContent: 'center',
             }}
           >
-            <Button htmlType="submit" style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#40E0D0', color: 'white', width: '30%', marginRight: '10px' }}>
+            <Button
+              htmlType="submit"
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#40E0D0',
+                color: 'white',
+                width: '30%',
+                marginRight: '10px',
+              }}
+            >
               Edit
             </Button>
-            <Button onClick={handleCancel} style={{ border: '1px solid #C0C0C0', borderRadius: '10px', background: '#FF6347', color: 'white', width: '30%' }}>
+            <Button
+              onClick={handleCancel}
+              style={{
+                border: '1px solid #C0C0C0',
+                borderRadius: '10px',
+                background: '#FF6347',
+                color: 'white',
+                width: '30%',
+              }}
+            >
               Cancel
             </Button>
           </div>

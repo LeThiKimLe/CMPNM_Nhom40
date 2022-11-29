@@ -337,7 +337,7 @@ function Products() {
         onCancel={() => setVisibleDelete(false)}
         loading={product.loading}
         handleDelete={handleConfirmDelete}
-        title={'Xóa thương hiệu'}
+        title={'Xóa sản phẩm'}
       />
       <div className="tabled">
         <Row gutter={[24, 0]}>

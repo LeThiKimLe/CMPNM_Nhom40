@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MDBox from '../../components/MDBox';
 import CategoryItem from '../../components/CategoryItem';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -17,20 +17,29 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useSelector } from 'react-redux';
 
 const SideNavigation = () => {
+  const data = useSelector((state) => state.data);
+  const { categories } = data;
   const [icon, setIcon] = useState(false);
-  const categories =
+  const categoriesLocal =
     localStorage.getItem('categories') == null
       ? null
       : JSON.parse(localStorage.getItem('categories'));
-  let categoryLevelOne = categories.filter((item) => item.level === 1);
-  let categoryCustom = categoryLevelOne.map((item) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  let categoryList = [];
+  if (!categoriesLocal) {
+    categoryList = categories;
+  } else {
+    categoryList = categoriesLocal;
+  }
+  const categoryOneList = categoryList.filter((item) => item.level === 1);
+
+  const categoryCustom = categoryOneList.map((item) => {
     return {
       key: item._id,
       name: item.name,
       value: item._id,
     };
   });
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
@@ -43,6 +52,7 @@ const SideNavigation = () => {
     setAnchorEl(null);
     setIcon(false);
   }
+
   return (
     <MDBox
       color="dark"

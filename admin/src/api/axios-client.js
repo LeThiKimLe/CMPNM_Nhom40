@@ -27,6 +27,7 @@ axiosClient.interceptors.response.use(
   async function (error) {
     const originalConfig = error.config;
     const user = TokenService.getUser();
+    console.log("user ", user)
     if (originalConfig.url !== '/admin/signin' && error.response && user) {
       // Access Token was expired
       if (error.response.status === 401 && !originalConfig._retry) {
