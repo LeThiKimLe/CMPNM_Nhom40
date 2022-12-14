@@ -8,6 +8,8 @@ import {
   MenuItem,
   Badge,
 } from '@mui/material';
+import { notification } from 'antd';
+
 import Grid from '@mui/material/Unstable_Grid2';
 import React, { useState, useEffect } from 'react';
 import MDBox from '../../components/MDBox';
@@ -49,6 +51,10 @@ const Navbar = () => {
     dispatch(userActions.signout());
     dispatch(cartActions.reset());
     dispatch(addressActions.reset());
+    notification.success({
+      message: 'Đăng xuất thành công!',
+      placement: 'top',
+    });
     navigate('/');
   };
   useEffect(() => {

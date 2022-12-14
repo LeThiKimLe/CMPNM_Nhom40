@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import dataThunk from './data.service';
+import _ from 'lodash';
 import {
   getListCategory,
   getAllGroupProducts,
-  getShuffledArr,
 } from '../../utils/custom-products';
 //
 
@@ -41,7 +41,10 @@ const dataSlice = createSlice({
         );
         state.loading = false;
         state.categoryGroups = listCategory;
-        state.productGroups = getShuffledArr(allGroupProducts);
+        state.productGroups = _.sampleSize(
+          allGroupProducts.slice(),
+          allGroupProducts.length
+        );
         state.categories = action.payload.list[0];
         localStorage.setItem(
           'categories',

@@ -30,11 +30,9 @@ const authSlice = createSlice({
     isUserLoggedIn: {
       reducer: (state, action) => {
         const { adminData, accessToken } = action.payload;
-        state.logging = false;
-        state.user = action.payload.adminData;
-        state.token = action.payload.accessToken;
+        state.user = adminData;
+        state.token = accessToken;
 
-        state.logging = false;
         if (!accessToken || !adminData) {
           state.isLoggedIn = false;
         } else {

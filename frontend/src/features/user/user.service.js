@@ -125,11 +125,15 @@ const getDataUserAPI = createAsyncThunk('/get-data-user', async (thunkAPI) => {
 });
 const getProductsOptionAPI = createAsyncThunk(
   '/get-products',
-  async (thunkAPI) => {
+  async (searchModel, thunkAPI) => {
     try {
-      const response = await axiosClient.get('/get-products', {
-        withCredentials: true,
-      });
+      const response = await axiosClient.post(
+        '/get-products',
+        JSON.stringify({ data: searchModel }),
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     } catch (error) {
       const message =

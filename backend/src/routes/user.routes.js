@@ -27,7 +27,7 @@ router.post('/refresh-token', reSendRefreshToken);
 router.get('/get-all-data', getAllData);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
-router.get('/get-products', getProductsOption);
+router.post('/get-products', getProductsOption);
 router.use(authenticateUser, userCheckRole);
 router.post('/cancel-order', cancelOrder);
 router.get('/get-profile', showProfile);

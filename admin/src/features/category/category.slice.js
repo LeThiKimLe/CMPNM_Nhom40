@@ -42,6 +42,17 @@ const categorySlice = createSlice({
         state.error = true;
         state.getLoading = false;
       })
+      .addCase(categoryThunk.getAllAfterHandle.pending, (state) => {
+        state.getLoading = true;
+      })
+      .addCase(categoryThunk.getAllAfterHandle.fulfilled, (state, action) => {
+        state.getLoading = false;
+        state.categories = action.payload.list;
+      })
+      .addCase(categoryThunk.getAllAfterHandle.rejected, (state, action) => {
+        state.error = true;
+        state.getLoading = false;
+      })
       .addCase(categoryThunk.deleteCategoryAPI.pending, (state) => {
         state.loading = true;
       })

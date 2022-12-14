@@ -30,6 +30,8 @@ import OrderConfirmation from './pages/checkout/order-confirmation';
 import OrderDetails from './pages/user/order-detail';
 import addressThunk from './features/address/address.service';
 import AllProductPage from './pages/all-products';
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:3000/');
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -115,5 +117,6 @@ function App() {
     </>
   );
 }
+export const socketApp = socket;
 
 export default App;

@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react';
-import { Container, Paper, Stack, Divider, IconButton } from '@mui/material';
+import { Container, Paper, Stack, Divider } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
@@ -12,8 +12,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { formatThousand } from '../../utils/custom-price';
 import emptyCart from '../../assets/images/empty-cart.png';
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../../containers/footer';
 import cartThunk from '../../features/cart/cart.service';
+import { notification } from 'antd';
 const columns = [
   {
     key: 'name',
@@ -66,18 +66,35 @@ const CartPage = () => {
     localStorage.getItem('cartItems') == null
       ? null
       : JSON.parse(localStorage.getItem('cartItems'));
+  const [getLoading, setGetLoading] = useState(false);
   const [items, setItems] = useState(
     cartItemsLocal === null ? [] : cartItemsLocal
   );
   const handleDelete = (id) => {
+    setGetLoading(true);
     if (user.isLoggedIn) {
       dispatch(cartThunk.deleteCartItemAPI(id))
         .unwrap()
         .then(() => {
-          dispatch(cartThunk.getAllItemsAPI());
+          return dispatch(cartThunk.getAllItemsAPI()).unwrap();
+        })
+        .then(() => {
+          notification.success({
+            message: 'Xóa sản phẩm thành công!',
+            placement: 'top',
+          });
+          setGetLoading(false);
         });
     } else {
-      dispatch(cartActions.deleteCartItemLocal({ productId: id }));
+      console.log(id);
+      dispatch(cartActions.deleteCartItemLocal(id));
+      notification.success({
+        message: 'Xóa sản phẩm thành công!',
+        placement: 'top',
+      });
+      setTimeout(() => {
+        setGetLoading(false);
+      }, 1000);
     }
   };
   const handleCheckOut = () => {
@@ -90,7 +107,7 @@ const CartPage = () => {
   useEffect(() => {
     setItems(cartItems);
   }, [cartItems]);
-  if (cart.getLoading) {
+  if (getLoading) {
     return (
       <MDBox
         color="#000000"
@@ -293,7 +310,12 @@ const CartPage = () => {
           </Grid>
         ) : (
           <Grid item xs={11} sm={9} md={7} lg={6} xl={5}>
-            <MDBox justifyContent="center" alignItems="center" display="flex">
+            <MDBox
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+              sx={{ marginTop: '50px' }}
+            >
               <Stack
                 direction="column"
                 justifyContent="center"
@@ -316,7 +338,7 @@ const CartPage = () => {
                   fontSize="1rem"
                   color={'dark'}
                   component={Link}
-                  to="/notification"
+                  to="/products"
                 >
                   Tiếp tục mua hàng
                 </MDButton>

@@ -25,7 +25,8 @@ import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
 import { getBase64 } from '../../utils';
-import ConfirmDelete from '../../components/ui/modal/confirm-delete';
+import ConfirmDeleteCategories from './components/confirm-delete';
+
 const columns = [
   {
     title: 'Tên',
@@ -67,8 +68,7 @@ function ListCategories() {
   // modal visible
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
-  const auth = useSelector((state) => state.auth);
-  const { categories } = auth.data;
+  const { categories } = category;
 
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
@@ -133,7 +133,6 @@ function ListCategories() {
       const picture = await getBase64(fileList[0].originFileObj);
       categoryData.picture = picture;
     }
-    setLoading(true);
     dispatch(categoryThunk.createAPI(categoryData))
       .unwrap()
       .then(() => {
@@ -142,16 +141,14 @@ function ListCategories() {
         dispatch(categoryActions.reset());
         setTimeout(() => {
           setVisibleAdd(false);
-          dispatch(categoryThunk.getAllAPI())
+          dispatch(categoryThunk.getAllAfterHandle())
             .unwrap()
             .then((value) => {
               setListCategory(value.list);
-              setLoading(false);
             });
         }, 1000);
       })
       .catch((error) => {
-        setLoading(false);
         formAdd.setFields([
           {
             name: 'name',
@@ -183,7 +180,11 @@ function ListCategories() {
         });
         setTimeout(() => {
           setVisibleDelete(false);
-          dispatch(categoryThunk.getAllAPI());
+          dispatch(categoryThunk.getAllAfterHandle())
+            .unwrap()
+            .then((value) => {
+              setListCategory(value.list);
+            });
         }, 1000);
       })
       .catch((error) => {
@@ -192,19 +193,25 @@ function ListCategories() {
   };
 
   useEffect(() => {
-    if (listCategory.length === 0) {
+    setLoading(true);
+    if (Object.keys(listCategory).length === 0) {
       dispatch(categoryThunk.getAllAPI())
         .unwrap()
         .then((value) => {
           setListCategory(value.list);
-          setLoading(false);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
         });
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   }, [dispatch, listCategory]);
   //* watch for changes to the category.categoryies after get all categories
   useEffect(() => {
     if (listCategory.length > 0) {
-      setLoading(false);
       const listParent = listCategory.filter(
         (cate) => cate.level === 1 || cate.level === 2
       );
@@ -283,7 +290,7 @@ function ListCategories() {
       <AddCategoryModal
         handleCancel={handleCancel}
         form={formAdd}
-        loading={loading}
+        loading={category.loading}
         onFinish={handleAddCategory}
         visible={visibleAdd}
         setListCategory={setListCategory}
@@ -299,12 +306,12 @@ function ListCategories() {
         visible={visibleEdit}
         onCancel={() => setVisibleEdit(false)}
       />
-      <ConfirmDelete
-        visible={visibleDelete}
+      <ConfirmDeleteCategories
+        open={visibleDelete}
+        title="Xóa nhãn hiệu"
+        loading={category.loading}
         onCancel={() => setVisibleDelete(false)}
-        loading={loading}
         handleDelete={handleConfirmDelete}
-        title={'Xóa thương hiệu'}
       />
       <div className="tabled">
         <Row gutter={[24, 0]}>

@@ -37,6 +37,7 @@ const {
   createRefreshToken,
   Unauthenticated,
 } = require('../../utils');
+const redisClient = require('../../connections/cachingRedis');
 // time expire token send email
 const oneDay = 60 * 60 * 24;
 
@@ -83,7 +84,10 @@ const signup = (req, res) => {
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).exec();
-  if (!user) return NotFound(res, 'Email chưa được đăng ký tài khoản');
+  if (!user) {
+    return BadRequest(res, 'Email chưa được đăng ký tài khoản');
+  }
+
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     return BadRequest(res, 'Vui lòng xem lại mật khẩu');
@@ -101,7 +105,7 @@ const signin = async (req, res) => {
   await user.save();
   // Creates Secure Cookie with refresh token
 
-  return Response(res, {
+  Response(res, {
     userData,
     accessToken,
   });
@@ -115,7 +119,7 @@ const verifyEmail = (req, res) => {
     if (user.verificationToken === token) {
       const now = new Date(Date.now());
 
-      if (user.verifyDate < now) {
+      if (user.verifyDate >= now) {
         return BadRequest(res, 'Đường dẫn kích hoạt đã hết hạn!');
       }
       user.isVerified = true;
@@ -142,21 +146,25 @@ const verifyEmail = (req, res) => {
  */
 const reSendVerifyEmail = async (req, res) => {
   const email = req.body.data;
-  const verificationToken = crypto.randomBytes(40).toString('hex');
-  const user = await User.findOne({ email });
-
-  user.verifyDate = new Date(Date.now() + oneDay);
-  user.verificationToken = verificationToken;
-  user.save(async (error, data) => {
+  User.findOne({ email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (data) {
-      await sendVerificationEmail({
-        firstName: user.firstName,
-        email,
-        verificationToken,
-      });
-      return Response(res, 'Success! check email to verify account');
-    }
+    if (!user) return NotFound(res, 'Tài khoản');
+    const verificationToken = crypto.randomBytes(40).toString('hex');
+    const newUser = await User.findOne({ email });
+
+    newUser.verifyDate = new Date(Date.now() + oneDay);
+    newUser.verificationToken = verificationToken;
+    newUser.save(async (error, data) => {
+      if (error) return ServerError(res, error.message);
+      if (data) {
+        await sendVerificationEmail({
+          firstName: newUser.firstName,
+          email,
+          verificationToken,
+        });
+        return Response(res, 'Success! check email to verify account');
+      }
+    });
   });
 };
 
@@ -256,27 +264,53 @@ const reSendRefreshToken = async (req, res) => {
     );
   }
 };
-const getDetailsProduct = (listDetail, id) => {
-  let details;
-  listDetail.map((item) => {
-    if (item._id === id) {
-      details = item;
-    }
-  });
-  return details;
-};
+
 const getAllData = async (req, res) => {
-  const listCategory = await Category.find({ isActive: true }).select(
-    '_id name slug isActive level parentId'
-  );
-  const listBanner = await Banner.find({});
-  const listProduct = await Product.find({ active: true }).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
-  );
-  const listColor = await Color.find({});
-  return Response(res, {
-    list: [listCategory, listProduct, listColor, listBanner],
-  });
+  let listCategory = [];
+  let listBanner = [];
+  let listProduct = [];
+  let listColor = [];
+  try {
+    const cachedListCategory = await redisClient.get('categories');
+    const cachedListBanner = await redisClient.get('banners');
+    const cachedListProduct = await redisClient.get('products');
+    const cachedListColor = await redisClient.get('colors');
+    if (cachedListCategory) {
+      listCategory = JSON.parse(cachedListCategory);
+    } else {
+      listCategory = await Category.find({}).select(
+        '_id name slug isActive level parentId'
+      );
+      await redisClient.set('categories', JSON.stringify(listCategory));
+    }
+    if (cachedListBanner) {
+      listBanner = JSON.parse(cachedListBanner);
+    } else {
+      listBanner = await Banner.find({});
+      await redisClient.set('banners', JSON.stringify(listBanner));
+    }
+    if (cachedListProduct) {
+      isCached = true;
+      listProduct = JSON.parse(cachedListProduct);
+    } else {
+      listProduct = await Product.find({}).select(
+        '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
+      );
+      await redisClient.set('products', JSON.stringify(listProduct));
+    }
+
+    if (cachedListColor) {
+      listColor = JSON.parse(cachedListColor);
+    } else {
+      listColor = await Color.find({});
+      await redisClient.set('colors', JSON.stringify(listColor));
+    }
+    Response(res, {
+      list: [listCategory, listProduct, listColor, listBanner],
+    });
+  } catch (error) {
+    ServerError(res);
+  }
 };
 
 module.exports = {

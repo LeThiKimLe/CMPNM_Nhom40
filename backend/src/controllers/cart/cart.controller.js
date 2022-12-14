@@ -25,12 +25,10 @@ const getAllItems = (req, res) => {
       '_id name salePrice regularPrice productPictures detailsProduct color category'
     )
     .exec((error, cart) => {
-      console.log(cart);
       if (error) return res.status(400).json({ error });
       if (cart) {
         let cartItems = [];
         cart.cartItems.forEach((item, index) => {
-          console.log(item);
           const newCartItem = {
             _id: item.product._id.toString(),
             name: item.product.name,

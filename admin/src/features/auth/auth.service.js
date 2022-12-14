@@ -48,7 +48,6 @@ const getAllDataAPI = createAsyncThunk(
       const response = await axiosClient.get('/admin/get-all-data', {
         withCredentials: true,
       });
-      console.log(response);
       return response.data;
     } catch (error) {
       const message =

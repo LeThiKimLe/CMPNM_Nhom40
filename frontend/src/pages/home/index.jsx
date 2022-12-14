@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Box, Paper, Stack } from '@mui/material';
-
+import { Link } from 'react-router-dom';
 import ProductCard from '../../components/ProductItem';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -58,9 +58,15 @@ Item.propTypes = {
 };
 
 const Home = () => {
-  const navigate = useNavigate();
   const data = useSelector((state) => state.data);
   const { productGroups, banners } = data;
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }, []);
 
   return (
     <MDBox
@@ -79,7 +85,7 @@ const Home = () => {
           backgroundColor: 'Light',
         }}
       >
-        {data.loading ? (
+        {loading ? (
           <MDBox
             display="flex"
             justifyContent="center"
@@ -303,12 +309,13 @@ const Home = () => {
                 Sản phẩm giảm giá
               </MDTypography>
               <Stack
+                component={Link}
                 direction="row"
                 alignItems="center"
                 display="flex"
                 spacing={0.5}
                 sx={{ cursor: 'pointer' }}
-                onClick={() => navigate('/products')}
+                to="/products"
               >
                 <MDTypography
                   sx={{

@@ -8,4 +8,14 @@ export const getBase64 = (file) =>
 export const formatThousand = (num) => {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
+export const getListProductSold = (products) => {
+  let newListProduct = [];
+  products.map((item, index) => {
+    if (item.quantitySold > 0) {
+      newListProduct.push(item);
+    }
+  });
+  console.log('new list product sold');
+  return newListProduct;
+};
 export * from './private-component';

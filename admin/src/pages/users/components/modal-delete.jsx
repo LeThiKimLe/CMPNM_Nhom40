@@ -18,7 +18,7 @@ const ConfirmDeleteUser = (props) => {
         onCancel={onCancel}
         width={500}
       >
-        <Result status="warning" title="Bạn có chắc chăn muốn xóa không!" />
+        <Result status="warning" title="Bạn có chắc chắn muốn xóa không!" />
         <div
           style={{
             display: 'flex',

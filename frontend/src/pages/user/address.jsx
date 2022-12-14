@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, Stack, Chip, CircularProgress } from '@mui/material';
+import { Divider, Stack, CircularProgress } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
 import MDButton from '../../components/MDButton';
 import MDBox from '../../components/MDBox';
@@ -9,7 +9,6 @@ import UserPage from './user-page';
 import { useDispatch, useSelector } from 'react-redux';
 import addressThunk from '../../features/address/address.service';
 import AddressItem from './address-item';
-import { Link } from 'react-router-dom';
 const AddressPage = () => {
   const dispatch = useDispatch();
   const addressUser = useSelector((state) => state.addressUser);

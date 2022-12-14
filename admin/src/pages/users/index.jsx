@@ -12,6 +12,7 @@ import {
   Typography,
   Switch,
   Spin,
+  Tag,
 } from 'antd';
 import {
   PlusOutlined,
@@ -21,7 +22,6 @@ import {
 } from '@ant-design/icons';
 import avatar from '../../assets/images/avatar.jpg';
 import AddUserModal from './components/modal-add';
-import ConfirmDelete from '../../components/ui/modal/confirm-delete';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBase64 } from '../../utils';
 import userThunk from '../../features/users/user.service';
@@ -34,18 +34,18 @@ const { Title } = Typography;
 function Users() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { users, getLoading, loading } = user;
+  const { loading } = user;
+  const [listUser, setListUser] = useState(user.users);
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [fileList, setFileList] = useState([]);
   const [data, setData] = useState([]);
+  const [getLoading, setGetLoading] = useState(true);
   // form
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
-  const handleChangeUpload = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+
   // table code start
   const columns = [
     {
@@ -82,7 +82,6 @@ function Users() {
   };
   // *delete button handle
   const handleConfirmDelete = () => {
-    console.log(selectedRowKeys);
     dispatch(userThunk.deleteUsersAPI(selectedRowKeys))
       .unwrap()
       .then(() => {
@@ -91,8 +90,14 @@ function Users() {
           placement: 'top',
         });
         setTimeout(() => {
+          setGetLoading(true);
           setVisibleDelete(false);
-          dispatch(userThunk.getAllUserAPI());
+          dispatch(userThunk.getAllUserHandleAPI())
+            .unwrap()
+            .then((value) => {
+              setGetLoading(false);
+              setListUser(value.list);
+            });
         }, 1000);
       })
       .catch((error) => {
@@ -100,13 +105,13 @@ function Users() {
       });
   };
   const onClickBtnDelete = () => {
-    setVisibleDelete(true);
     if (selectedRowKeys.length === 0) {
       notification.error({
         message: 'Vui lòng chỉ chọn một trường để xóa',
         placement: 'top',
       });
-      return;
+    } else {
+      setVisibleDelete(true);
     }
   };
   const onClickBtnEdit = () => {
@@ -154,7 +159,10 @@ function Users() {
     }
     return false;
   };
-
+  const onCancelAddUser = () => {
+    setVisibleAdd(false);
+    // formAdd.resetFields();
+  };
   // todo create new User
   const handleAddUser = async (values) => {
     let userData = {};
@@ -170,15 +178,23 @@ function Users() {
       delete values.image;
       userData = { ...values };
     }
+
     dispatch(userThunk.createUserAPI(userData))
       .unwrap()
       .then(() => {
         notification.success({ message: 'Tạo tài khoản thành công!' });
         formAdd.resetFields();
         dispatch(userActions.reset());
+
         setTimeout(() => {
+          setGetLoading(true);
           setVisibleAdd(false);
-          dispatch(userThunk.getAllUserAPI());
+          dispatch(userThunk.getAllUserHandleAPI())
+            .unwrap()
+            .then((value) => {
+              setGetLoading(false);
+              setListUser(value.list);
+            });
         }, 1000);
       })
       .catch((error) => {
@@ -198,14 +214,25 @@ function Users() {
   };
   //* get all users initial
   useEffect(() => {
-    if (users.length === 0) {
-      dispatch(userThunk.getAllUserAPI());
+    setGetLoading(true);
+    if (Object.keys(listUser).length === 0) {
+      dispatch(userThunk.getAllUserAPI())
+        .unwrap()
+        .then((value) => {
+          setGetLoading(false);
+          setListUser(value.list);
+        });
+    } else {
+      setGetLoading(false);
+      setTimeout(() => {
+        setGetLoading(false);
+      }, 2000);
     }
-  }, [dispatch, users]);
+  }, [listUser, dispatch]);
   useEffect(() => {
-    if (users.length > 0) {
+    if (listUser.length > 0) {
       setData(
-        users.map((user) => {
+        listUser.map((user) => {
           return {
             key: user._id,
             name: (
@@ -239,7 +266,11 @@ function Users() {
               <>
                 <div className="author-info">
                   <Typography.Title level={5}>
-                    {user.roles === 'user' ? 'Người dùng' : 'Quản trị viên'}
+                    {user.roles === 'user' ? (
+                      <Tag color="orange">Người dùng</Tag>
+                    ) : (
+                      <Tag color="blue">Quản trị viên</Tag>
+                    )}
                   </Typography.Title>
                 </div>
               </>
@@ -272,7 +303,7 @@ function Users() {
     } else {
       setData([]);
     }
-  }, [users]);
+  }, [listUser]);
   return (
     <>
       <ConfirmDeleteUser
@@ -288,7 +319,7 @@ function Users() {
         loading={loading}
         onFinish={handleAddUser}
         visible={visibleAdd}
-        onCancel={() => setVisibleAdd(false)}
+        onCancel={onCancelAddUser}
         beforeUpload={beforeUploadHandler}
       />
       <EditUserModel
@@ -347,7 +378,7 @@ function Users() {
                   onClick={onClickBtnEdit}
                   icon={<EditOutlined />}
                 >
-                  Chỉnh sửa
+                  Chi tiết
                 </Button>
               </Col>
               <Col>
@@ -357,7 +388,7 @@ function Users() {
                     color: 'white',
                     borderRadius: '10px',
                   }}
-                  onClick={() => setVisibleDelete(true)}
+                  onClick={onClickBtnDelete}
                   icon={<DeleteOutlined />}
                 >
                   Xóa

@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import {
   Container,
   Divider,
@@ -10,7 +9,9 @@ import {
   Input,
   FormGroup,
   FormControlLabel,
+  tableFooterClasses,
 } from '@mui/material';
+import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
@@ -25,6 +26,8 @@ import {
   getShuffledArr,
   getListProductByCategory,
 } from '../../utils/custom-products';
+import { getAllCategorySelect } from '../../utils/custome-category';
+import ProductPagination from './pagination';
 const typePhone = [
   {
     name: 'iOS',
@@ -75,6 +78,11 @@ const storages = [
 ];
 const sortOptions = [
   {
+    key: 'Nổi bật',
+    name: 'Nổi bật',
+    value: 2,
+  },
+  {
     key: '% giảm',
     name: '% giảm',
     value: 0,
@@ -88,11 +96,6 @@ const sortOptions = [
     key: 'Giá tăng dần',
     name: 'Giá tăng dần',
     value: 1,
-  },
-  {
-    key: 'Nổi bật',
-    name: 'Nổi bật',
-    value: '2',
   },
 ];
 function Item(props) {
@@ -121,7 +124,7 @@ function Item(props) {
     />
   );
 }
-
+const pageSize = 12;
 const AllProductPage = () => {
   const dispatch = useDispatch();
   const categories = JSON.parse(localStorage.getItem('categories'));
@@ -133,12 +136,19 @@ const AllProductPage = () => {
   const [osOption, setOsOption] = useState([]);
   const [ramOption, setRamOption] = useState([]);
   const [storageOption, setStorageOption] = useState([]);
-  const [sortOption, setSortOption] = useState('Giá tăng dần');
+  const [sortOption, setSortOption] = useState('Nổi bật');
   const [sortOptionValue, setSortOptionValue] = useState(2);
+  const [listProductGroup, setListProductGroup] = useState([]);
   const [listProduct, setListProduct] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState(null);
+  const [checkProduct, setCheckProduct] = useState(1);
+  const [pagination, setPagination] = useState({
+    count: 0,
+    from: 0,
+    to: pageSize,
+  });
+  useEffect(() => {});
   const handleChangeSort = (e) => {
     sortOptions.map((item) => {
       if (item.key === e.target.value) {
@@ -199,29 +209,46 @@ const AllProductPage = () => {
       setMaxPriceInput(newValue);
     }
   };
-
+  const handlePageChange = (event, page) => {
+    const from = (page - 1) * pageSize;
+    const to = (page - 1) * pageSize + pageSize;
+    setPagination({ ...pagination, from: from, to: to });
+  };
   useEffect(() => {
+    setLoading(true);
     if (
       Object.keys(osOption).length === 0 &&
       Object.keys(ramOption).length === 0 &&
       Object.keys(storageOption).length === 0
     ) {
-      setListProduct(
-        getListProductByCategory(productGroups, categoryOption, sortOptionValue)
+      const newListGroup = getListProductByCategory(
+        productGroups,
+        categoryOption,
+        sortOptionValue
       );
+      setAmount(newListGroup.length);
+      setCheckProduct(1);
+      setListProductGroup(newListGroup);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     } else {
-      const searchModal = {
+      const searchModel = {
         category: categoryOption,
         os: osOption,
         ram: ramOption,
         storage: storageOption,
         sort: sortOptionValue,
       };
-      dispatch(userThunk.getProductsOptionAPI())
+      setCheckProduct(2);
+
+      dispatch(userThunk.getProductsOptionAPI(searchModel))
         .unwrap()
         .then((value) => {
+          setAmount(value.list.length);
+          const newListProduct = getShuffledArr(value.list);
+          setListProduct(newListProduct);
           setLoading(false);
-          setListProduct(value.list);
         });
     }
   }, [
@@ -234,6 +261,7 @@ const AllProductPage = () => {
     productGroups,
     sortOption,
   ]);
+
   return (
     <MDBox
       color="#000000"
@@ -492,7 +520,7 @@ const AllProductPage = () => {
                       color: '#2b3445',
                     }}
                   >
-                    48 điện thoại
+                    {!amount ? '0 sản phẩm' : `${amount} sản phẩm`}
                   </MDTypography>
                   <Select
                     sx={{ width: '150px', height: '35px' }}
@@ -509,49 +537,102 @@ const AllProductPage = () => {
                   </Select>
                 </Stack>
               </MDBox>
-              <MDBox
-                variant="contained"
-                borderRadius="lg"
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                }}
-              >
-                {listProduct.length > 0
-                  ? listProduct.map((item, index) => {
-                      if (index < 15) {
-                        return (
-                          <Item key={index}>
-                            <ProductCard
-                              index={item.category}
-                              rams={item.rams}
-                              storages={item.storages}
-                              category={item.category}
-                              categoryOne={item.categoryOne}
-                              categoryOneName={item.categoryOneName}
-                              options={item.options}
-                              productSelected={item.productSelected}
-                              productGroup={item.products}
-                              colors={item.colors}
-                              groupColors={item.groupColors}
-                            />
-                          </Item>
-                        );
-                      }
-                    })
-                  : null}
-                {/* {listProduct.length > 0
-                  ? listProduct.map((item, index) => {
-                      if (index < 12) {
-                        return (
-                          <Item key={index}>
-                            <ProductCard2 index={item._id} item={item} />
-                          </Item>
-                        );
-                      }
-                    })
-                  : null} */}
-              </MDBox>
+              {loading ? (
+                <MDBox
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  p={2}
+                >
+                  <CircularProgress />
+                </MDBox>
+              ) : Object.keys(osOption).length === 0 &&
+                Object.keys(ramOption).length === 0 &&
+                Object.keys(storageOption).length === 0 &&
+                Array.isArray(listProductGroup) ? (
+                <MDBox
+                  variant="contained"
+                  borderRadius="lg"
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                  }}
+                >
+                  {listProductGroup.map((item, index) => {
+                    if (index < 15) {
+                      return (
+                        <Item key={index}>
+                          <ProductCard
+                            index={item.category}
+                            rams={item.rams}
+                            storages={item.storages}
+                            category={item.category}
+                            categoryOne={item.categoryOne}
+                            categoryOneName={item.categoryOneName}
+                            options={item.options}
+                            productSelected={item.productSelected}
+                            productGroup={item.products}
+                            colors={item.colors}
+                            groupColors={item.groupColors}
+                          />
+                        </Item>
+                      );
+                    }
+                  })}
+                </MDBox>
+              ) : Object.keys(osOption).length === 0 &&
+                Object.keys(ramOption).length === 0 &&
+                Object.keys(storageOption).length === 0 &&
+                Object.keys(listProductGroup).length === 0 ? (
+                <MDBox
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  p={2}
+                >
+                  <MDTypography sx={{ color: '#111111' }}>
+                    Không tìm thấy sản phẩm
+                  </MDTypography>
+                </MDBox>
+              ) : Object.keys(listProduct).length === 0 ? (
+                <MDBox
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  p={2}
+                >
+                  <MDTypography sx={{ color: '#111111' }}>
+                    Không tìm thấy sản phẩm
+                  </MDTypography>
+                </MDBox>
+              ) : Array.isArray(listProduct) ? (
+                <MDBox
+                  variant="contained"
+                  borderRadius="lg"
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                  }}
+                >
+                  {listProduct.map((item, index) => {
+                    if (index < 12) {
+                      return (
+                        <Item key={index}>
+                          <ProductCard2 index={item._id} item={item} />
+                        </Item>
+                      );
+                    }
+                  })}
+                </MDBox>
+              ) : null}
+              <Stack>
+                {amount && !loading ? (
+                  <ProductPagination
+                    count={Math.ceil(pagination.count / pageSize)}
+                    onChange={handlePageChange}
+                  />
+                ) : null}
+              </Stack>
             </Grid>
           </Grid>
         )}

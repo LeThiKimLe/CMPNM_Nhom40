@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-
+import _ from 'lodash';
 export function createCategoryGroup(categories, parentId) {
   let categoryList = [];
   let category;

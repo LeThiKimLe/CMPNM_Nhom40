@@ -14,7 +14,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
 const EditUserModel = (props) => {
-  const { visible, onCancel, form, onFinish, loading, handleCancel } = props;
+  const { visible, onCancel, form } = props;
   const { roles, createdAt } = form.getFieldValue();
   const [value, setValue] = useState(roles);
   const onChange = ({ target: { value } }) => {
@@ -43,12 +43,11 @@ const EditUserModel = (props) => {
         width={600}
         footer={null}
         open={visible}
-        title="Create New User"
+        title="Chi tiết người dùng"
         onCancel={onCancel}
       >
         <Form
           form={form}
-          onFinish={onFinish}
           layout="vertical"
           className="row-col"
           autoComplete="off"
@@ -162,21 +161,6 @@ const EditUserModel = (props) => {
               {new Date(createdAt).toLocaleDateString()}
             </Typography.Title>
           </Form.Item>
-          <Form.Item
-            className="username"
-            label="Avatar"
-            style={{ fontWeight: '600' }}
-            name="image"
-          >
-            <Upload accept=".png, .jpeg, .jpg">
-              <Button
-                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                icon={<UploadOutlined />}
-              >
-                Click to Upload
-              </Button>
-            </Upload>
-          </Form.Item>
 
           <Form.Item
             style={{
@@ -184,42 +168,7 @@ const EditUserModel = (props) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-          >
-            {loading ? <Spin /> : null}
-          </Form.Item>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              htmlType="submit"
-              style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
-                background: '#40E0D0',
-                color: 'white',
-                width: '30%',
-                marginRight: '10px',
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={handleCancel}
-              style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
-                background: '#FF6347',
-                color: 'white',
-                width: '30%',
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
+          ></Form.Item>
         </Form>
       </Modal>
     </div>

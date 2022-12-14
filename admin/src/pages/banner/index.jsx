@@ -66,6 +66,11 @@ const Banner = () => {
   };
   // * banner list
 
+  const onCancelhandle = () => {
+    formAdd.resetFields();
+    setOpenAdd(false);
+  };
+
   // todo handle add banner
   const onFinishAdd = async (values) => {
     console.log(values);
@@ -157,10 +162,10 @@ const Banner = () => {
     <div className="tabled">
       <ModalAddBanner
         open={openAdd}
-        onCancel={() => setOpenAdd(false)}
+        onCancel={onCancelhandle}
         form={formAdd}
         onFinish={onFinishAdd}
-        handleCancel={() => setOpenAdd(false)}
+        handleCancel={onCancelhandle}
         loading={loading}
       />
       <Row gutter={[24, 0]}>

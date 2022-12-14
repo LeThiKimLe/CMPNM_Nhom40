@@ -34,6 +34,8 @@ import * as Yup from 'yup';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
 import SideNavigation from '../../containers/side-navigation';
+import { notification } from 'antd';
+
 function SignUp() {
   const [open, setOpen] = useState(false);
   const handleClose = (event, reason) => {
@@ -73,8 +75,13 @@ function SignUp() {
       .unwrap()
       .then((value) => {
         const { firstName, email } = value;
+
         navigate('/finish-signup', { state: { firstName, email } });
         dispatch(userActions.reset());
+        notification.success({
+          message: 'Tạo tài khoản thành công!',
+          placement: 'top',
+        });
       })
       .catch((error) => {
         setOpen(true);

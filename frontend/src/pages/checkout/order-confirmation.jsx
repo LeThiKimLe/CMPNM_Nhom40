@@ -59,7 +59,7 @@ const OrderConfirmation = () => {
                   </MDTypography>
                   <MDButton
                     component={Link}
-                    to="/"
+                    to="/user/order"
                     size="medium"
                     color="primary"
                     sx={{
@@ -67,7 +67,7 @@ const OrderConfirmation = () => {
                       fontWeight: '500',
                     }}
                   >
-                    Đến trang chủ
+                    Đến đơn hàng
                   </MDButton>
                 </Stack>
               </Paper>
