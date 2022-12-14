@@ -14,6 +14,7 @@ import orderThunk from '../../features/order/order.service';
 import OrderDetailItem from './order-detail-item';
 import { notification } from 'antd';
 import userThunk from '../../features/user/user.service';
+import { socketApp } from '../../App';
 function getTotalPrice(items) {
   let total = 0;
   items.map((item, index) => {
@@ -44,12 +45,14 @@ const OrderDetails = () => {
         dispatch(orderThunk.getOrder(orderId))
           .unwrap()
           .then((value) => {
-            console.log(value.order);
             setDateDelivered(
               new Date(
                 value.order.orderStatus[value.order.orderStatus.length - 1].date
               )
             );
+            socketApp.emit('cancelOrder', {
+              id: orderId,
+            });
             setLoading(false);
             setOrderSelected(value.order);
           });

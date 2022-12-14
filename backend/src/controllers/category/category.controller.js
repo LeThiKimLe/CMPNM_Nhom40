@@ -6,6 +6,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 const slugify = require('slugify');
+const redisClient = require('../../connections/cachingRedis');
 const { Category, Color } = require('../../models');
 const {
   Response,
@@ -20,7 +21,7 @@ const create = async (req, res) => {
   const { name } = req.body.data;
   const categoryExists = await Category.find({ name }).exec();
   if (categoryExists.length > 0) {
-    return BadRequest(res, 'Tên nhãn hiệu đã được tạo');
+    return BadRequest(res, 'Tên thương hiệu đã tồn tại!');
   }
   let categoryImage = '';
   if (req.body.data.picture) {
@@ -53,15 +54,40 @@ const create = async (req, res) => {
   category.save(async (error, cat) => {
     if (error) return ServerError(res, error.message);
     if (cat) {
-      return Create(res, { message: 'Create category successfully' });
+      return Create(res, { message: 'Tạo thương hiệu thành công!' });
     }
   });
 };
 const getAll = async (req, res) => {
-  const categories = await Category.find({}).select(
-    '_id name slug categoryImage isActive parentId level createdAt'
-  );
-  return Response(res, { list: categories });
+  let listCategory = [];
+  try {
+    const cacheResults = await redisClient.get('categories');
+    if (cacheResults) {
+      listCategory = JSON.parse(cacheResults);
+    } else {
+      listCategory = await Category.find({}).select(
+        '_id name slug categoryImage isActive parentId level createdAt'
+      );
+      await redisClient.set('categories', JSON.stringify(listCategory));
+    }
+
+    Response(res, { list: listCategory });
+  } catch (error) {
+    ServerError(res);
+  }
+};
+const getAllAfterHandle = async (req, res) => {
+  let listCategory = [];
+  try {
+    listCategory = await Category.find({}).select(
+      '_id name slug categoryImage isActive parentId level createdAt'
+    );
+    await redisClient.set('categories', JSON.stringify(listCategory));
+
+    Response(res, { list: listCategory });
+  } catch (error) {
+    ServerError(res);
+  }
 };
 
 const deleteCategory = (req, res) => {
@@ -98,4 +124,5 @@ module.exports = {
   create,
   getAll,
   deleteCategory,
+  getAllAfterHandle,
 };

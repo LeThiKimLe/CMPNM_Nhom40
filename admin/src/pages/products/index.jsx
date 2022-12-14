@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import productThunk from '../../features/product/product.service';
 import MenuSearch from './components/menu-search';
 import { getBase64, formatThousand } from '../../utils';
-import ConfirmDelete from '../../components/ui/modal/confirm-delete';
+import ConfirmDelete from '../categories/components/confirm-delete';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -65,9 +65,21 @@ const columns = [
     dataIndex: 'created',
   },
 ];
+
+const getColorProduct = (product, colors) => {
+  let colorName = '';
+  const { color, category } = product;
+  colors.map((item) => {
+    if (item.value === color && item.category == category) {
+      colorName = item.name;
+    }
+  });
+  return colorName;
+};
 function Products() {
   const product = useSelector((state) => state.product);
   const auth = useSelector((state) => state.auth);
+  const { colors } = auth.data;
   const { categories } = auth.data;
   const getCategoryById = (id) => {
     let name;
@@ -81,7 +93,9 @@ function Products() {
 
   // * useDispatch
   const dispatch = useDispatch();
+
   const [listProduct, setListProduct] = useState(product.products);
+  const [loading, setLoading] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   // *tab mô tả
@@ -166,7 +180,7 @@ function Products() {
             });
             setTimeout(() => {
               setOpenAdd(false);
-              dispatch(productThunk.getAllAPI())
+              dispatch(productThunk.getAllAfterHandle())
                 .unwrap()
                 .then((value) => {
                   setListProduct(value.list);
@@ -204,7 +218,7 @@ function Products() {
         });
         setTimeout(() => {
           setVisibleDelete(false);
-          dispatch(productThunk.getAllAPI())
+          dispatch(productThunk.getAllAfterHandle())
             .unwrap()
             .then((value) => {
               setListProduct(value.list);
@@ -222,9 +236,13 @@ function Products() {
         .then((value) => {
           setListProduct(value.list);
         });
+    } else {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   }, [dispatch]);
-
   useEffect(() => {
     if (listProduct.length > 0) {
       setData(
@@ -268,16 +286,14 @@ function Products() {
 
             color: (
               <>
-                <Button
+                <Tag
+                  color={product.color}
                   style={{
-                    backgroundColor: `${product.color}`,
-                    borderRadius: '50%',
-                    width: '30px',
-                    height: '30px',
+                    color: product.color === '#ffffff' ? '#111111' : '#ffffff',
                   }}
                 >
-                  {' '}
-                </Button>
+                  {getColorProduct(product, colors)}
+                </Tag>
               </>
             ),
             stock: (
@@ -406,7 +422,7 @@ function Products() {
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              {product.getLoading ? (
+              {product.getLoading || loading ? (
                 <div
                   style={{
                     display: 'flex',

@@ -8,6 +8,7 @@
 /* eslint-disable consistent-return */
 const { Order, Cart, UserAddress, Color, Product } = require('../../models');
 const { Response, ServerError } = require('../../utils');
+const redisClient = require('../../connections/cachingRedis');
 
 const addOrder = (req, res) => {
   const { userId } = req.user;
@@ -24,7 +25,7 @@ const addOrder = (req, res) => {
       ];
       orderData.user = userId;
       const order = new Order(orderData);
-      order.save((err, data) => {
+      order.save(async (err, data) => {
         if (err) return res.status(400).json({ err });
         if (data) {
           res.status(201).json({ order });
@@ -37,38 +38,85 @@ const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
     .select('_id totalAmount orderStatus paymentStatus items freeShip')
     .populate('items.productId', '_id name productPicture salePrice')
-    .exec((error, orders) => {
+    .exec(async (error, orders) => {
       if (error) return res.status(400).json({ error });
       if (orders) {
+        const listOrder = await Order.find({})
+          .select(
+            '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+          )
+          .populate(
+            'items.productId',
+            '_id name productPictures salePrice detailsProduct'
+          );
+        await redisClient.set('orders', JSON.stringify(listOrder));
         res.status(200).json({ orders });
       }
     });
 };
-const getAllOrder = (req, res) => {
-  let promiseArray = [];
-  const listUserAddress = UserAddress.find({})
-    .select('user address')
-    .populate('user', '_id');
-
-  promiseArray.push(listUserAddress);
-  const listOrder = Order.find({})
-    .select(
-      '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
-    )
-    .populate(
-      'items.productId',
-      '_id name productPictures salePrice detailsProduct color'
-    );
-  promiseArray.push(listOrder);
-  Promise.all(promiseArray)
-    .then((value) => {
-      Response(res, {
-        list: [value[0], value[1]],
-      });
-    })
-    .catch((error) => {
-      ServerError(res, error);
+// *todo get-all-order [admin]
+const getAllOrder = async (req, res) => {
+  let listUserAddress = [];
+  let listOrder = [];
+  try {
+    const cacheListAddress = await redisClient.get('userAddress');
+    const cacheListOrder = await redisClient.get('orders');
+    if (cacheListAddress) {
+      listUserAddress = JSON.parse(cacheListAddress);
+    } else {
+      listUserAddress = await UserAddress.find({})
+        .select('user address')
+        .populate('user', '_id');
+      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
+    }
+    if (cacheListOrder) {
+      listOrder = JSON.parse(cacheListOrder);
+    } else {
+      listOrder = await Order.find({})
+        .select(
+          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+        )
+        .populate(
+          'items.productId',
+          '_id name productPictures salePrice detailsProduct'
+        );
+      await redisClient.set('orders', JSON.stringify(listOrder));
+    }
+    Response(res, {
+      list: [listUserAddress, listOrder],
     });
+  } catch (error) {
+    ServerError(res);
+  }
+};
+const getAllOrderAfterHandle = async (req, res) => {
+  let listUserAddress = [];
+  let listOrder = [];
+  try {
+    const cacheListAddress = await redisClient.get('userAddress');
+    if (cacheListAddress) {
+      listUserAddress = JSON.parse(cacheListAddress);
+    } else {
+      listUserAddress = await UserAddress.find({})
+        .select('user address')
+        .populate('user', '_id');
+      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
+    }
+    listOrder = await Order.find({})
+      .select(
+        '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+      )
+      .populate(
+        'items.productId',
+        '_id name productPictures salePrice detailsProduct'
+      );
+    await redisClient.set('orders', JSON.stringify(listOrder));
+    Response(res, {
+      list: [listUserAddress, listOrder],
+    });
+  } catch (error) {
+    ServerError(res);
+  }
 };
 const getOrder = (req, res) => {
   const { id } = req.params;
@@ -98,16 +146,29 @@ const getOrder = (req, res) => {
 const updateOrderStatus = (req, res) => {
   const orderStatusData = req.body.data;
   const { orderId, status } = orderStatusData;
+  let newPaymentStatus = '';
   const newStatus = {
     type: status,
     date: new Date(),
     isCompleted: true,
   };
-  const updateOrder = Order.updateOne(
+  if (status == 'delivered') {
+    newPaymentStatus = 'completed';
+  } else if (status == 'refund') {
+    newPaymentStatus = 'refund';
+  } else if (status == 'cancelled') {
+    newPaymentStatus = 'cancelled';
+  } else {
+    newPaymentStatus = 'pending';
+  }
+  Order.updateOne(
     { _id: orderId },
     {
       $push: {
         orderStatus: newStatus,
+      },
+      $set: {
+        paymentStatus: newPaymentStatus,
       },
     },
     {
@@ -117,7 +178,7 @@ const updateOrderStatus = (req, res) => {
     if (data) {
       let promiseArray = [];
       // todo Trạng thái đóng gói thì giảm số lượng trong kho
-      if (status == 'packed') {
+      if (status == 'delivered') {
         //* get product
         Order.findOne({ _id: orderId })
           .populate(
@@ -203,6 +264,9 @@ const cancelOrder = (req, res) => {
       $push: {
         orderStatus: newStatus,
       },
+      $set: {
+        paymentStatus: 'cancelled',
+      },
     },
     {
       upsert: true,
@@ -222,4 +286,5 @@ module.exports = {
   getAllOrderOfUser,
   updateOrderStatus,
   cancelOrder,
+  getAllOrderAfterHandle,
 };

@@ -1,7 +1,7 @@
 import { Modal, Result, Button, Spin } from 'antd';
 import React from 'react';
 
-const ConfirmDelete = (props) => {
+const ConfirmDeleteCategories = (props) => {
   const { open, handleDelete, loading, onCancel, title } = props;
   return (
     <div
@@ -51,4 +51,4 @@ const ConfirmDelete = (props) => {
   );
 };
 
-export default ConfirmDelete;
+export default ConfirmDeleteCategories;

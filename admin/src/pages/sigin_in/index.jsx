@@ -8,6 +8,7 @@ import {
   Input,
   Spin,
   Alert,
+  notification,
 } from 'antd';
 import signinbg from '../../assets/images/img-signin.jpg';
 import React, { useEffect, useState } from 'react';
@@ -31,14 +32,28 @@ function SignIn() {
       email,
       password,
     };
-    dispatch(authThunk.signinAPI(userData));
+    dispatch(authThunk.signinAPI(userData))
+      .unwrap()
+      .then((value) => {
+        navigate('/');
+        notification.success({
+          message: 'Đăng nhập thành công!',
+          placement: 'top',
+        });
+      })
+      .catch((error) => {
+        notification.error({
+          message: error,
+          placement: 'top',
+        });
+      });
   };
 
-  useEffect(() => {
-    if (isLoggedIn || user) {
-      navigate('/');
-    }
-  }, [user, isLoggedIn, navigate]);
+  // useEffect(() => {
+  //   if (isLoggedIn || user) {
+  //     navigate('/');
+  //   }
+  // }, [user, isLoggedIn, navigate]);
 
   return (
     <Layout className="layout-default layout-signin">
@@ -54,7 +69,6 @@ function SignIn() {
             <Title className="font-regular text-muted" level={5}>
               Nhập email và mật khẩu để đăng nhập
             </Title>
-            {error ? <Alert message={message} type="error" showIcon /> : null}
             <Form
               layout="vertical"
               className="row-col"

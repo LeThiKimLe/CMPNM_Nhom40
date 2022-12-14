@@ -4,6 +4,7 @@
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
+const redisClient = require('../../connections/cachingRedis');
 const {
   User,
   Category,
@@ -36,16 +37,20 @@ const origin = `http://localhost:3001/`;
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const admin = await User.findOne({ email }).exec();
-  if (!admin) return Unauthenticated(res, 'Email is not registered account');
+  if (!admin)
+    return Unauthenticated(res, 'Địa chỉ email chưa được đăng ký tài khoản');
   const isMatch = await admin.comparePassword(password);
   if (!isMatch) {
-    return Unauthenticated(res, 'Password is not correct');
+    return Unauthenticated(res, 'Mật khẩu không đứng!');
   }
   if (!admin.isVerified) {
-    return Unauthenticated(res, 'Account is not verified');
+    return Unauthenticated(res, 'Tài khoản chưa được kích hoạt!');
   }
   if (admin.roles !== 'admin') {
-    return Unauthorized(res, 'Account is not admin account');
+    return Unauthorized(
+      res,
+      'Tài khoản không phải tài khoản của quản trị viên!'
+    );
   }
   const adminData = createTokenUser(admin);
 
@@ -113,15 +118,46 @@ const getUserById = async (req, res) => {
   return BadRequest(res, 'User not found');
 };
 const getAllUser = async (req, res) => {
-  const users = await User.find({}).select(
-    '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
-  );
-  if (users.length === 1) {
-    return Response(res, { list: [] });
+  let listUser = [];
+  try {
+    const cacheResults = await redisClient.get('users');
+    if (cacheResults) {
+      listUser = JSON.parse(cacheResults);
+    } else {
+      listUser = await User.find({}).select(
+        '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
+      );
+      await redisClient.set('users', JSON.stringify(listUser));
+    }
+    if (listUser.length === 1) {
+      Response(res, { list: [] });
+    } else {
+      // remove account admin
+      listUser.shift();
+      return Response(res, { list: listUser });
+    }
+    Response(res, { list: listUser });
+  } catch (error) {
+    ServerError(res);
   }
-  // remove account admin
-  users.shift();
-  return Response(res, { list: users });
+};
+const getAllUserAfterHandle = async (req, res) => {
+  let listUser = [];
+  try {
+    listUser = await User.find({}).select(
+      '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
+    );
+    await redisClient.set('users', JSON.stringify(listUser));
+    if (listUser.length === 1) {
+      Response(res, { list: [] });
+    } else {
+      // remove account admin
+      listUser.shift();
+      Response(res, { list: listUser });
+    }
+  } catch (error) {
+    ServerError(res);
+  }
 };
 const deleteUser = (req, res) => {
   const listID = req.body.data;
@@ -140,41 +176,65 @@ const deleteUser = (req, res) => {
     }
   );
 };
-const getAllData = (req, res) => {
-  let listPromise = [];
-  const listUserAddress = UserAddress.find({})
-    .select('user address')
-    .populate('user', '_id');
-  listPromise.push(listUserAddress);
-  const listCategory = Category.find({ isActive: true }).select(
-    '_id name slug isActive level parentId categoryImage createdAt'
-  );
-  listPromise.push(listCategory);
-  const listOrder = Order.find({})
-    .select(
-      '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
-    )
-    .populate(
-      'items.productId',
-      '_id name productPictures salePrice detailsProduct'
-    );
-  listPromise.push(listOrder);
-  const listColor = Color.find({});
-  listPromise.push(listColor);
-  Promise.all(listPromise)
-    .then((value) => {
-      Response(res, {
-        list: [value[0], value[1], value[2], value[3]],
-      });
-    })
-    .catch((error) => {
-      ServerError(res, error);
+const getAllData = async (req, res) => {
+  let listUserAddress = [];
+  let listCategory = [];
+  let listOrder = [];
+  let listColor = [];
+  try {
+    const cacheListAddress = await redisClient.get('userAddress');
+    const cacheListCategory = await redisClient.get('categories');
+    const cacheListOrder = await redisClient.get('orders');
+    const cacheListColor = await redisClient.get('colors');
+    if (cacheListAddress) {
+      listUserAddress = JSON.parse(cacheListAddress);
+    } else {
+      listUserAddress = await UserAddress.find({})
+        .select('user address')
+        .populate('user', '_id');
+      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
+    }
+
+    if (cacheListCategory) {
+      listCategory = JSON.parse(cacheListCategory);
+    } else {
+      listCategory = await Category.find({ isActive: true }).select(
+        '_id name slug isActive level parentId categoryImage createdAt'
+      );
+      await redisClient.set('categories', JSON.stringify(listCategory));
+    }
+    if (cacheListOrder) {
+      listOrder = JSON.parse(cacheListOrder);
+    } else {
+      listOrder = await Order.find({})
+        .select(
+          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+        )
+        .populate(
+          'items.productId',
+          '_id name productPictures salePrice detailsProduct'
+        );
+      await redisClient.set('orders', JSON.stringify(listOrder));
+    }
+
+    if (cacheListColor) {
+      listColor = JSON.parse(cacheListColor);
+    } else {
+      listColor = await Color.find({});
+      await redisClient.set('colors', JSON.stringify(listColor));
+    }
+    Response(res, {
+      list: [listUserAddress, listCategory, listOrder, listColor],
     });
+  } catch (error) {
+    ServerError(res);
+  }
 };
 module.exports = {
   signin,
   createUser,
   getAllUser,
+  getAllUserAfterHandle,
   deleteUser,
   getUserById,
   getAllData,

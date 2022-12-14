@@ -8,6 +8,8 @@ import {
   Chip,
   CircularProgress,
 } from '@mui/material';
+// *socket io
+
 import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -26,6 +28,7 @@ import { customListOrderProducts } from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
+import { socketApp } from '../../App';
 const columns = [
   {
     key: 'name',
@@ -72,13 +75,16 @@ function getTotalPrice(items) {
   });
   return total;
 }
+
 const CheckOutPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const cart = useSelector((state) => state.cart);
   const addressUser = useSelector((state) => state.addressUser);
   const { cartItems } = cart;
   const [items, setItems] = useState(cartItems);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [listAddress, setListAddress] = useState(addressUser.addresses);
   const [addressIndexSelected, setAddressIndexSelected] = useState(
     getAddressAPI.getIndexDefault(addressUser.addresses)
@@ -159,8 +165,12 @@ const CheckOutPage = () => {
     setOpenModalAddress(false);
   };
   const handleOrder = () => {
+    setCheckoutLoading(true);
     if (Object.keys(addressSelected).length === 0) {
-      notification.error({ message: 'Vui lòng chọn địa chỉ giao hàng!' });
+      setTimeout(() => {
+        notification.error({ message: 'Vui lòng chọn địa chỉ giao hàng!' });
+        setCheckoutLoading(false);
+      }, 1500);
       return;
     } else {
       let orderData = {
@@ -174,9 +184,16 @@ const CheckOutPage = () => {
       dispatch(orderThunk.addOrderAPI(orderData))
         .unwrap()
         .then((value) => {
-          // navigation order-confirmation
-          dispatch(cartActions.reset());
-          navigate('/order-confirmation', { state: { id: value.order._id } });
+          setTimeout(() => {
+            notification.success({ message: 'Đặt hàng thành công!' });
+            setCheckoutLoading(false);
+            // navigation order-confirmation
+            dispatch(cartActions.reset());
+            socketApp.emit('newOrder', {
+              id: value.order._id,
+            });
+            navigate('/order-confirmation', { state: { id: value.order._id } });
+          }, 1500);
         });
     }
   };
@@ -707,7 +724,17 @@ const CheckOutPage = () => {
                       }}
                       onClick={handleOrder}
                     >
-                      Đặt hàng
+                      <Stack
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={1}
+                      >
+                        {checkoutLoading ? (
+                          <CircularProgress size={20} color="light" />
+                        ) : null}
+                        <span> Đặt hàng</span>
+                      </Stack>
                     </MDButton>
                   </Stack>
                 </MDBox>

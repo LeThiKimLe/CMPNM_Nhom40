@@ -115,7 +115,7 @@ const EditOrder = () => {
         dispatch(orderThunk.getOrder(orderId))
           .unwrap()
           .then((value) => {
-            console.log(value.order);
+            dispatch(orderThunk.getAllOrderAfter());
             setListStatus(customOrderStatusList(value.order.orderStatus));
             setOrderSelected(value.order);
           });

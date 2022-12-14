@@ -6,12 +6,12 @@ const sendVerificationEmail = async ({
   verificationToken,
 }) => {
   const verifyEmail = `http://localhost:3002/verify-email?token=${verificationToken}&email=${email}`;
-  const message = `<p>Please verify your account by clicking the link: 
+  const message = `<p>Vui lòng click vào link dưới đây để kích hoạt tài khoản: 
   <a href="${verifyEmail}">Verify Email</a> </p>`;
 
   sendEmail({
     to: email,
-    subject: 'Email Confirmation',
+    subject: 'Xác nhận tài khoản',
     html: `<h4> Hello, ${firstName}</h4>
     ${message}
     `,

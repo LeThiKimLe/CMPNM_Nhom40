@@ -130,7 +130,6 @@ const TabInfo = (props) => {
               label="Phần trăm giảm giá (%)"
               style={{ fontWeight: '600' }}
               name="sale"
-              hasFeedback
             >
               <Row>
                 <Col span={12}>

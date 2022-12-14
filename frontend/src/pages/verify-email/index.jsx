@@ -10,6 +10,7 @@ import MDInput from '../../components/MDInput';
 import MDTypography from '../../components/MDTypography';
 import MDButton from '../../components/MDButton';
 import Footer from '../../containers/footer';
+import { notification } from 'antd';
 // Authentication layout components
 // Images
 import verifyEmailSuccess from '../../assets/images/verify-email-success.png';
@@ -20,6 +21,7 @@ import Navbar from '../../containers/navbar';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
 import SideNavigation from '../../containers/side-navigation';
+import { socketApp } from '../../App';
 const VerifyEmail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,27 +29,52 @@ const VerifyEmail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [emailValue, setEmailValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const token = searchParams.get('token');
   const email = searchParams.get('email');
   const onClickHandler = () => {
     console.log(emailValue);
-    setLoading(true);
+    setUpdateLoading(true);
     dispatch(userThunk.reSendVerifyEmailAPI(emailValue))
       .unwrap()
       .then(() => {
-        setLoading(false);
+        setUpdateLoading(false);
+        notification.success({
+          message: 'Gửi lại thành công!',
+          placement: 'top',
+        });
         navigate('/finish-signup');
       })
-      .catch(() => {
-        setLoading(false);
+      .catch((error) => {
+        setUpdateLoading(false);
+        notification.error({
+          message: error,
+          placement: 'top',
+        });
+        dispatch(userActions.reset());
       });
   };
 
   useMemo(() => {
     const verifyData = { token, email };
-    dispatch(userThunk.verifyEmailAPI(verifyData));
+    setLoading(true);
+    dispatch(userThunk.verifyEmailAPI(verifyData))
+      .unwrap()
+      .then(() => {
+        socketApp.emit('newUser', {
+          email: email,
+        });
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
+      })
+      .catch(() => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
+      });
   }, [dispatch, token, email]);
-  if (user.loading) {
+  if (loading) {
     return (
       <MDBox
         width="100vw"
@@ -138,7 +165,9 @@ const VerifyEmail = () => {
                       justifyContent: 'center',
                     }}
                   >
-                    {loading ? <CircularProgress color={'success'} /> : null}
+                    {updateLoading ? (
+                      <CircularProgress color={'success'} />
+                    ) : null}
                   </Box>
                 </div>
                 <Grid item xs={12}>

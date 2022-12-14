@@ -57,15 +57,13 @@ const cartSlice = createSlice({
       state.cartItems = items;
     },
     deleteCartItemLocal: (state, action) => {
-      const productId = action.payload.productId;
-      console.log(productId);
+      const id = action.payload;
+      console.log(id);
       const cartItems =
         localStorage.getItem('cartItems') == null
           ? null
           : JSON.parse(localStorage.getItem('cartItems'));
-      const newCartItems = cartItems.filter(
-        (item) => item.product._id != productId
-      );
+      const newCartItems = cartItems.filter((item) => item._id != id);
       if (newCartItems.length === 0) {
         localStorage.setItem('cartItems', null);
       } else {

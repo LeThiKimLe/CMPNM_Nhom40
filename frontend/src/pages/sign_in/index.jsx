@@ -29,6 +29,7 @@ import Footer from '../../containers/footer';
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
 //
+import { notification } from 'antd';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -63,16 +64,18 @@ function SignIn() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(signinValidationSchema) });
   const onSubmit = (data) => {
-    dispatch(userThunk.signinAPI(data));
+    dispatch(userThunk.signinAPI(data))
+      .unwrap()
+      .then((value) => {
+        notification.success({
+          message: 'Đăng nhập thành công!',
+          placement: 'top',
+        });
+      })
+      .catch((error) => {
+        setOpen(true);
+      });
     dispatch(userActions.reset());
-    // .unwrap()
-    // .then((value) => {
-    //   navigate('/');
-    //   dispatch(userActions.reset());
-    // })
-    // .catch((error) => {
-    //   setOpen(true);
-    // });
   };
   useEffect(() => {
     if (isLoggedIn || user) {

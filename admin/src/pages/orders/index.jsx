@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
 import { formatThousand } from '../../utils';
-import { Button, Row, Col, Typography, Table, Spin, notification } from 'antd';
+import {
+  Button,
+  Row,
+  Col,
+  Typography,
+  Table,
+  Spin,
+  notification,
+  Tag,
+} from 'antd';
 import { useNavigate } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +29,7 @@ const paymentStatusList = [
   {
     name: 'Chưa thanh toán',
     value: 'pending',
-    color: '#eeeeee',
+    color: '#5ba6a6',
   },
   {
     name: 'Đã thanh toán',
@@ -42,7 +51,7 @@ const orderStatusList = [
   {
     key: 'pending',
     value: 'Chờ xác nhận',
-    color: '#eeeeee',
+    color: '#5ba6a6',
   },
   {
     key: 'packed',
@@ -117,9 +126,9 @@ const columns = [
 function Orders() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth);
-  const { orders } = auth.data;
-  const [listOrder, setListOrder] = useState(orders);
+  const order = useSelector((state) => state.order);
+  const { orderList } = order;
+  const [listOrder, setListOrder] = useState(orderList);
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   const [data, setData] = useState([]);
@@ -149,21 +158,26 @@ function Orders() {
       navigate(`/orders/edit/${selectedRowKeys[0]}`);
     }
   };
-
   useEffect(() => {
-    dispatch(orderThunk.getAllOrder())
-      .unwrap()
-      .then((value) => {
-        console.log(value);
-        const newListOrder = customListOrder(value.list[1], value.list[0]);
-        console.log(newListOrder);
+    setLoading(true);
+    if (Object.keys(listOrder).length === 0) {
+      dispatch(orderThunk.getAllOrder())
+        .unwrap()
+        .then((value) => {
+          const newListOrder = customListOrder(value.list[1], value.list[0]);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
+          setListOrder(newListOrder);
+        });
+    } else {
+      setTimeout(() => {
         setLoading(false);
-        setListOrder(newListOrder);
-      });
-  }, [dispatch]);
+      }, 1500);
+    }
+  }, [dispatch, listOrder]);
   useEffect(() => {
     if (listOrder.length > 0) {
-      setLoading(false);
       setData(
         listOrder.map((item) => {
           const { paymentStatus, totalAmount, orderStatus, items } = item;
@@ -214,15 +228,10 @@ function Orders() {
                     statusValue.key === orderStatus[orderStatus.length - 1].type
                   ) {
                     return (
-                      <Button
-                        key={statusValue.key}
-                        style={{
-                          borderRadius: '20px',
-                          backgroundColor: statusValue.color,
-                        }}
-                      >
+                      <Tag key={statusValue.key} color={statusValue.color}>
+                        {' '}
                         {statusValue.value}
-                      </Button>
+                      </Tag>
                     );
                   }
                 })}
@@ -233,15 +242,10 @@ function Orders() {
                 {paymentStatusList.map((payment) => {
                   if (payment.value === paymentStatus) {
                     return (
-                      <Button
-                        key={payment.key}
-                        style={{
-                          borderRadius: '20px',
-                          backgroundColor: payment.color,
-                        }}
-                      >
+                      <Tag key={payment.key} color={payment.color}>
+                        {' '}
                         {payment.name}
-                      </Button>
+                      </Tag>
                     );
                   }
                 })}
@@ -278,19 +282,7 @@ function Orders() {
                 Tìm kiếm
               </Button>
             </Col>
-            <Col>
-              <Button
-                style={{
-                  background: '#00994C',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                onClick={() => setVisibleAdd(true)}
-                icon={<PlusOutlined />}
-              >
-                Thêm
-              </Button>
-            </Col>
+
             <Col>
               <Button
                 style={{
@@ -302,18 +294,6 @@ function Orders() {
                 onClick={handleEditOrder}
               >
                 Chỉnh sửa
-              </Button>
-            </Col>
-            <Col>
-              <Button
-                style={{
-                  background: '#FF3333',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<DeleteOutlined />}
-              >
-                Xóa
               </Button>
             </Col>
           </Row>

@@ -135,7 +135,7 @@ const AddCategoryModal = (props) => {
                 marginRight: '10px',
               }}
             >
-              Thêm mới
+              Thêm
             </Button>
 
             <Button
