@@ -1,6 +1,14 @@
 h3 {
   font-size: '14px';
 }
+.list-product-sample {
+  max-width: 100%;
+  display: flex;
+  overflow-x: auto;
+}
+.list-product-sample::-webkit-scrollbar {
+  width: 0;
+}
 .content {
   display: 'block';
   border-bottom-left-radius: '10px';

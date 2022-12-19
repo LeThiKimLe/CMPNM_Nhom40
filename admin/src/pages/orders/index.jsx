@@ -175,7 +175,7 @@ function Orders() {
         setLoading(false);
       }, 1500);
     }
-  }, [dispatch, listOrder]);
+  }, [dispatch]);
   useEffect(() => {
     if (listOrder.length > 0) {
       setData(

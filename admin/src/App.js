@@ -25,7 +25,6 @@ import EditOrder from './pages/orders/edit-order';
 import Banner from './pages/banner';
 import { io } from 'socket.io-client';
 import userThunk from './features/users/user.service';
-const socket = io('http://localhost:3000/');
 
 function App() {
   const dispatch = useDispatch();
@@ -42,30 +41,6 @@ function App() {
       dispatch(authThunk.getAllDataAPI());
     }
   }, [auth.isLoggedIn]);
-
-  useEffect(() => {
-    socket.on('newOrder', (message) => {
-      notification.success({
-        message: `Đơn hàng có mã #${message.id} vừa được tạo!`,
-        placement: 'top',
-      });
-      dispatch(orderThunk.getAllOrderAfter());
-    });
-    socket.on('cancelOrder', (message) => {
-      notification.success({
-        message: `Đơn hàng có mã #${message.id} vừa được hủy bởi khách hàng!`,
-        placement: 'top',
-      });
-      dispatch(orderThunk.getAllOrderAfter());
-    });
-    socket.on('newUser', (message) => {
-      notification.success({
-        message: `Tài khoản có địa chỉ email #${message.email} vừa được tạo bởi khách hàng!`,
-        placement: 'top',
-      });
-      dispatch(userThunk.getAllUserHandleAPI());
-    });
-  }, []);
 
   return (
     <BrowserRouter>
@@ -146,5 +121,4 @@ function App() {
     </BrowserRouter>
   );
 }
-export const socketApp = socket;
 export default App;

@@ -103,7 +103,6 @@ const addAddress = (req, res) => {
 const updateAddress = (req, res) => {
   const { address } = req.body.data;
   const { userId } = req.user;
-  console.log(address);
   if (!address.isDefault) {
     UserAddress.updateOne(
       {
@@ -176,30 +175,33 @@ const updateAddress = (req, res) => {
 };
 const getAllAddress = (req, res) => {
   const { userId } = req.user;
-  UserAddress.find({ user: userId }).exec((error, data) => {
-    if (error) {
-      ServerError(res, error);
-    }
-    if (data) {
-      if (!data[0]?.address) {
-        Response(res, { addresses: [] });
-      } else {
-        Response(res, { addresses: data[0]?.address });
+  UserAddress.find({ user: userId, 'address.isActive': true }).exec(
+    (error, data) => {
+      if (error) {
+        ServerError(res, error);
+      }
+      if (data) {
+        if (!data[0]?.address) {
+          Response(res, { addresses: [] });
+        } else {
+          Response(res, { addresses: data[0]?.address });
+        }
       }
     }
-  });
+  );
 };
 const deleteAddress = (req, res) => {
   const addressId = req.body.data;
   const { userId } = req.user;
-  UserAddress.findOneAndUpdate(
-    { user: userId },
+  UserAddress.updateOnde(
+    { user: userId, 'address._id': addressId },
     {
-      $pull: {
-        address: {
-          _id: addressId,
-        },
+      $set: {
+        'address.$.isActive': false,
       },
+    },
+    {
+      arrayFilters: [{ 'address._id': addressId }],
     }
   ).exec((error, result) => {
     if (error) return res.status(400).json({ error });

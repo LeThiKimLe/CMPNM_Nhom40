@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
+import productThunk from '../../features/product/product.service';
 import './style.css';
 
 import {
@@ -116,6 +117,9 @@ const EditOrder = () => {
           .unwrap()
           .then((value) => {
             dispatch(orderThunk.getAllOrderAfter());
+            if (orderStatusSelected === 'delivered') {
+              dispatch(productThunk.getAllAfterHandle());
+            }
             setListStatus(customOrderStatusList(value.order.orderStatus));
             setOrderSelected(value.order);
           });

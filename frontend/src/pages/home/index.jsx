@@ -10,33 +10,31 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
-import delivery from '../../assets/images/fast-delivery.png';
-import money from '../../assets/images/money.png';
-import history from '../../assets/images/history.png';
-import payment from '../../assets/images/payment.png';
+
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 import { getShuffledArr } from '../../utils/custom-products';
+import InfoComponent from './Info.component';
 function Item(props) {
   const { sx, ...other } = props;
   return (
-    <Box
+    <MDBox
+      shadow="lg"
       sx={{
         bgcolor: (theme) =>
           theme.palette.mode === 'dark' ? '#101010' : '#fff',
         color: (theme) =>
           theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
-        border: '1px solid',
-        borderColor: (theme) =>
-          theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300',
         p: 1,
-        borderRadius: 2,
+
         fontSize: '0.875rem',
         fontWeight: '700',
         maxWidth: '250px',
         minWidth: '245px',
         marginRight: '12px',
         marginBottom: '8px',
+        borderRadius: '16px',
+        paddingTop: '16px',
         ...sx,
       }}
       {...other}
@@ -44,23 +42,12 @@ function Item(props) {
   );
 }
 
-Item.propTypes = {
-  /**
-   * The system prop that allows defining system overrides as well as additional CSS styles.
-   */
-  sx: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])
-    ),
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-};
-
 const Home = () => {
   const data = useSelector((state) => state.data);
   const { productGroups, banners } = data;
+
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -92,7 +79,7 @@ const Home = () => {
             alignItems="center"
             p={2}
           >
-            <CircularProgress />
+            <CircularProgress color="dark" />
           </MDBox>
         ) : (
           <Grid
@@ -133,162 +120,8 @@ const Home = () => {
                 </Carousel>
               </Paper>
             </MDBox>
-            <MDBox variant="contained" borderRadius="lg" width="100%">
-              <Paper
-                elevation={3}
-                sx={{ padding: '20px', marginBottom: '10px' }}
-              >
-                <Grid
-                  direction="column"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  display="flex"
-                  spacing={2}
-                  xs={12}
-                >
-                  <Grid
-                    xs={3}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <img src={delivery} alt="giao hang nhanh" width="60px" />
-                      <Stack
-                        direction="column"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                      >
-                        <MDTypography
-                          sx={{
-                            color: '#444444',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                          }}
-                        >
-                          Giao hàng nhanh chóng
-                        </MDTypography>
-                        <MDTypography
-                          sx={{ color: '#444444', fontSize: '14px' }}
-                        >
-                          Phí vận chuyển thấp
-                        </MDTypography>
-                      </Stack>
-                    </Stack>
-                  </Grid>
-                  <Grid
-                    xs={3}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <img src={money} alt="Đảm bảo tiền" width="60px" />
-                      <Stack
-                        direction="column"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                      >
-                        <MDTypography
-                          sx={{
-                            color: '#444444',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                          }}
-                        >
-                          Đảm bảo tiền tệ
-                        </MDTypography>
-                        <MDTypography
-                          sx={{ color: '#444444', fontSize: '14px' }}
-                        >
-                          Tiền sẽ được hoàn lại trong 7 ngày
-                        </MDTypography>
-                      </Stack>
-                    </Stack>
-                  </Grid>
-                  <Grid
-                    xs={3}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <img src={history} alt="Bảo hành" width="60px" />
-                      <Stack
-                        direction="column"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                      >
-                        <MDTypography
-                          sx={{
-                            color: '#444444',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                          }}
-                        >
-                          Bảo hành
-                        </MDTypography>
-                        <MDTypography
-                          sx={{ color: '#444444', fontSize: '14px' }}
-                        >
-                          Sản phẩm bảo hành 1 năm
-                        </MDTypography>
-                      </Stack>
-                    </Stack>
-                  </Grid>
-                  <Grid
-                    xs={3}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <img src={payment} alt="Thanh toán" width="60px" />
-                      <Stack
-                        direction="column"
-                        justifyContent="flex-start"
-                        alignItems="flex-start"
-                      >
-                        <MDTypography
-                          sx={{
-                            color: '#444444',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                          }}
-                        >
-                          Thanh toán
-                        </MDTypography>
-                        <MDTypography
-                          sx={{ color: '#444444', fontSize: '14px' }}
-                        >
-                          Thanh toán bảo mật, tiện lợi
-                        </MDTypography>
-                      </Stack>
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </MDBox>
+            {/* info component */}
+            <InfoComponent />
             <Grid
               direction="column"
               justifyContent="space-between"
@@ -328,7 +161,7 @@ const Home = () => {
                 >
                   Xem thêm
                 </MDTypography>
-                <ArrowForwardIcon size="small" />
+                <ArrowForwardIcon size="small" sx={{ color: '#111' }} />
               </Stack>
             </Grid>
 

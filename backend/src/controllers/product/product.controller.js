@@ -94,7 +94,6 @@ const getAllAfterHandle = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  let isCached = false;
   let listProducts = [];
   try {
     const cacheResults = await redisClient.get('products');

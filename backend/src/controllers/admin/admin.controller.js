@@ -182,18 +182,12 @@ const getAllData = async (req, res) => {
   let listOrder = [];
   let listColor = [];
   try {
-    const cacheListAddress = await redisClient.get('userAddress');
     const cacheListCategory = await redisClient.get('categories');
     const cacheListOrder = await redisClient.get('orders');
     const cacheListColor = await redisClient.get('colors');
-    if (cacheListAddress) {
-      listUserAddress = JSON.parse(cacheListAddress);
-    } else {
-      listUserAddress = await UserAddress.find({})
-        .select('user address')
-        .populate('user', '_id');
-      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
-    }
+    listUserAddress = await UserAddress.find({})
+      .select('user address')
+      .populate('user', '_id');
 
     if (cacheListCategory) {
       listCategory = JSON.parse(cacheListCategory);

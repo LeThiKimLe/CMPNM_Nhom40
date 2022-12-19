@@ -124,9 +124,11 @@ function SignUp() {
             <Card>
               <MDBox
                 variant="gradient"
-                bgColor="info"
                 borderRadius="lg"
-                coloredShadow="info"
+                sx={{
+                  backgroundColor: '#0F3460',
+                  color: '#fff',
+                }}
                 mx={2}
                 mt={-3}
                 p={2}
@@ -199,7 +201,7 @@ function SignUp() {
                         {...register('firstName')}
                         error={errors.firstName ? true : false}
                         label="Tên"
-                        sx={{ width: '200px' }}
+                        sx={{ width: '230px' }}
                       />
                       <Typography
                         fontSize="14px"
@@ -218,7 +220,7 @@ function SignUp() {
                         error={errors.lastName ? true : false}
                         type="text"
                         label="Họ"
-                        sx={{ width: '200px' }}
+                        sx={{ width: '230px' }}
                       />
                       <Typography
                         variant="inherit"
@@ -300,8 +302,8 @@ function SignUp() {
 
                   <MDBox mt={4} mb={1}>
                     <MDButton
-                      variant="gradient"
-                      color="info"
+                      variant="contained"
+                      color="dark"
                       fullWidth
                       onClick={handleSubmit(onSubmit)}
                     >
@@ -310,12 +312,12 @@ function SignUp() {
                   </MDBox>
                   <MDBox mt={3} mb={1} textAlign="center">
                     <MDTypography variant="button" color="text">
-                      Đã có tài khoản
+                      Đã có tài khoản?
                       <MDTypography
                         component={Link}
                         to="/sign-in"
                         variant="button"
-                        color="info"
+                        color="dark"
                         fontWeight="medium"
                         textGradient
                       >
