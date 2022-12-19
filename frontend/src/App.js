@@ -1,6 +1,8 @@
 /* eslint-disable array-callback-return */
 import { Routes, Route } from 'react-router-dom';
 import 'antd/dist/reset.css';
+import '../node_modules/slick-carousel/slick/slick.css';
+import '../node_modules/slick-carousel/slick/slick-theme.css';
 import MainLayout from './containers/layout';
 import Home from './pages/home';
 import { ThemeProvider } from '@mui/material/styles';
@@ -30,8 +32,6 @@ import OrderConfirmation from './pages/checkout/order-confirmation';
 import OrderDetails from './pages/user/order-detail';
 import addressThunk from './features/address/address.service';
 import AllProductPage from './pages/all-products';
-import { io } from 'socket.io-client';
-const socket = io('http://localhost:3000/');
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -62,7 +62,6 @@ function App() {
       // * cartItems in state change
       if (cartItemsLocal !== null) {
         // TODO add to mongose
-        console.log('cart', cartItemsLocal);
         let newCartItems = [];
         cartItemsLocal.map((item) => {
           const newItem = {
@@ -117,6 +116,5 @@ function App() {
     </>
   );
 }
-export const socketApp = socket;
 
 export default App;

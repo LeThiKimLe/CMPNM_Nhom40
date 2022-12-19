@@ -119,9 +119,10 @@ function SignIn() {
             <Card>
               <MDBox
                 variant="gradient"
-                bgColor="info"
+                sx={{
+                  backgroundColor: '#0F3460',
+                }}
                 borderRadius="lg"
-                coloredShadow="info"
                 mx={2}
                 mt={-3}
                 p={2}
@@ -213,8 +214,8 @@ function SignIn() {
                   </Box>
                   <MDBox mt={4} mb={1}>
                     <MDButton
-                      variant="gradient"
-                      color="info"
+                      variant="contained"
+                      color="dark"
                       fullWidth
                       onClick={handleSubmit(onSubmit)}
                     >
@@ -228,8 +229,8 @@ function SignIn() {
                         component={Link}
                         to="/sign-up"
                         variant="button"
-                        color="info"
                         fontWeight="medium"
+                        color="dark"
                         textGradient
                       >
                         Đăng ký

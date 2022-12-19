@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -9,7 +9,7 @@ import MDBox from '../MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../MDTypography';
 import MDButton from '../MDButton';
-import { Chip, Stack } from '@mui/material';
+import { Button, Chip, Stack } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -46,19 +46,23 @@ function ProductCard({
     detailsProduct.storage
   );
   const screenCustom = renderScreen(detailsProduct.screen);
-  let customOptions = [];
-  if (
-    rams.length > 1 &&
-    storages.length > 1 &&
-    rams.length <= 2 &&
-    storages.length <= 2
-  ) {
-    customOptions = options;
-  } else if (rams.length === 1 || storages.length === 1) {
-    customOptions = storages;
-  } else {
-    customOptions = Object.keys(groupColors);
-  }
+  const customOptions = useMemo(() => {
+    let custom = [];
+    if (
+      rams.length > 1 &&
+      storages.length > 1 &&
+      rams.length <= 2 &&
+      storages.length <= 2
+    ) {
+      custom = options;
+    } else if (rams.length === 1 || storages.length === 1) {
+      custom = storages;
+    } else {
+      custom = Object.keys(groupColors);
+    }
+    console.log(custom);
+    return custom;
+  }, [groupColors, storages, rams, options]);
 
   useEffect(() => {
     if (customOptions.length === storages.length) {
@@ -78,6 +82,7 @@ function ProductCard({
     }
   }, [customOptions, optionSelected, rams, storages.length, storages]);
   useEffect(() => {
+    console.log('chay');
     productGroup.map((item) => {
       const {
         detailsProduct: { ram, storage },
@@ -219,28 +224,25 @@ function ProductCard({
             >
               {customOptions.map((item, index) => {
                 return (
-                  <MDButton
+                  <Button
                     key={index}
-                    variant="contained"
                     size="small"
                     sx={{
                       fontSize: '0.75rem',
-                      fontWeight: '500',
+                      fontWeight: '400',
                       padding: '2px 3px',
-                      border:
-                        optionSelected === index
-                          ? '2px solid #2F4F4F'
-                          : '1px solid #2F4F4F',
+                      border: optionSelected === index ? '1px solid #111' : '',
                       borderRadius: '0.3rem',
                       marginRight: '3px',
                       marginBottom: '3px',
-                      color: '#2F4F4F',
                       width: '30px',
+                      color: '#111',
+                      backgroundColor: '#d0e0e3',
                     }}
                     onClick={() => setOptionSelected(index)}
                   >
                     {item}
-                  </MDButton>
+                  </Button>
                 );
               })}
             </Grid>

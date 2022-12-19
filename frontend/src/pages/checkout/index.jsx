@@ -28,7 +28,6 @@ import { customListOrderProducts } from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
-import { socketApp } from '../../App';
 const columns = [
   {
     key: 'name',
@@ -189,9 +188,7 @@ const CheckOutPage = () => {
             setCheckoutLoading(false);
             // navigation order-confirmation
             dispatch(cartActions.reset());
-            socketApp.emit('newOrder', {
-              id: value.order._id,
-            });
+
             navigate('/order-confirmation', { state: { id: value.order._id } });
           }, 1500);
         });

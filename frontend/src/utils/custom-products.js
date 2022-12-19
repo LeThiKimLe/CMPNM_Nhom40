@@ -1,4 +1,6 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable array-callback-return */
+import _ from 'lodash';
 export const getGroupProduct = (listProduct, category) => {
   const products = [];
   listProduct.map((item) => {
@@ -60,10 +62,12 @@ export const customGroupProduct = (group, categories, category) => {
   productGroup.groupColors = getListColorGroup(listOption, group);
   return productGroup;
 };
+
 export const renderScreen = (screen) => {
   const screens = screen.split(',');
   return screens;
 };
+
 const getListColorGroup = (listOption, listProduct) => {
   let listColor = {};
   listOption.map((item) => {
@@ -79,6 +83,7 @@ const getListColorGroup = (listOption, listProduct) => {
   });
   return listColor;
 };
+
 export const getListCategory = (listProduct) => {
   let categories = [];
   listProduct.map((item) => {
@@ -132,48 +137,25 @@ export const getListProductByCategory = (productGroups, categories, sort) => {
 };
 export const getCategoryLevelOne = (listCategory, category) => {
   let parent;
-  listCategory.map((item) => {
-    if (item._id === category) {
-      parent = item;
-    }
-  });
-
-  if (parent.parentId) {
-    listCategory.map((value) => {
-      if (value._id === parent.parentId) {
-        parent = value;
-      }
-    });
-  }
-  if (parent.parentId) {
-    listCategory.map((value) => {
-      if (value._id === parent.parentId) {
-        parent = value;
-      }
-    });
-  }
+  parent = _.find(listCategory, { _id: category });
+  do {
+    parent = _.find(listCategory, { _id: parent.parentId });
+  } while (parent.parentId);
+  console.log(parent._id);
   return parent._id;
 };
 export const getCategoryName = (list, id) => {
-  let name = '';
-  list.map((item) => {
-    if (item._id === id) {
-      name = item.name;
-    }
-  });
-  return name;
+  const category = _.find(list, { _id: id });
+  return category.name;
 };
 
 export const getProduct = (products, ram, color, storage) => {
-  products.map((item) => {
-    if (
-      item.color === color &&
-      item.detailsProduct.ram === ram &&
-      item.detailsProduct.storage === storage
-    ) {
-      return item;
-    }
+  const product = _.find(products, {
+    color: color,
+    'detailsProduct.ram': ram,
+    'detailsProduct.storage': storage,
   });
+  return product;
 };
 
 export const getDetailCartItem = (products, cartItem) => {

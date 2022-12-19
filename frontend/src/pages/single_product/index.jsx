@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
+
 import {
   Container,
   Stack,
@@ -27,7 +28,42 @@ import { cartActions, selectCartItems } from '../../features/cart/cart.slice';
 import { selectIsLoggedIn } from '../../features/user/user.slice';
 import cartThunk from '../../features/cart/cart.service';
 import DetailProductItem from './detail-item';
-
+import ProductCard from '../../components/ProductItem';
+import Slider from 'react-slick';
+const settings = {
+  dots: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 5,
+  slidesToScroll: 2,
+  initialSlide: 0,
+};
+function Item(props) {
+  const { sx, ...other } = props;
+  return (
+    <MDBox
+      shadow="lg"
+      sx={{
+        bgcolor: (theme) =>
+          theme.palette.mode === 'dark' ? '#101010' : '#fff',
+        color: (theme) =>
+          theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
+        p: 1,
+        marginRight: '8px',
+        fontSize: '0.875rem',
+        fontWeight: '700',
+        maxWidth: '250px',
+        minWidth: '240px',
+        marginBottom: '8px',
+        minHeight: '495px',
+        borderRadius: '16px',
+        paddingTop: '16px',
+        ...sx,
+      }}
+      {...other}
+    />
+  );
+}
 const listTitle = [
   'Màn hình',
   'Hệ điều hành',
@@ -39,11 +75,13 @@ const listTitle = [
   'SIM',
   'Pin, Sạc',
 ];
+const breakPoints = [{ itemsToShow: 4, itemsToScroll: 1 }];
 const SingleProduct = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const data = useSelector((state) => state.data);
   const user = useSelector((state) => state.user);
+  const { productGroups, banners } = data;
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const { colors } = data;
   const id = location.state?.id;
@@ -120,7 +158,6 @@ const SingleProduct = () => {
   //* useEffect handle init page
 
   useEffect(() => {
-    console.log(option, rams, storages);
     let ramSelect = '';
     let storageSelect = '';
     // console.log(optionSelected);
@@ -171,7 +208,6 @@ const SingleProduct = () => {
         const productImage = item.productPictures.filter(
           (item, index) => index !== 0
         );
-        console.log(item);
         setProductImages(productImage);
         setProductSelected(item);
         return;
@@ -189,6 +225,7 @@ const SingleProduct = () => {
       display="flex"
       justifyContent="space-between"
       minHeight="80vh"
+      width="100%"
     >
       <Container>
         {!loading && productSelected ? (
@@ -251,7 +288,7 @@ const SingleProduct = () => {
                       </div>
                     </div>
                   </MDBox>
-                  <MDTypography sx={{ fontSize: '20px', color: '#111111' }}>
+                  <MDTypography sx={{ fontWeight: '500', color: '#111' }}>
                     Thông tin sản phẩm
                   </MDTypography>
                   <MDBox variant="contained">
@@ -271,8 +308,7 @@ const SingleProduct = () => {
                     >
                       <MDButton onClick={handleToggle}>Xem thêm</MDButton>
                       <Dialog
-                        fullWidth={'xl'}
-                        maxWidth={'xl'}
+                        maxWidth="xl"
                         open={openDescription}
                         onClick={handleClose}
                       >
@@ -315,15 +351,14 @@ const SingleProduct = () => {
                               size="small"
                               sx={{
                                 fontSize: '0.75rem',
-                                fontWeight: '400',
+                                fontWeight: '500',
                                 padding: '2px 10px',
                                 border:
                                   optionSelected === index
                                     ? '2px solid #2F4F4F'
-                                    : '1px solid #2F4F4F',
+                                    : '',
                                 borderRadius: '0.3rem',
                                 marginRight: '5px',
-                                color: '#2F4F4F',
                               }}
                               onClick={() => setOptionSelected(index)}
                             >
@@ -346,17 +381,17 @@ const SingleProduct = () => {
                                   key={index}
                                   variant="contained"
                                   size="small"
+                                  shadow="lg"
                                   sx={{
                                     fontSize: '0.75rem',
-                                    fontWeight: '400',
+                                    fontWeight: '500',
                                     border:
                                       colorSelected === item
                                         ? '2px solid #2F4F4F'
-                                        : '1px solid #2F4F4F',
+                                        : '',
                                     borderRadius: '0.3rem',
                                     marginRight: '5px',
                                     marginBottom: '10px',
-                                    color: '#2F4F4F',
                                   }}
                                   onClick={() => setColorSelected(item)}
                                 >
@@ -544,7 +579,11 @@ const SingleProduct = () => {
                 >
                   Cấu hình {productSelected.name}
                 </MDTypography>
-                <MDBox variant="contained" maxWidth="460px">
+                <MDBox
+                  variant="contained"
+                  maxWidth="460px"
+                  sx={{ border: '8px' }}
+                >
                   {productSelected
                     ? Object.entries(productSelected.detailsProduct).map(
                         (item, index) => {
@@ -562,14 +601,41 @@ const SingleProduct = () => {
                 </MDBox>
               </Grid>
             </Grid>
-            <Grid
-              container
-              display="flex"
-              justifyContent="flex-start"
-              alignItems="flex-start"
-            >
-              Xem thêm điện thoại khác
-            </Grid>
+            <MDBox sx={{ marginTop: '10px', marginBottom: '10px' }}>
+              <MDTypography
+                sx={{ fontWeight: '500', color: '#111', margin: '15px 0px' }}
+              >
+                Xem thêm điện thoại khác
+              </MDTypography>
+              <Slider {...settings}>
+                {productGroups.map((item, index) => {
+                  if (index < 15) {
+                    return (
+                      <Item key={item.category}>
+                        <ProductCard
+                          style={{ marginRight: '10px' }}
+                          index={item.category}
+                          rams={item.rams}
+                          storages={item.storages}
+                          category={item.category}
+                          categoryOne={item.categoryOne}
+                          categoryOneName={item.categoryOneName}
+                          options={item.options}
+                          productSelected={item.productSelected}
+                          productGroup={item.products}
+                          colors={item.colors}
+                          groupColors={item.groupColors}
+                        />
+                      </Item>
+                    );
+                  }
+                })}
+              </Slider>
+            </MDBox>
+            {/* Xem thêm điện thoại khác
+            <div className="list-product-sample">
+             
+            </div> */}
           </>
         ) : (
           <Grid

@@ -21,7 +21,6 @@ import Navbar from '../../containers/navbar';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
 import SideNavigation from '../../containers/side-navigation';
-import { socketApp } from '../../App';
 const VerifyEmail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -61,9 +60,6 @@ const VerifyEmail = () => {
     dispatch(userThunk.verifyEmailAPI(verifyData))
       .unwrap()
       .then(() => {
-        socketApp.emit('newUser', {
-          email: email,
-        });
         setTimeout(() => {
           setLoading(false);
         }, 1500);

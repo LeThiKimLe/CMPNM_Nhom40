@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import {
   Container,
   Divider,
@@ -6,10 +7,7 @@ import {
   MenuItem,
   Box,
   CircularProgress,
-  Input,
-  FormGroup,
   FormControlLabel,
-  tableFooterClasses,
 } from '@mui/material';
 import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
@@ -26,8 +24,8 @@ import {
   getShuffledArr,
   getListProductByCategory,
 } from '../../utils/custom-products';
-import { getAllCategorySelect } from '../../utils/custome-category';
 import ProductPagination from './pagination';
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 const typePhone = [
   {
     name: 'iOS',
@@ -285,7 +283,7 @@ const AllProductPage = () => {
             alignItems="center"
             p={2}
           >
-            <CircularProgress />
+            <CircularProgress color="dark" />
           </MDBox>
         ) : (
           <Grid
@@ -522,19 +520,39 @@ const AllProductPage = () => {
                   >
                     {!amount ? '0 sản phẩm' : `${amount} sản phẩm`}
                   </MDTypography>
-                  <Select
-                    sx={{ width: '150px', height: '35px' }}
-                    value={sortOption}
-                    onChange={handleChangeSort}
+                  <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={2}
                   >
-                    {sortOptions.map((item, index) => {
-                      return (
-                        <MenuItem key={index} value={item.name}>
-                          {item.key}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                    <MDTypography
+                      sx={{
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: '#2b3445',
+                      }}
+                    >
+                      Sắp xếp theo:
+                    </MDTypography>
+                    <Select
+                      sx={{ width: '150px', height: '35px' }}
+                      value={sortOption}
+                      onChange={handleChangeSort}
+                    >
+                      {sortOptions.map((item, index) => {
+                        return (
+                          <MenuItem
+                            key={index}
+                            value={item.name}
+                            sx={{ fontWeight: '500' }}
+                          >
+                            {item.key}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </Stack>
                 </Stack>
               </MDBox>
               {loading ? (
@@ -544,7 +562,7 @@ const AllProductPage = () => {
                   alignItems="center"
                   p={2}
                 >
-                  <CircularProgress />
+                  <CircularProgress color="dark" />
                 </MDBox>
               ) : Object.keys(osOption).length === 0 &&
                 Object.keys(ramOption).length === 0 &&

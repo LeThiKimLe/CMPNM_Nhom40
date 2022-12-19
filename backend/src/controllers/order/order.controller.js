@@ -59,16 +59,10 @@ const getAllOrder = async (req, res) => {
   let listUserAddress = [];
   let listOrder = [];
   try {
-    const cacheListAddress = await redisClient.get('userAddress');
     const cacheListOrder = await redisClient.get('orders');
-    if (cacheListAddress) {
-      listUserAddress = JSON.parse(cacheListAddress);
-    } else {
-      listUserAddress = await UserAddress.find({})
-        .select('user address')
-        .populate('user', '_id');
-      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
-    }
+    listUserAddress = await UserAddress.find({})
+      .select('user address')
+      .populate('user', '_id');
     if (cacheListOrder) {
       listOrder = JSON.parse(cacheListOrder);
     } else {
