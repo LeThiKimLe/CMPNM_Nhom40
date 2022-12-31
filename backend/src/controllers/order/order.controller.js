@@ -84,6 +84,7 @@ const getAllOrder = async (req, res) => {
   }
 };
 const getAllOrderAfterHandle = async (req, res) => {
+  console.log('chay order');
   let listUserAddress = [];
   let listOrder = [];
   try {

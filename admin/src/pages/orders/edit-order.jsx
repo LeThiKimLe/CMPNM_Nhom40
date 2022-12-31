@@ -56,7 +56,9 @@ const orderStatusList = [
 ];
 const checkOrderStatus = (orderStatus) => {
   const status = orderStatus[orderStatus.length - 1].type;
-  return status == 'delivered' || status == 'cancelled' || status == 'refund';
+  return (
+    status === 'delivered' || status === 'cancelled' || status === 'refund'
+  );
 };
 const getOrder = (listOrder, orderId) => {
   let order = {};
@@ -116,12 +118,14 @@ const EditOrder = () => {
         dispatch(orderThunk.getOrder(orderId))
           .unwrap()
           .then((value) => {
-            dispatch(orderThunk.getAllOrderAfter());
+            setListStatus(customOrderStatusList(value.order.orderStatus));
+            setOrderSelected(value.order);
+            return dispatch(orderThunk.getAllOrderAfter()).unwrap();
+          })
+          .then(() => {
             if (orderStatusSelected === 'delivered') {
               dispatch(productThunk.getAllAfterHandle());
             }
-            setListStatus(customOrderStatusList(value.order.orderStatus));
-            setOrderSelected(value.order);
           });
       });
   };

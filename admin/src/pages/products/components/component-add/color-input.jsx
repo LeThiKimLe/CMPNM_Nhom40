@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import { Tag, Input, notification, Row, Col, Button, List } from 'antd';
+import { Input, notification, Row, Col, Button } from 'antd';
 import { SketchPicker } from 'react-color';
 import { useDispatch } from 'react-redux';
-import colorThunk from '../../../features/color/color.service';
+import colorThunk from '../../../../features/color/color.service';
 
 const deletebtn = [
   <svg

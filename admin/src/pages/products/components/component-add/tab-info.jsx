@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
   Form,
   Input,
   Row,
   Col,
   InputNumber,
-  Slider,
   Upload,
   Select,
   notification,
 } from 'antd';
-import ColorInput from '../components/color-input';
-import { UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
+import ColorInput from './color-input';
 import { useSelector, useDispatch } from 'react-redux';
-import categoryThunk from '../../../features/category/category.service';
-import colorThunk from '../../../features/color/color.service';
+import categoryThunk from '../../../../features/category/category.service';
+import colorThunk from '../../../../features/color/color.service';
 const { Option } = Select;
 const TabInfo = (props) => {
   const { form, setColorSubmit, colorSubmit, fileList, handleChangeUpload } =
@@ -249,16 +247,9 @@ const TabInfo = (props) => {
             fileList={fileList}
             onChange={handleChangeUpload}
             multiple={true}
+            listType="picture-card"
           >
-            <Button
-              style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
-              }}
-              icon={<UploadOutlined />}
-            >
-              Click to Upload
-            </Button>
+            <PlusOutlined />
           </Upload>
         </Form.Item>
       </Form>

@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
@@ -19,12 +21,12 @@ import productThunk from '../../features/product/product.service';
 import MenuSearch from './components/menu-search';
 import { getBase64, formatThousand } from '../../utils';
 import ConfirmDelete from '../categories/components/confirm-delete';
-import {
-  PlusOutlined,
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import ButtonHandle from '../../components/ui/button';
+import { AiFillEye, AiFillEdit, AiFillDelete } from 'react-icons/ai';
+import { HiPlus } from 'react-icons/hi';
+import { BiSearchAlt } from 'react-icons/bi';
+import DetailModal from './components/modal-detail';
+import ModalEdit from './components/modal-edit';
 const { Title } = Typography;
 const columns = [
   {
@@ -78,9 +80,8 @@ const getColorProduct = (product, colors) => {
 };
 function Products() {
   const product = useSelector((state) => state.product);
-  const auth = useSelector((state) => state.auth);
-  const { colors } = auth.data;
-  const { categories } = auth.data;
+  const data = useSelector((state) => state.data);
+  const { colors, categories } = data;
   const getCategoryById = (id) => {
     let name;
     categories.map((cat) => {
@@ -97,6 +98,8 @@ function Products() {
   const [listProduct, setListProduct] = useState(product.products);
   const [loading, setLoading] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   // *tab mô tả
   const [description, setDescription] = useState('');
@@ -105,17 +108,19 @@ function Products() {
   const [fileList, setFileList] = useState([]);
   const [formTabInfo] = Form.useForm();
   const [formTabDigital] = Form.useForm();
+  const [formEditTabInfo] = Form.useForm();
+  const [formEditTabDigital] = Form.useForm();
+
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [data, setData] = useState([]);
+  const [dataTable, setDataTable] = useState([]);
+
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-  };
-  const onCancel = () => {
-    setOpenAdd(false);
   };
 
   const handleChangeUpload = ({ fileList: newFileList }) =>
@@ -165,7 +170,7 @@ function Products() {
           description,
         };
         delete infoValues.image;
-        console.log(productData);
+
         return new Promise((resolve, reject) => {
           resolve(productData);
         });
@@ -179,6 +184,8 @@ function Products() {
               placement: 'top',
             });
             setTimeout(() => {
+              formTabInfo.resetFields();
+              formTabDigital.resetFields();
               setOpenAdd(false);
               dispatch(productThunk.getAllAfterHandle())
                 .unwrap()
@@ -188,7 +195,6 @@ function Products() {
             }, 1000);
           });
       })
-
       .catch((error) => {
         notification.error({
           message: error,
@@ -196,10 +202,20 @@ function Products() {
         });
       });
   };
+  const handleOpenEditModal = () => {
+    if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một sản phẩm để chỉnh sửa',
+        placement: 'top',
+      });
+    } else {
+      setOpenEdit(true);
+    }
+  };
   const onClickBtnDelete = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một trường để xóa',
+        message: 'Vui lòng chỉ chọn một sản phẩm để xóa',
         placement: 'top',
       });
     } else {
@@ -229,6 +245,16 @@ function Products() {
         notification.error({ message: error, placement: 'top' });
       });
   };
+  const handleDetailProduct = () => {
+    if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1) {
+      notification.error({
+        message: 'Vui lòng chỉ chọn một sản phẩm để xem',
+        placement: 'top',
+      });
+    } else {
+      setOpenDetail(true);
+    }
+  };
   useEffect(() => {
     if (Object.keys(listProduct).length === 0) {
       dispatch(productThunk.getAllAPI())
@@ -245,7 +271,7 @@ function Products() {
   }, [dispatch]);
   useEffect(() => {
     if (listProduct.length > 0) {
-      setData(
+      setDataTable(
         listProduct.map((product) => {
           return {
             key: product._id,
@@ -328,7 +354,7 @@ function Products() {
         })
       );
     } else {
-      setData([]);
+      setDataTable([]);
     }
   }, [listProduct]);
   return (
@@ -336,7 +362,7 @@ function Products() {
       <AddProductModal
         loading={product.loading}
         open={openAdd}
-        onCancel={onCancel}
+        onCancel={() => setOpenAdd(false)}
         handleCancel={() => setOpenAdd(false)}
         handleChangeUpload={handleChangeUpload}
         handleAddProduct={handleAddProduct}
@@ -355,6 +381,17 @@ function Products() {
         handleDelete={handleConfirmDelete}
         title={'Xóa sản phẩm'}
       />
+      <DetailModal
+        open={openDetail}
+        onCancel={() => setOpenDetail(false)}
+        productId={selectedRowKeys.length > 0 ? selectedRowKeys[0] : null}
+      />
+      <ModalEdit
+        open={openEdit}
+        onCancel={() => setOpenEdit(false)}
+        formInfo={formEditTabInfo}
+        formDigital={formEditTabDigital}
+      />
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -368,57 +405,52 @@ function Products() {
             </Row>
             <Row
               gutter={[32, 16]}
-              style={{ marginTop: '10px', marginBottom: '20px' }}
+              style={{
+                marginTop: '10px',
+                marginBottom: '20px',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+              }}
             >
               <Col>
-                <Button
-                  style={{
-                    background: '#FFB266',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<SearchOutlined />}
-                >
-                  Tìm kiếm
-                </Button>
+                <ButtonHandle
+                  bgColor="#99cccc"
+                  icon={<BiSearchAlt />}
+                  title="Tìm kiếm"
+                />
               </Col>
               <Col>
-                <Button
-                  style={{
-                    background: '#00994C',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  onClick={() => setOpenAdd(true)}
-                  icon={<PlusOutlined />}
-                >
-                  Thêm
-                </Button>
+                <ButtonHandle
+                  bgColor="#93c47d"
+                  icon={<HiPlus />}
+                  title="Thêm"
+                  handle={() => setOpenAdd(true)}
+                />
               </Col>
               <Col>
-                <Button
-                  style={{
-                    background: '#0066CC',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<EditOutlined />}
-                >
-                  Chỉnh sửa
-                </Button>
+                <ButtonHandle
+                  bgColor="#f9cb9c"
+                  icon={<AiFillEye />}
+                  title="Chi tiết"
+                  handle={handleDetailProduct}
+                />
               </Col>
               <Col>
-                <Button
-                  style={{
-                    background: '#FF3333',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<DeleteOutlined />}
-                  onClick={onClickBtnDelete}
-                >
-                  Xóa
-                </Button>
+                <ButtonHandle
+                  bgColor="#3d85c6"
+                  icon={<AiFillEdit />}
+                  title="Chỉnh sửa"
+                  handle={handleOpenEditModal}
+                />
+              </Col>
+              <Col>
+                <ButtonHandle
+                  bgColor="#e06666"
+                  icon={<AiFillDelete />}
+                  handle={onClickBtnDelete}
+                  title="Xóa"
+                />
               </Col>
             </Row>
             <div className="table-responsive" style={{ borderRadius: '10px' }}>
@@ -437,7 +469,7 @@ function Products() {
                 <Table
                   rowSelection={rowSelection}
                   columns={columns}
-                  dataSource={data}
+                  dataSource={dataTable}
                   pagination={true}
                   className="ant-border-space"
                 />

@@ -160,21 +160,15 @@ function Orders() {
   };
   useEffect(() => {
     setLoading(true);
-    if (Object.keys(listOrder).length === 0) {
-      dispatch(orderThunk.getAllOrder())
-        .unwrap()
-        .then((value) => {
-          const newListOrder = customListOrder(value.list[1], value.list[0]);
-          setTimeout(() => {
-            setLoading(false);
-          }, 1500);
-          setListOrder(newListOrder);
-        });
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1500);
-    }
+    dispatch(orderThunk.getAllOrder())
+      .unwrap()
+      .then((value) => {
+        const newListOrder = customListOrder(value.list[1], value.list[0]);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
+        setListOrder(newListOrder);
+      });
   }, [dispatch]);
   useEffect(() => {
     if (listOrder.length > 0) {

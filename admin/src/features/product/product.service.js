@@ -72,10 +72,28 @@ const deleteProductAPI = createAsyncThunk(
     }
   }
 );
+const getProductByIdAPI = createAsyncThunk(
+  '/product/get-product-by-id',
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosClient.get(`/product/${id}`);
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 const productThunk = {
   createAPI,
   getAllAPI,
   deleteProductAPI,
   getAllAfterHandle,
+  getProductByIdAPI,
 };
 export default productThunk;

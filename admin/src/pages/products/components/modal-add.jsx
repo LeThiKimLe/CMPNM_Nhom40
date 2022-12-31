@@ -1,9 +1,9 @@
 import { Modal, Tabs, Button, Spin, Row, Col } from 'antd';
 
 import React from 'react';
-import TabDescription from './tab-description';
-import TabDigital from './tab-digital';
-import TabInfo from './tab-info';
+import TabDescription from './component-add/tab-description';
+import TabDigital from './component-add/tab-digital';
+import TabInfo from './component-add/tab-info';
 
 const AddProductModal = (props) => {
   const {
@@ -22,6 +22,36 @@ const AddProductModal = (props) => {
     loading,
   } = props;
 
+  const listTabs = [
+    {
+      key: '1',
+      label: 'Thông tin sản phẩm',
+      children: (
+        <TabInfo
+          form={formTabInfo}
+          setColorSubmit={setColorSubmit}
+          colorSubmit={colorSubmit}
+          handleChangeUpload={handleChangeUpload}
+          fileList={fileList}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: 'Thông số kỹ thuật',
+      children: <TabDigital form={formTabDigital} />,
+    },
+    {
+      key: '3',
+      label: 'Mô tả sản phẩm',
+      children: (
+        <TabDescription
+          setDescription={setDescription}
+          description={description}
+        />
+      ),
+    },
+  ];
   return (
     <div
       style={{
@@ -38,26 +68,7 @@ const AddProductModal = (props) => {
         title="Thêm sản phẩm mới"
         onCancel={onCancel}
       >
-        <Tabs defaultActiveKey="1" size="large">
-          <Tabs.TabPane tab="Thông tin sản phẩm" key="1">
-            <TabInfo
-              form={formTabInfo}
-              setColorSubmit={setColorSubmit}
-              colorSubmit={colorSubmit}
-              handleChangeUpload={handleChangeUpload}
-              fileList={fileList}
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Thông số kỹ thuật" key="2">
-            <TabDigital form={formTabDigital} />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Mô tả sản phẩm" key="3">
-            <TabDescription
-              setDescription={setDescription}
-              description={description}
-            />
-          </Tabs.TabPane>
-        </Tabs>
+        <Tabs defaultActiveKey="1" size="large" items={listTabs} />
         <div
           style={{
             display: 'flex',
