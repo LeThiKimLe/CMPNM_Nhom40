@@ -19,12 +19,9 @@ import { authActions } from './features/auth/auth.slice';
 import Products from './pages/products';
 import VerifyAccount from './pages/verify_email';
 import ReSendEmail from './pages/resend-email';
-import authThunk from './features/auth/auth.service';
-import orderThunk from './features/order/order.service';
 import EditOrder from './pages/orders/edit-order';
 import Banner from './pages/banner';
-import { io } from 'socket.io-client';
-import userThunk from './features/users/user.service';
+import dataThunk from './features/data/data.service';
 
 function App() {
   const dispatch = useDispatch();
@@ -38,7 +35,7 @@ function App() {
   }, []);
   useEffect(() => {
     if (auth.isLoggedIn) {
-      dispatch(authThunk.getAllDataAPI());
+      dispatch(dataThunk.getAllDataAPI());
     }
   }, [auth.isLoggedIn]);
 
@@ -105,6 +102,7 @@ function App() {
               }
             />
             <Route
+              exact
               path="/"
               element={
                 <PrivateComponent>

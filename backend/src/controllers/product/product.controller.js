@@ -80,11 +80,10 @@ const createProduct = async (req, res) => {
     .catch((error) => ServerError(res, error.message));
 };
 const getAllAfterHandle = async (req, res) => {
+  console.log('chay');
   let listProducts = [];
   try {
-    listProducts = await Product.find({}).select(
-      '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
-    );
+    listProducts = await Product.find({ active: true });
     await redisClient.set('products', JSON.stringify(listProducts));
 
     Response(res, { list: listProducts });
@@ -115,12 +114,23 @@ const getAll = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const listID = req.body.data;
-  await Product.deleteMany({
-    _id: {
-      $in: listID,
+  await Product.updateMany(
+    {
+      _id: {
+        $in: listID,
+      },
     },
-  });
+    { $set: { active: false } }
+  );
   return Response(res);
+};
+const getProductById = async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findById(id).select(
+    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
+  );
+  Response(res, { product });
+  // Product.findById()
 };
 const updateAll = async (req, res) => {
   Product.find().forEach((x) => {
@@ -155,6 +165,7 @@ const getProductsOption = async (req, res) => {
   );
   return Response(res, { list: listProduct });
 };
+
 module.exports = {
   createProduct,
   getAll,
@@ -162,4 +173,5 @@ module.exports = {
   deleteProduct,
   updateAll,
   getProductsOption,
+  getProductById,
 };

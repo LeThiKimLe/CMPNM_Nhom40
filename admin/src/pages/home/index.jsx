@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { Col, Row, Typography, Card, Button, Spin, Table, Tag } from 'antd';
 import {
@@ -120,38 +121,7 @@ const orderStatusList = [
     color: '#b4a7d6',
   },
 ];
-const getTotalAmount = (orders) => {
-  let total = 0;
-  orders.map((item) => {
-    if (item.orderStatus[item.orderStatus.length - 1].type === 'delivered') {
-      total = total + item.totalAmount;
-    }
-  });
-  return total;
-};
-const getTotalProductInItem = (items) => {
-  let amount = 0;
-  items.map((item) => {
-    amount = amount + item.purchasedQty;
-  });
-  return amount;
-};
-const getTotalItems = (orders) => {
-  let items = 0;
-  orders.map((item) => {
-    if (item.orderStatus[item.orderStatus.length - 1].type === 'delivered') {
-      items = items + getTotalProductInItem(item.items);
-    }
-  });
-  return items;
-};
-const getAllTotalShip = (orders) => {
-  let totalShip = 0;
-  orders.map((item) => {
-    totalShip = totalShip + item.shipAmount;
-  });
-  return totalShip;
-};
+
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -167,7 +137,38 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [orderData, setOrderData] = useState([]);
   const [productSoldData, setProductSoldData] = useState([]);
-
+  const getTotalAmount = (orders) => {
+    let total = 0;
+    orders.map((item) => {
+      if (item.orderStatus[item.orderStatus.length - 1].type === 'delivered') {
+        total = total + item.totalAmount;
+      }
+    });
+    return total;
+  };
+  const getTotalProductInItem = (items) => {
+    let amount = 0;
+    items.map((item) => {
+      amount = amount + item.purchasedQty;
+    });
+    return amount;
+  };
+  const getTotalItems = (orders) => {
+    let items = 0;
+    orders.map((item) => {
+      if (item.orderStatus[item.orderStatus.length - 1].type === 'delivered') {
+        items = items + getTotalProductInItem(item.items);
+      }
+    });
+    return items;
+  };
+  const getAllTotalShip = (orders) => {
+    let totalShip = 0;
+    orders.map((item) => {
+      totalShip = totalShip + item.shipAmount;
+    });
+    return totalShip;
+  };
   const count = [
     {
       today: 'Tổng doanh thu',
@@ -194,42 +195,31 @@ function Home() {
       bnb: 'bnb2',
     },
   ];
-  useEffect(() => {
-    if (Object.keys(listProduct).length === 0) {
-      dispatch(productThunk.getAllAPI())
-        .unwrap()
-        .then((data) => {
-          setListProduct(data.list);
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-        });
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    }
-  }, [listProduct, dispatch]);
 
   useEffect(() => {
-    if (Object.keys(listOrder).length === 0) {
-      dispatch(orderThunk.getAllOrder())
-        .unwrap()
-        .then((value) => {
-          setListOrder(value.list[1]);
-          setTotalAmount(getTotalAmount(value.list[1]));
-          setAllItems(getTotalItems(value.list[1]));
-          setTotalShipAmount(getAllTotalShip(value.list[1]));
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-        });
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    }
-  }, [dispatch, listOrder]);
+    dispatch(productThunk.getAllAPI())
+      .unwrap()
+      .then((data) => {
+        setListProduct(data.list);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      });
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(orderThunk.getAllOrder())
+      .unwrap()
+      .then((value) => {
+        setListOrder(value.list[1]);
+        setTotalAmount(getTotalAmount(value.list[1]));
+        setAllItems(getTotalItems(value.list[1]));
+        setTotalShipAmount(getAllTotalShip(value.list[1]));
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      });
+  }, [dispatch]);
   useEffect(() => {
     if (Object.keys(listOrder).length > 0) {
       setOrderData(
