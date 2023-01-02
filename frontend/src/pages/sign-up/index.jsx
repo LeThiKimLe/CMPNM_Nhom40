@@ -201,7 +201,7 @@ function SignUp() {
                         {...register('firstName')}
                         error={errors.firstName ? true : false}
                         label="Tên"
-                        sx={{ width: '230px' }}
+                        sx={{ width: '200px' }}
                       />
                       <Typography
                         fontSize="14px"
@@ -220,7 +220,7 @@ function SignUp() {
                         error={errors.lastName ? true : false}
                         type="text"
                         label="Họ"
-                        sx={{ width: '230px' }}
+                        sx={{ width: '200px' }}
                       />
                       <Typography
                         variant="inherit"

@@ -67,6 +67,7 @@ const getAllOrder = async (req, res) => {
       listOrder = JSON.parse(cacheListOrder);
     } else {
       listOrder = await Order.find({})
+        .sort({ createdAt: 'desc' })
         .select(
           '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
         )
@@ -98,8 +99,9 @@ const getAllOrderAfterHandle = async (req, res) => {
       await redisClient.set('userAddress', JSON.stringify(listUserAddress));
     }
     listOrder = await Order.find({})
+      .sort({ createdAt: 'desc' })
       .select(
-        '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+        '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
       )
       .populate(
         'items.productId',
@@ -232,6 +234,7 @@ const updateOrderStatus = (req, res) => {
                 .then((value) => {
                   Response(res);
                 })
+
                 .catch((err) => {
                   ServerError(res, err);
                 });
@@ -266,8 +269,18 @@ const cancelOrder = (req, res) => {
     {
       upsert: true,
     }
-  ).exec((error, data) => {
+  ).exec(async (error, data) => {
     if (data) {
+      const listOrder = await Order.find({})
+        .sort({ createdAt: 'desc' })
+        .select(
+          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+        )
+        .populate(
+          'items.productId',
+          '_id name productPictures salePrice detailsProduct'
+        );
+      await redisClient.set('orders', JSON.stringify(listOrder));
       Response(res);
     } else {
       ServerError(res, error);

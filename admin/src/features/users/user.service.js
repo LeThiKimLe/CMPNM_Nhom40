@@ -34,23 +34,7 @@ const getAllUserAPI = createAsyncThunk('admin/get-users', async (thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
-const getAllUserHandleAPI = createAsyncThunk(
-  'admin/get-users-handle',
-  async (thunkAPI) => {
-    try {
-      const response = await axiosClient.get('/admin/get-all-user-handle');
-      return response.data;
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
+
 const deleteUsersAPI = createAsyncThunk(
   '/delete-users',
   async (listID, thunkAPI) => {
@@ -76,7 +60,6 @@ const userThunk = {
   createUserAPI,
   getAllUserAPI,
   deleteUsersAPI,
-  getAllUserHandleAPI,
 };
 
 export default userThunk;
