@@ -92,7 +92,7 @@ function Users() {
         setTimeout(() => {
           setGetLoading(true);
           setVisibleDelete(false);
-          dispatch(userThunk.getAllUserHandleAPI())
+          dispatch(userThunk.getAllUserAPI())
             .unwrap()
             .then((value) => {
               setGetLoading(false);
@@ -189,7 +189,7 @@ function Users() {
         setTimeout(() => {
           setGetLoading(true);
           setVisibleAdd(false);
-          dispatch(userThunk.getAllUserHandleAPI())
+          dispatch(userThunk.getAllUserAPI())
             .unwrap()
             .then((value) => {
               setGetLoading(false);

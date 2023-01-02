@@ -119,16 +119,11 @@ const getUserById = async (req, res) => {
 };
 const getAllUser = async (req, res) => {
   let listUser = [];
+
   try {
-    const cacheResults = await redisClient.get('users');
-    if (cacheResults) {
-      listUser = JSON.parse(cacheResults);
-    } else {
-      listUser = await User.find({}).select(
-        '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
-      );
-      await redisClient.set('users', JSON.stringify(listUser));
-    }
+    listUser = await User.find({}).select(
+      '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
+    );
     if (listUser.length === 1) {
       Response(res, { list: [] });
     } else {
@@ -147,7 +142,6 @@ const getAllUserAfterHandle = async (req, res) => {
     listUser = await User.find({}).select(
       '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
     );
-    await redisClient.set('users', JSON.stringify(listUser));
     if (listUser.length === 1) {
       Response(res, { list: [] });
     } else {

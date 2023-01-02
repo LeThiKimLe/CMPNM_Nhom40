@@ -117,9 +117,9 @@ const verifyEmail = (req, res) => {
     if (error) return ServerError(res, error.message);
     if (!user) return NotFound(res, 'Tài khoản');
     if (user.verificationToken === token) {
-      const now = new Date(Date.now());
+      const now = new Date(Date.now()).getTime();
 
-      if (user.verifyDate >= now) {
+      if (user.verifyDate.getTime() < now) {
         return BadRequest(res, 'Đường dẫn kích hoạt đã hết hạn!');
       }
       user.isVerified = true;
