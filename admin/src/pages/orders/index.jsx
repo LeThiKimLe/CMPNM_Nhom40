@@ -17,12 +17,7 @@ import { useNavigate } from 'react-router-dom';
 // import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { customListOrder } from '../../utils/custom-order';
 
-import {
-  PlusOutlined,
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import { SearchOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Text, Title } = Typography;
 const paymentStatusList = [

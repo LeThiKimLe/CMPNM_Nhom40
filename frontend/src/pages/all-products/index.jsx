@@ -9,7 +9,6 @@ import {
   CircularProgress,
   FormControlLabel,
 } from '@mui/material';
-import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
@@ -24,8 +23,8 @@ import {
   getShuffledArr,
   getListProductByCategory,
 } from '../../utils/custom-products';
+
 import ProductPagination from './pagination';
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 const typePhone = [
   {
     name: 'iOS',

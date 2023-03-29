@@ -7,14 +7,15 @@ const CategoryItem = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [icon, setIcon] = useState(false);
   const listCategory = categories.filter((item) => item.parentId === value);
-
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
     }
     setIcon(true);
   }
-
+  const handleOnClick = (value) => {
+    console.log(value);
+  };
   function handleClose() {
     setAnchorEl(null);
     setIcon(false);
@@ -62,7 +63,11 @@ const CategoryItem = (props) => {
         >
           {listCategory.map((item) => {
             return (
-              <MenuItem key={item._id} value={item._id}>
+              <MenuItem
+                key={item._id}
+                value={item._id}
+                onClick={() => handleOnClick(item._id)}
+              >
                 {item.name}
               </MenuItem>
             );

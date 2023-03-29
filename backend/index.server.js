@@ -3,16 +3,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
-const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: ['http://localhost:3001', 'http://localhost:3002'],
-    methods: ['GET', 'POST'],
-  },
-});
 
 const helmet = require('helmet');
 
@@ -65,22 +58,6 @@ server.listen(PORT, async () => {
   connect(urlMongoose);
   redisClient.on('error', (error) => console.error(`Error : ${error}`));
   await redisClient.connect();
-  io.on('connection', (socket) => {
-    console.log('connection');
-    console.log('user', socket.id);
-    socket.on('newOrder', (id) => {
-      console.log(id);
-      socket.broadcast.emit('newOrder', id);
-    });
-    socket.on('cancelOrder', (id) => {
-      console.log(id);
-      socket.broadcast.emit('cancelOrder', id);
-    });
-    socket.on('newUser', (email) => {
-      console.log(email);
-      socket.broadcast.emit('newUser', email);
-    });
-  });
   console.log(`App listen at https://localhost:${PORT}`);
 });
 

@@ -9,8 +9,8 @@ import {
   CircularProgress,
 } from '@mui/material';
 // *socket io
-
 import { notification } from 'antd';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
@@ -28,6 +28,7 @@ import { customListOrderProducts } from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
+import ModalChangePayment from './modal-change-payment';
 const columns = [
   {
     key: 'name',
@@ -99,8 +100,10 @@ const CheckOutPage = () => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [freeShip, setFreeShip] = useState(0);
 
+  // modal change payment
+  const [openChangePayment, setOpenChangePayment] = useState(false);
+  const [paymentValue, setPaymentValue] = useState(0);
   //* modal add new Address
-
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const onCancelModalAdd = () => {
     setOpenModalAdd(false);
@@ -179,22 +182,38 @@ const CheckOutPage = () => {
         freeShip,
         items: customListOrderProducts(items),
       };
-      console.log(orderData);
-      dispatch(orderThunk.addOrderAPI(orderData))
-        .unwrap()
-        .then((value) => {
-          setTimeout(() => {
-            notification.success({ message: 'Đặt hàng thành công!' });
-            setCheckoutLoading(false);
-            // navigation order-confirmation
-            dispatch(cartActions.reset());
+      let orderMomoData = {
+        totalAmount,
+      };
+      if (paymentValue === 0) {
+        console.log(orderData);
+        dispatch(orderThunk.addOrderAPI(orderData))
+          .unwrap()
+          .then((value) => {
+            setTimeout(() => {
+              notification.success({ message: 'Đặt hàng thành công!' });
+              setCheckoutLoading(false);
+              // navigation order-confirmation
+              dispatch(cartActions.reset());
 
-            navigate('/order-confirmation', { state: { id: value.order._id } });
-          }, 1500);
-        });
+              navigate('/order-confirmation', {
+                state: { id: value.order._id },
+              });
+            }, 1500);
+          });
+      } else {
+        dispatch(orderThunk.paymentWithMomo(orderMomoData))
+          .unwrap()
+          .then((value) => {
+            // value have url thanh toan
+            console.log('payment with momo');
+            window.open(value, '_blank');
+            setCheckoutLoading(false);
+          });
+        // checkout with momo
+      }
     }
   };
-
   useEffect(() => {
     setItems(cartItems);
     dispatch(addressThunk.getAllAPI())
@@ -280,6 +299,12 @@ const CheckOutPage = () => {
           addressIndex={addressIndex}
           setAddressIndex={setAddressIndex}
           setListAddress={setListAddress}
+        />
+        <ModalChangePayment
+          paymentValue={paymentValue}
+          setPaymentValue={setPaymentValue}
+          open={openChangePayment}
+          setOpen={setOpenChangePayment}
         />
         <Container>
           <Grid
@@ -423,7 +448,6 @@ const CheckOutPage = () => {
                         <MDButton
                           size="small"
                           color="dark"
-                          variant="outlined"
                           sx={{
                             textTransform: 'initial !important',
                             fontWeight: '500',
@@ -509,7 +533,7 @@ const CheckOutPage = () => {
           >
             <Grid
               item
-              xs={9}
+              xs={12}
               justifyContent="flex-start"
               alignItems="center"
               spacing={2}
@@ -530,213 +554,201 @@ const CheckOutPage = () => {
                     >
                       Phương thức thanh toán
                     </MDTypography>
-                    <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px' }}
-                      variant="h4"
-                    >
-                      Thanh toán khi nhận hàng
-                    </MDTypography>
-                  </Stack>
-
-                  <Divider />
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}
-                  >
-                    <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px', fontWeight: '500' }}
-                      variant="body"
-                    >
-                      Phí vận chuyển:
-                    </MDTypography>
-                    <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px', fontWeight: '500' }}
-                      variant="body1"
-                    >
-                      {shipAmount ? formatThousand(shipAmount) : 0}đ
-                    </MDTypography>
-                  </Stack>
-                </Paper>
-              </MDBox>
-            </Grid>
-            {items && items.length > 0 ? (
-              <Grid
-                item
-                xs={3}
-                justifyContent="flex-end"
-                alignItems="center"
-                spacing={2}
-              >
-                <MDBox variant="contained">
-                  <Paper elevation={3} sx={{ padding: '15px' }}>
                     <Stack
                       direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
+                      justifyContent="flex-end"
+                      alignItems={'center'}
                       spacing={2}
-                      sx={{ marginBottom: '5px' }}
                     >
                       <MDTypography
                         color="dark"
                         sx={{ fontSize: '14px' }}
                         variant="h4"
                       >
-                        Tổng cộng
+                        {paymentValue === 0
+                          ? 'Thanh toán khi nhận hàng'
+                          : 'Thanh toán qua ví Momo'}
                       </MDTypography>
-                      <MDTypography
+                      <MDButton
+                        size="small"
                         color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="h4"
-                      >
-                        {cartItems.length} sản phẩm
-                      </MDTypography>
-                    </Stack>
-
-                    <Divider />
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{ marginBottom: '5px' }}
-                    >
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
-                      >
-                        Tổng tiền hàng:
-                      </MDTypography>
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
-                      >
-                        {formatThousand(getTotalPrice(items))}đ
-                      </MDTypography>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{ marginBottom: '5px' }}
-                    >
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
-                      >
-                        Tổng phí vận chuyển:
-                      </MDTypography>
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
-                      >
-                        {' '}
-                        {shipAmount ? formatThousand(shipAmount) : 0}đ
-                      </MDTypography>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
-                      >
-                        Tổng giảm phí vận chuyển:
-                      </MDTypography>
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
-                      >
-                        - {formatThousand(freeShip)}đ
-                      </MDTypography>
-                    </Stack>
-                    <Divider />
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={2}
-                    >
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px', fontWeight: '500' }}
-                        variant="body"
-                      >
-                        Tổng thanh toán:
-                      </MDTypography>
-                      <MDTypography
                         sx={{
-                          fontSize: '14px',
-                          color: '#990000',
+                          textTransform: 'initial !important',
                           fontWeight: '500',
                         }}
+                        onClick={() => setOpenChangePayment(true)}
                       >
-                        {totalAmount
-                          ? formatThousand(totalAmount)
-                          : formatThousand(getTotalPrice(items))}
-                        đ
-                      </MDTypography>
+                        <EditIcon sx={{ marginRight: '4px' }} />
+                        Thay đổi
+                      </MDButton>
                     </Stack>
-                  </Paper>
-                  <Stack
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    spacing={3}
-                    sx={{
-                      marginTop: '20px',
-                    }}
-                  >
-                    <MDButton
-                      size="medium"
-                      color="dark"
-                      sx={{
-                        textTransform: 'initial !important',
-                        fontWeight: '500',
-                      }}
-                      onClick={() => navigate('/cart')}
-                    >
-                      Quay lại
-                    </MDButton>
-                    <MDButton
-                      size="medium"
-                      color="success"
-                      sx={{
-                        textTransform: 'initial !important',
-                        fontWeight: '500',
-                      }}
-                      onClick={handleOrder}
-                    >
+                  </Stack>
+                  {items && items.length > 0 ? (
+                    <>
                       <Stack
                         direction="row"
-                        justifyContent="center"
+                        justifyContent="space-between"
                         alignItems="center"
-                        spacing={1}
+                        spacing={2}
+                        sx={{ marginTop: '10px' }}
                       >
-                        {checkoutLoading ? (
-                          <CircularProgress size={20} color="light" />
-                        ) : null}
-                        <span> Đặt hàng</span>
+                        <MDTypography
+                          color="primary"
+                          sx={{ fontSize: '14px' }}
+                          variant="h4"
+                        >
+                          Tổng cộng
+                        </MDTypography>
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="h4"
+                        >
+                          {cartItems.length} sản phẩm
+                        </MDTypography>
                       </Stack>
-                    </MDButton>
-                  </Stack>
-                </MDBox>
-              </Grid>
-            ) : null}
+
+                      <Divider />
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ marginBottom: '5px' }}
+                      >
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body"
+                        >
+                          Tổng tiền hàng:
+                        </MDTypography>
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body1"
+                        >
+                          {formatThousand(getTotalPrice(items))}đ
+                        </MDTypography>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ marginBottom: '5px' }}
+                      >
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body"
+                        >
+                          Tổng phí vận chuyển:
+                        </MDTypography>
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body1"
+                        >
+                          {' '}
+                          {shipAmount ? formatThousand(shipAmount) : 0}đ
+                        </MDTypography>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                      >
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body"
+                        >
+                          Tổng giảm phí vận chuyển:
+                        </MDTypography>
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px' }}
+                          variant="body1"
+                        >
+                          - {formatThousand(freeShip)}đ
+                        </MDTypography>
+                      </Stack>
+                      <Divider />
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                      >
+                        <MDTypography
+                          color="dark"
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
+                          variant="body"
+                        >
+                          Tổng thanh toán:
+                        </MDTypography>
+                        <MDTypography
+                          sx={{
+                            fontSize: '14px',
+                            color: '#990000',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {totalAmount
+                            ? formatThousand(totalAmount)
+                            : formatThousand(getTotalPrice(items))}
+                          đ
+                        </MDTypography>
+                      </Stack>
+                    </>
+                  ) : null}
+                </Paper>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  spacing={3}
+                  sx={{
+                    marginTop: '20px',
+                  }}
+                >
+                  <MDButton
+                    size="medium"
+                    color="dark"
+                    sx={{
+                      textTransform: 'initial !important',
+                      fontWeight: '500',
+                    }}
+                    onClick={() => navigate('/cart')}
+                  >
+                    Quay lại
+                  </MDButton>
+                  <MDButton
+                    size="medium"
+                    color="success"
+                    sx={{
+                      textTransform: 'initial !important',
+                      fontWeight: '500',
+                    }}
+                    onClick={handleOrder}
+                  >
+                    <Stack
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center"
+                      spacing={1}
+                    >
+                      {checkoutLoading ? (
+                        <CircularProgress size={20} color="light" />
+                      ) : null}
+                      <span>Đặt hàng</span>
+                    </Stack>
+                  </MDButton>
+                </Stack>
+              </MDBox>
+            </Grid>
           </Grid>
         </Container>
       </MDBox>

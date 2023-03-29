@@ -4,14 +4,7 @@ import CategoryItem from '../../components/CategoryItem';
 import CategoryIcon from '@mui/icons-material/Category';
 // react-router-dom components
 import Grid from '@mui/material/Unstable_Grid2';
-import {
-  Container,
-  Stack,
-  Menu,
-  Button,
-  MenuItem,
-  Divider,
-} from '@mui/material';
+import { Container, Stack, Menu, Button, MenuItem } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useSelector } from 'react-redux';
@@ -52,7 +45,6 @@ const SideNavigation = () => {
     setAnchorEl(null);
     setIcon(false);
   }
-
   return (
     <MDBox
       color="dark"

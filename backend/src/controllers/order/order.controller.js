@@ -6,10 +6,27 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-const { Order, Cart, UserAddress, Color, Product } = require('../../models');
-const { Response, ServerError } = require('../../utils');
+
+const crypto = require('crypto');
+const https = require('https');
+const { Order, Cart, UserAddress, Product } = require('../../models');
+const { Response, ServerError, BadRequest } = require('../../utils/response');
 const redisClient = require('../../connections/cachingRedis');
 
+const partnerCode = 'MOMO';
+const accessKey = 'F8BBA842ECF85';
+const secretkey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+const requestId = partnerCode + new Date().getTime();
+const orderId = requestId;
+const orderInfo = 'pay with MoMo';
+const redirectUrl = 'https://localhost:3002/checkout/checkoutMomo';
+const ipnUrl = 'https://localhost:3000/api/order/checkResponse';
+const requestType = 'captureWallet';
+const extraData = '';
+const orderGroupId = '';
+const autoCapture = true;
+const lang = 'vi';
+const amount = '50000';
 const addOrder = (req, res) => {
   const { userId } = req.user;
   const orderData = req.body.data;
@@ -34,6 +51,104 @@ const addOrder = (req, res) => {
     }
   });
 };
+
+// api momo
+const paymentWithMomo = (req, res) => {
+  const { totalAmount } = req.body.data;
+  console.log(totalAmount);
+  const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+  console.log(rawSignature);
+  const signature = crypto
+    .createHmac('sha256', secretkey)
+    .update(rawSignature)
+    .digest('hex');
+  console.log('--------------------SIGNATURE----------------');
+  console.log('chu ky', signature);
+  const requestBody = JSON.stringify({
+    partnerCode,
+    accessKey,
+    requestId,
+    amount: totalAmount,
+    orderId,
+    orderInfo,
+    redirectUrl,
+    ipnUrl,
+    extraData,
+    requestType,
+    signature,
+    lang: 'en',
+  });
+  const options = {
+    hostname: 'test-payment.momo.vn',
+    port: 443,
+    path: '/v2/gateway/api/create',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody),
+    },
+    data: requestBody,
+  };
+  const reqChild = https.request(options, (resChild) => {
+    console.log(`Status: ${resChild.statusCode}`);
+    console.log(`Headers: ${JSON.stringify(resChild.headers)}`);
+    resChild.setEncoding('utf8');
+    resChild.on('data', (body) => {
+      console.log('Body: ');
+      console.log(body);
+      console.log('resultCode: ');
+      console.log(JSON.parse(body).resultCode);
+      res.header('Access-Control-Allow-Origin');
+      return res.json(JSON.parse(body).payUrl);
+    });
+
+    resChild.on('end', () => {
+      console.log('No more data in response.');
+    });
+  });
+  reqChild.on('error', (e) => {
+    console.log(`problem with request: ${e.message}`);
+  });
+  // write data to request body
+  console.log('Sending....');
+  reqChild.write(requestBody);
+  reqChild.end();
+};
+const checkResponseMomo = (req, res) => {
+  try {
+    const Secretkey = secretkey;
+    const {
+      orderId,
+      requestId,
+      orderInfo,
+      orderType,
+      transId,
+      resultCode,
+      message,
+      payType,
+      responseTime,
+      extraData,
+    } = req.body;
+    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
+    // Signature
+    const signature = crypto
+      .createHmac('sha256', Secretkey)
+      .update(rawSignature)
+      .digest('hex');
+    console.log(signature);
+    console.log(signature.body);
+    if (signature === req.body.signature && req.body.resultCode === 0) {
+      // handle update đơn hàng
+      console.log('dúng r nè');
+
+      return Response(res);
+    }
+    return BadRequest(res);
+  } catch (error) {
+    return ServerError(res);
+  }
+};
+
 const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
     .select('_id totalAmount orderStatus paymentStatus items freeShip')
@@ -54,6 +169,41 @@ const getAllOrderOfUser = (req, res) => {
       }
     });
 };
+
+const updateOrderMomoPayment = (req, res) => {
+  // update status order, paymentType
+  const orderStatusData = req.body.data;
+  const { orderId, status } = orderStatusData;
+  Order.updateOne(
+    { _id: orderId },
+    {
+      $set: {
+        paymentStatus: status,
+        paymentType: 'card',
+      },
+    },
+    {
+      upsert: true,
+    }
+  ).exec(async (error, data) => {
+    if (data) {
+      const listOrder = await Order.find({})
+        .sort({ createdAt: 'desc' })
+        .select(
+          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+        )
+        .populate(
+          'items.productId',
+          '_id name productPictures salePrice detailsProduct'
+        );
+      await redisClient.set('orders', JSON.stringify(listOrder));
+      Response(res);
+    } else {
+      ServerError(res, error);
+    }
+  });
+};
+
 // *todo get-all-order [admin]
 const getAllOrder = async (req, res) => {
   let listUserAddress = [];
@@ -295,4 +445,7 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   getAllOrderAfterHandle,
+  checkResponseMomo,
+  paymentWithMomo,
+  updateOrderMomoPayment,
 };

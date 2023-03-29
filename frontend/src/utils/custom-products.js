@@ -141,7 +141,6 @@ export const getCategoryLevelOne = (listCategory, category) => {
   do {
     parent = _.find(listCategory, { _id: parent.parentId });
   } while (parent.parentId);
-  console.log(parent._id);
   return parent._id;
 };
 export const getCategoryName = (list, id) => {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, List, Divider, Button } from 'antd';
 import ModalAddAddress from './modal-add-address';
 import AddressItem from './addressItem';
+import MDButton from '../../components/MDButton';
 
 const ModalAddress = (props) => {
   const {
@@ -57,20 +58,17 @@ const ModalAddress = (props) => {
           marginTop: '10px',
         }}
       >
-        <Button
-          style={{
-            border: '1px solid #C0C0C0',
-            borderRadius: '8px',
-            background: '#344767',
-            color: 'white',
-            width: '30%',
-            marginRight: '10px',
-            marginTop: '20px',
+        <MDButton
+          size="small"
+          color="info"
+          sx={{
+            textTransform: 'initial !important',
+            fontWeight: '500',
           }}
           onClick={() => setOpenModalAdd(true)}
         >
-          Thêm địa chỉ mới
-        </Button>
+          Thêm mới
+        </MDButton>
       </div>
       <div
         style={{
@@ -80,33 +78,30 @@ const ModalAddress = (props) => {
           marginTop: '10px',
         }}
       >
-        <Button
-          style={{
-            border: '1px solid #C0C0C0',
-            borderRadius: '8px',
-            background: '#40E0D0',
-            color: 'white',
-            width: '20%',
-            marginRight: '10px',
-            marginTop: '20px',
+        <MDButton
+          size="small"
+          color="primary"
+          sx={{
+            textTransform: 'initial !important',
+            fontWeight: '500',
           }}
           onClick={onHandleCancel}
         >
           Hủy
-        </Button>
+        </MDButton>
 
-        <Button
-          style={{
-            border: '1px solid #C0C0C0',
-            borderRadius: '10px',
-            background: '#FF6347',
-            color: 'white',
-            width: '20%',
+        <MDButton
+          size="small"
+          color="dark"
+          sx={{
+            marginLeft: '10px',
+            textTransform: 'initial !important',
+            fontWeight: '500',
           }}
           onClick={handleChangeAddress}
         >
           Xác nhận
-        </Button>
+        </MDButton>
       </div>
     </Modal>
   );

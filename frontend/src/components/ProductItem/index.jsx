@@ -60,7 +60,6 @@ function ProductCard({
     } else {
       custom = Object.keys(groupColors);
     }
-    console.log(custom);
     return custom;
   }, [groupColors, storages, rams, options]);
 
@@ -82,7 +81,6 @@ function ProductCard({
     }
   }, [customOptions, optionSelected, rams, storages.length, storages]);
   useEffect(() => {
-    console.log('chay');
     productGroup.map((item) => {
       const {
         detailsProduct: { ram, storage },
