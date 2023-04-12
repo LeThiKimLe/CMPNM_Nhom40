@@ -218,6 +218,27 @@ const EditOrder = () => {
                   </Typography.Text>
                 </Col>
                 <Col gutter={[8, 0]}>
+                    <Typography.Text style={{ fontSize: '14px', color: 'black'}}>
+                      {
+                        orderSelected.paymentStatus === "completed" ? "Đã thanh toán": "Chưa thanh toán"
+                      }
+                    </Typography.Text>
+                </Col>
+              </Row>
+              <Row
+                gutter={[8, 0]}
+                align="start"
+                justify="start"
+                style={{ marginTop: '20px' }}
+              >
+                <Col>
+                  <Typography.Text
+                    style={{ fontSize: '14px', color: '#7d879c' }}
+                  >
+                    Trạng thái đơn hàng:
+                  </Typography.Text>
+                </Col>
+                <Col gutter={[8, 0]}>
                   <Steps
                     direction="horizontal"
                     current={
@@ -251,6 +272,7 @@ const EditOrder = () => {
                   </Steps>
                 </Col>
               </Row>
+
               {orderSelected.orderStatus &&
               checkOrderStatus(orderSelected.orderStatus) ? null : (
                 <Row
@@ -370,8 +392,10 @@ const EditOrder = () => {
                     style={{ fontSize: '14px', color: '#7d879c' }}
                     strong
                   >
-                    Thanh toán khi nhận hàng
-                  </Typography.Text>
+                      {
+                        orderSelected.paymentType === 'card' ? "Thanh toán qua ví điện tử Paypal" : " Thanh toán khi nhận hàng"
+                      }
+                    </Typography.Text>
                 </Row>
               </div>
             </Col>

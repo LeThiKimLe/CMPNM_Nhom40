@@ -7,6 +7,8 @@ import {
   Stack,
   Chip,
   CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 // *socket io
 import { notification } from 'antd';
@@ -24,11 +26,10 @@ import CheckOutItem from '../../components/CheckOutItem';
 import getAddressAPI from '../../utils/get-details-address';
 import ModalAddress from './modal-address';
 import addressThunk from '../../features/address/address.service';
-import { customListOrderProducts } from '../../utils/custom-products';
+import { customListOrderProducts, customeListOrderProductsPaypal } from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
-import ModalChangePayment from './modal-change-payment';
 const columns = [
   {
     key: 'name',
@@ -66,6 +67,8 @@ const columns = [
     width: 2,
   },
 ];
+
+
 function getTotalPrice(items) {
   let total = 0;
   items.map((item, index) => {
@@ -79,7 +82,8 @@ function getTotalPrice(items) {
 const CheckOutPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const data = useSelector((state) => state.data);
+  const { colors } = data;
   const cart = useSelector((state) => state.cart);
   const addressUser = useSelector((state) => state.addressUser);
   const { cartItems } = cart;
@@ -101,14 +105,15 @@ const CheckOutPage = () => {
   const [freeShip, setFreeShip] = useState(0);
 
   // modal change payment
-  const [openChangePayment, setOpenChangePayment] = useState(false);
-  const [paymentValue, setPaymentValue] = useState(0);
+  const [paymentType, setPaymentType] = React.useState(0);
   //* modal add new Address
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const onCancelModalAdd = () => {
     setOpenModalAdd(false);
   };
-
+  const handleChange = (event, newPaymentType) => {
+    setPaymentType(newPaymentType);
+  };
   const getMethodShip = async (to_district) => {
     const response = await fetch(
       `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
@@ -175,19 +180,16 @@ const CheckOutPage = () => {
       }, 1500);
       return;
     } else {
-      let orderData = {
-        addressId: addressSelected._id,
-        totalAmount,
-        shipAmount,
-        freeShip,
-        items: customListOrderProducts(items),
-      };
-      let orderMomoData = {
-        totalAmount,
-      };
-      if (paymentValue === 0) {
-        console.log(orderData);
-        dispatch(orderThunk.addOrderAPI(orderData))
+        let orderCod = {
+          addressId: addressSelected._id,
+          totalAmount,
+          shipAmount,
+          freeShip,
+        }
+        orderCod.items = customListOrderProducts(items);
+        localStorage.setItem("orderCod", JSON.stringify(orderCod));
+        if (paymentType === 0) {
+        dispatch(orderThunk.addOrderAPI(orderCod))
           .unwrap()
           .then((value) => {
             setTimeout(() => {
@@ -195,22 +197,40 @@ const CheckOutPage = () => {
               setCheckoutLoading(false);
               // navigation order-confirmation
               dispatch(cartActions.reset());
-
+              
               navigate('/order-confirmation', {
                 state: { id: value.order._id },
               });
             }, 1500);
           });
       } else {
-        dispatch(orderThunk.paymentWithMomo(orderMomoData))
+        let orderData = {
+          address: addressSelected,
+          totalAmount,
+          shipAmount,
+          freeShip,
+          subAmount: getTotalPrice(items),
+        }
+        orderData.items = customeListOrderProductsPaypal(items, colors);
+        console.log("payment with paypal");
+        dispatch(orderThunk.paymentWithPaypal(orderData))
           .unwrap()
           .then((value) => {
             // value have url thanh toan
-            console.log('payment with momo');
-            window.open(value, '_blank');
+            console.log('payment with Paypal');
+            console.log(value.payment);
+            const { transactions } = value.payment;
+            let data = transactions[0];
+            data.addressId = addressSelected._id; 
+            localStorage.setItem("orderPaypal", JSON.stringify(data));
+            const { links } = value.payment;
+            const url = links[1].href;
+            window.open(url, '_blank')
             setCheckoutLoading(false);
+          }).catch(() => {
+            localStorage.removeItem("orderPaypal");
           });
-        // checkout with momo
+        // checkout with paypal     
       }
     }
   };
@@ -300,12 +320,7 @@ const CheckOutPage = () => {
           setAddressIndex={setAddressIndex}
           setListAddress={setListAddress}
         />
-        <ModalChangePayment
-          paymentValue={paymentValue}
-          setPaymentValue={setPaymentValue}
-          open={openChangePayment}
-          setOpen={setOpenChangePayment}
-        />
+        
         <Container>
           <Grid
             container
@@ -558,31 +573,20 @@ const CheckOutPage = () => {
                       direction="row"
                       justifyContent="flex-end"
                       alignItems={'center'}
-                      spacing={2}
-                    >
-                      <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="h4"
-                      >
-                        {paymentValue === 0
-                          ? 'Thanh toán khi nhận hàng'
-                          : 'Thanh toán qua ví Momo'}
-                      </MDTypography>
-                      <MDButton
-                        size="small"
-                        color="dark"
-                        sx={{
-                          textTransform: 'initial !important',
-                          fontWeight: '500',
-                        }}
-                        onClick={() => setOpenChangePayment(true)}
-                      >
-                        <EditIcon sx={{ marginRight: '4px' }} />
-                        Thay đổi
-                      </MDButton>
-                    </Stack>
-                  </Stack>
+                      spacing={2}>
+    <ToggleButtonGroup
+      color="primary"
+      value={paymentType}
+      exclusive={true}
+      size="small"
+      onChange={handleChange}
+      aria-label="Platform"
+    > 
+    <ToggleButton value={0} sx={{ fontWeight: "bold", padding: "10px"}}>Cod</ToggleButton>
+      <ToggleButton value={1} sx={{ fontWeight: "bold", padding: "10px"}}>Paypal</ToggleButton>
+         </ToggleButtonGroup>
+    </Stack>
+    </Stack>
                   {items && items.length > 0 ? (
                     <>
                       <Stack

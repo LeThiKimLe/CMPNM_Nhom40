@@ -13,10 +13,11 @@ const slugify = require('slugify');
 const mongoose = require('mongoose');
 
 const _ = require('lodash');
-const { Product, Category } = require('../../models');
+const { Product } = require('../../models');
 const { Response, ServerError, Create } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 const redisClient = require('../../connections/cachingRedis');
+const getPaginationProduct = require('../../utils/pagination');
 
 const getChildren = (categories, category) => {
   let list = [];
@@ -27,18 +28,15 @@ const getChildren = (categories, category) => {
   });
   return list;
 };
-
-const getAllCategorySelect = (categories, categorySelect) => {
+const getAllCategorySelectLevelOne = (categories, categorySelect) => {
   let list = [];
   for (let cate of categorySelect) {
-    const id = mongoose.Types.ObjectId(cate);
-    const category = _.find(categories, { _id: id });
-    console.log(category);
-    let newListCategory = getChildren(categories, category._id);
-    list.push(
-      ...newListCategory,
-      ...getAllCategorySelect(categories, newListCategory)
-    );
+    const category = _.find(categories,(c) => c._id == cate);
+      let newListCategory = getChildren(categories, category._id);
+      list.push(
+        ...newListCategory,
+        ...getAllCategorySelectLevelOne(categories, newListCategory)
+      );
   }
   return list;
 };
@@ -80,7 +78,6 @@ const createProduct = async (req, res) => {
     .catch((error) => ServerError(res, error.message));
 };
 const getAllAfterHandle = async (req, res) => {
-  console.log('chay');
   let listProducts = [];
   try {
     listProducts = await Product.find({ active: true });
@@ -140,29 +137,48 @@ const updateAll = async (req, res) => {
   return Response(res);
 };
 const getProductsOption = async (req, res) => {
+  const page = 1;
+  const size = 12;
   const searchModel = req.body.data;
-  let query = {};
   let listProduct = [];
-  const listCategory = await redisClient.get('categories');
-  if (Object.keys(searchModel.category).length !== 0) {
-    const categories = getAllCategorySelect(listCategory, searchModel.category);
-    query.category = { $in: categories };
+  const cacheResults = await redisClient.get('products');
+  if (cacheResults) {
+    isCached = true;
+    listProduct = JSON.parse(cacheResults);
+    let categoryCache = await redisClient.get('categories');
+    // check search model child 
+    listCategory = JSON.parse(categoryCache);
+    if (Object.keys(searchModel.category).length !== 0) {
+      let categories = [];
+      if (searchModel.child) {
+        categories = searchModel.category;
+      } else {
+        categories = getAllCategorySelectLevelOne(
+          listCategory,
+          searchModel.category
+        );
+      }
+      listProduct = listProduct.filter((product) =>
+        categories.includes(product.category)
+      );
+    }
+    if (Object.keys(searchModel.ram).length !== 0) {
+      listProduct = _.filter(listProduct, (product) =>
+        searchModel.ram.includes(product.detailsProduct.ram)
+      );
+    }
+    if (Object.keys(searchModel.storage).length !== 0) {
+      listProduct = _.filter(listProduct, (product) =>
+        searchModel.storage.includes(product.detailsProduct.storage)
+      );
+    }
+    if (Object.keys(searchModel.os).length !== 0) {
+      listProduct = _.filter(listProduct, (product) =>
+        searchModel.os.includes(product.detailsProduct.OS)
+      );
+    }
   }
-
-  if (Object.keys(searchModel.ram).length !== 0) {
-    query['detailsProduct.ram'] = { $in: searchModel.ram };
-  }
-  if (Object.keys(searchModel.storage).length !== 0) {
-    query['detailsProduct.storage'] = { $in: searchModel.storage };
-  }
-  if (Object.keys(searchModel.os).length !== 0) {
-    query['detailsProduct.OS'] = { $in: searchModel.os };
-  }
-  listProduct = await Product.find({
-    $and: [query],
-  }).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
-  );
+  listProduct = getPaginationProduct(listProduct, 1);
   return Response(res, { list: listProduct });
 };
 

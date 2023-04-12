@@ -194,11 +194,19 @@ export const customListOrderProducts = (products) => {
   });
   return list;
 };
-export const getShuffledArr = (arr) => {
-  const newArr = arr.slice();
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const rand = Math.floor(Math.random() * (i + 1));
-    [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
-  }
-  return newArr;
-};
+
+export const customeListOrderProductsPaypal = (products, colors) => {
+  let list = [];
+  console.log(colors)
+  products.map((item) => {
+    const { ram, storage } = item.detailsProduct;
+    const { name, salePrice, quantity } = item;
+    const colorName = getColorProduct(item, colors);
+
+    const newItem = {
+      name, ram, storage, salePrice, quantity, colorName
+    }
+    list.push(newItem);
+  });
+  return list;
+}

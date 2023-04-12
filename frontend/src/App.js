@@ -30,8 +30,9 @@ import PasswordPage from './pages/user/password';
 import CheckOutPage from './pages/checkout';
 import OrderConfirmation from './pages/checkout/order-confirmation';
 import OrderDetails from './pages/user/order-detail';
-import addressThunk from './features/address/address.service';
 import AllProductPage from './pages/all-products';
+import ProductPage from './pages/product-type';
+import PaypalSuccessPage from './pages/checkout/paypal-success';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -105,6 +106,8 @@ function App() {
             <Route path="/checkout" element={<CheckOutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/products" exact element={<AllProductPage />} />
+            <Route path="/product-page" element={<ProductPage />} />
+            <Route path="/checkout/success" element={<PaypalSuccessPage />} />
             <Route path="/products/*" element={<SingleProduct />} />
             <Route path="/finish-signup" element={<FinishSignUp />} />
             <Route path="/sign-in" element={<SignIn />} />

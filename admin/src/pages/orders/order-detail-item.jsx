@@ -14,9 +14,11 @@ const getColorProduct = (product, colors) => {
   return colorName;
 };
 const OrderDetailItem = (props) => {
+
   const { item } = props;
-  const auth = useSelector((state) => state.auth);
-  const { colors } = auth.data;
+  const data = useSelector((state) => state.data);
+  const { colors } = data;
+  console.log(colors);
   const { productId, purchasedQty } = item;
   const { salePrice, productPictures, name, detailsProduct } = productId;
   const { ram, storage } = detailsProduct;

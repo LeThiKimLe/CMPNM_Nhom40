@@ -3,7 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
-
+const paypal = require('paypal-rest-sdk');
 const app = express();
 const server = http.createServer(app);
 
@@ -13,6 +13,12 @@ const corsOptions = require('./src/configs/cors-options');
 const credentials = require('./src/middlewares/credentials');
 
 require('dotenv').config();
+
+paypal.configure({
+  'mode': 'sandbox', 
+  'client_id': process.env.CLIENT_ID,
+  'client_secret': process.env.CLIENT_SECRET,
+})
 /**
  * * mongoose connect db cloud
  */

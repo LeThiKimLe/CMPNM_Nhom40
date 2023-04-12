@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
+import { _ } from 'lodash';
+import { useLocation } from 'react-router-dom';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import CurrencyInput from 'react-currency-input-field';
@@ -19,82 +21,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import userThunk from '../../features/user/user.service';
 import ProductCard2 from '../../components/ProductItem2';
 import ProductCard from '../../components/ProductItem';
-import {
-  getShuffledArr,
-  getListProductByCategory,
-} from '../../utils/custom-products';
-
+import { getListProductByCategory } from '../../utils/custom-products';
+import optionFilter from './options';
 import ProductPagination from './pagination';
-const typePhone = [
-  {
-    name: 'iOS',
-  },
-  {
-    name: 'Android',
-  },
-];
-const rams = [
-  {
-    value: '2GB',
-  },
-  {
-    value: '3GB',
-  },
-  {
-    value: '4GB',
-  },
-  {
-    value: '6GB',
-  },
-  {
-    value: '8GB',
-  },
-  {
-    value: '12GB',
-  },
-];
-const storages = [
-  {
-    value: '32GB',
-  },
-  {
-    value: '64GB',
-  },
-  {
-    value: '128GB',
-  },
-  {
-    value: '256GB',
-  },
-  {
-    value: '512GB',
-  },
-  {
-    value: '1TB',
-  },
-];
-const sortOptions = [
-  {
-    key: 'Nổi bật',
-    name: 'Nổi bật',
-    value: 2,
-  },
-  {
-    key: '% giảm',
-    name: '% giảm',
-    value: 0,
-  },
-  {
-    key: 'Giá giảm dần',
-    name: 'Giá giảm dần',
-    value: -1,
-  },
-  {
-    key: 'Giá tăng dần',
-    name: 'Giá tăng dần',
-    value: 1,
-  },
-];
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -121,15 +50,17 @@ function Item(props) {
     />
   );
 }
-const pageSize = 12;
+const { typePhone, rams, storages, sortOptions } = optionFilter;
 const AllProductPage = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const categories = JSON.parse(localStorage.getItem('categories'));
   const data = useSelector((state) => state.data);
   const { productGroups } = data;
   const [minPriceInput, setMinPriceInput] = useState(null);
   const [maxPriceInput, setMaxPriceInput] = useState(null);
   const [categoryOption, setCategoryOption] = useState([]);
+  const [listCategoryFilter, setListCategoryFilter] = useState([]);
   const [osOption, setOsOption] = useState([]);
   const [ramOption, setRamOption] = useState([]);
   const [storageOption, setStorageOption] = useState([]);
@@ -140,13 +71,9 @@ const AllProductPage = () => {
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState(null);
   const [checkProduct, setCheckProduct] = useState(1);
-  const [pagination, setPagination] = useState({
-    count: 0,
-    from: 0,
-    to: pageSize,
-  });
-  useEffect(() => {});
-  const handleChangeSort = (e) => {
+  const [totalPage, setTotalPage] = useState(0);
+
+   const handleChangeSort = (e) => {
     sortOptions.map((item) => {
       if (item.key === e.target.value) {
         setSortOptionValue(item.value);
@@ -154,6 +81,7 @@ const AllProductPage = () => {
     });
     setSortOption(e.target.value);
   };
+
   const handleCategoryOption = (e) => {
     const index = categoryOption.indexOf(e.target.value);
     if (index === -1) {
@@ -191,7 +119,6 @@ const AllProductPage = () => {
     }
   };
   const handleChangeMin = (newValue) => {
-    console.log('onValueChange fired');
     if (newValue === undefined) {
       setMinPriceInput('0');
     } else {
@@ -206,14 +133,26 @@ const AllProductPage = () => {
       setMaxPriceInput(newValue);
     }
   };
-  const handlePageChange = (event, page) => {
-    const from = (page - 1) * pageSize;
-    const to = (page - 1) * pageSize + pageSize;
-    setPagination({ ...pagination, from: from, to: to });
-  };
+
+  useEffect(() => {
+    let list = [];
+    if (!location.state || Object.keys(listCategoryFilter).length === 0) {
+      list = categories.filter((c) => c.level === 1);
+    } else {
+      const listFilter = location.state.listFilter;
+      if (Object.keys(listFilter).length === 0) {
+        list = categories.filter((c) => c.level === 1);
+      } else {
+        list = categories.filter((c) => listFilter.includes(c._id));
+      }
+    }
+    setListCategoryFilter(list);
+  }, [location.state])
   useEffect(() => {
     setLoading(true);
+    console.log(location.state)
     if (
+      !location.state && 
       Object.keys(osOption).length === 0 &&
       Object.keys(ramOption).length === 0 &&
       Object.keys(storageOption).length === 0
@@ -231,24 +170,31 @@ const AllProductPage = () => {
       }, 1500);
     } else {
       const searchModel = {
-        category: categoryOption,
+        category: Object.keys(categoryOption).length !== 0 ? categoryOption : listCategoryFilter,
         os: osOption,
         ram: ramOption,
         storage: storageOption,
         sort: sortOptionValue,
       };
+      if (location.state) {
+        searchModel.child = true;
+      }
+      console.log('searchModel', searchModel);
       setCheckProduct(2);
 
       dispatch(userThunk.getProductsOptionAPI(searchModel))
         .unwrap()
         .then((value) => {
-          setAmount(value.list.length);
-          const newListProduct = getShuffledArr(value.list);
-          setListProduct(newListProduct);
+          console.log(value);
+          setAmount(value.list.total);
+          setTotalPage(value.list.totalPage);
+          setListProduct(value.list.data);
           setLoading(false);
         });
     }
   }, [
+    listCategoryFilter,
+    location.state,
     dispatch,
     sortOptionValue,
     categoryOption,
@@ -308,41 +254,33 @@ const AllProductPage = () => {
                 bgColor="white"
                 variant="contained"
                 sx={{ padding: '18px 27px', marginBottom: '10px' }}
-              >
-                <Stack sx={{ marginBottom: '15px' }}>
-                  <MDTypography
-                    sx={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#2b3445',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Thương hiệu
-                  </MDTypography>
-                  {categories && categories.length !== 0
-                    ? categories.map((item, index) => {
-                        if (item.level === 1) {
-                          const checkedValue = categoryOption.includes(
-                            item._id
-                          );
-                          return (
-                            <FormControlLabel
-                              key={index}
-                              label={item.name}
-                              control={
-                                <Checkbox
-                                  value={item._id}
-                                  checked={checkedValue}
-                                  onChange={handleCategoryOption}
-                                />
-                              }
-                            />
-                          );
-                        }
-                      })
-                    : null}
-                </Stack>
+              > <Stack sx={{ marginBottom: '15px' }}>
+      <MDTypography
+        sx={{
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#2b3445',
+          marginBottom: '8px',
+        }}
+      >
+        Thương hiệu
+      </MDTypography>
+      {listCategoryFilter && listCategoryFilter.length !== 0
+        ? listCategoryFilter.map((item, index) => {
+          const checkedValue = categoryOption.includes(item._id);
+          return ( 
+            <FormControlLabel
+              key={index}
+              label={item.name}
+              control={
+              <Checkbox
+                value={item._id}
+                checked={checkedValue}
+                onChange={handleCategoryOption}
+              />
+            }/>
+          )}): null}
+       </Stack>
                 <Divider />
                 <Stack spacing={1} sx={{ marginBottom: '15px' }}>
                   <MDTypography
@@ -411,7 +349,7 @@ const AllProductPage = () => {
                       marginBottom: '8px',
                     }}
                   >
-                    Thương hiệu
+                    Loại điện thoại
                   </MDTypography>
                   {typePhone.map((item, index) => {
                     const checkedValue = osOption.includes(item.name);
@@ -644,10 +582,7 @@ const AllProductPage = () => {
               ) : null}
               <Stack>
                 {amount && !loading ? (
-                  <ProductPagination
-                    count={Math.ceil(pagination.count / pageSize)}
-                    onChange={handlePageChange}
-                  />
+                  <ProductPagination count={totalPage} />
                 ) : null}
               </Stack>
             </Grid>

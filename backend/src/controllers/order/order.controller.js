@@ -6,11 +6,12 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
-
+const paypal = require('paypal-rest-sdk');
 const crypto = require('crypto');
 const https = require('https');
+const _ = require('lodash');
 const { Order, Cart, UserAddress, Product } = require('../../models');
-const { Response, ServerError, BadRequest } = require('../../utils/response');
+const { Response, ServerError, BadRequest, Create } = require('../../utils/response');
 const redisClient = require('../../connections/cachingRedis');
 
 const partnerCode = 'MOMO';
@@ -27,6 +28,149 @@ const orderGroupId = '';
 const autoCapture = true;
 const lang = 'vi';
 const amount = '50000';
+
+const exchangePrice = async (from, to) => {
+  let url = "";
+  if (to === "USD") {
+    url = process.env.API_URL_CURRENCY_USD; 
+  } else {
+    url = process.env.API_URL_CURRENCY_VND;
+  }
+  const res = await fetch(url);
+  const data = await res.json();
+  const rate = data.conversion_rates;
+  const valueChange = _.get(rate, from)
+  return valueChange; 
+}
+const paymentWithPaypal = async (req, res) => {
+  const orderData = req.body.data;
+  console.log(orderData);
+  const { subAmount, totalAmount, shipAmount, freeShip, items } = orderData;
+  const { name, address, mobileNumber, provinceName, districtName, wardName, wardCode } = orderData.address;
+  const exchange = await exchangePrice("USD", "VND");
+  console.log(exchange);
+  const totalPrice = (totalAmount*exchange).toFixed(2).toString();
+  const shipPrice = (shipAmount*exchange).toFixed(2).toString();
+  const shipDiscount = (freeShip*exchange).toFixed(2).toString();
+  const subPrice = (subAmount*exchange).toFixed(2).toString();
+  const listProducts = items.map((item) => {
+    const priceItem = (item.salePrice*exchange).toFixed(2).toString();
+    return {
+      name:`${item.name} ${item.ram} ${item.storage} ${item.colorName}`,
+      price: priceItem,
+      quantity: item.quantity,
+      currency: "USD"
+    }
+  })
+  console.log(JSON.stringify(listProducts, null, 1));
+  const createPaymentJson = {
+    "intent": "sale",
+    "payer": {
+      "payment_method": "paypal"
+    },
+    "redirect_urls": {
+          "return_url": "http://localhost:3002/checkout/success",
+          "cancel_url": "http://localhost:3002/checkout/cancel"
+    },
+    "transactions": [
+      {
+       "amount": {
+          "currency": "USD",
+          "total": totalPrice,
+          "details": {
+            "subtotal": subPrice,
+            "shipping": shipPrice,
+            "shipping_discount": shipDiscount,
+          }
+        },
+
+        "item_list": {
+          "items": listProducts,
+          "shipping_address": {
+            "recipient_name": name,
+            "line1": `${address} ${wardName}`,
+            "city": districtName,
+            "state": provinceName,
+            "phone": mobileNumber,
+            "postal_code": wardCode,
+            "country_code": "VN"
+          }
+        },
+        "description": "This is the payment description.",
+      }
+    ]
+  }
+  console.log(createPaymentJson)
+  paypal.payment.create(createPaymentJson, (error, payment) => {
+    if (error) {
+      return ServerError(res, error);
+    } 
+    return Create(res, { payment });
+  })
+}
+
+const paymentPaypalSuccess = (req, res) => {
+  const { paymentId, payerId, total, shipping_discount, shipping, subtotal } = req.query;
+   const executePaymentJson = {
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: total,
+          details: {
+            subtotal: subtotal,
+            shipping: shipping,
+            shipping_discount: shipping_discount,
+          }
+        },
+      },
+    ],
+  };
+ 
+  paypal.payment.execute(
+    paymentId,
+    executePaymentJson,
+    (error, payment) => {
+      if (error) {
+        console.log(error.response);
+        return ServerError(res, error);
+      } 
+       console.log(JSON.stringify(payment));
+       return Response(res, { success: true, payment })
+    }
+  );
+}
+const paymentPaypalCancel = (req, res) => {
+  
+}
+const addOrderPaypal = (req, res) => {
+  const { userId } = req.user;
+  const orderData = req.body.data;
+   Cart.deleteOne({ user: userId }).exec((error, result) => {
+    if (error) return res.status(400).json({ error });
+    if (result) {
+      orderData.orderStatus = [
+        {
+          type: 'pending',
+          date: new Date(),
+          isCompleted: true,
+        },
+      ];
+      orderData.paymentType = "card"
+      orderData.paymentStatus = "completed";
+      orderData.user = userId;
+      const order = new Order(orderData);
+      order.save(async (err, data) => {
+        if (err) return res.status(400).json({ err });
+        if (data) {
+          res.status(201).json({ order });
+        }
+      });
+    }
+  });
+
+}
 const addOrder = (req, res) => {
   const { userId } = req.user;
   const orderData = req.body.data;
@@ -151,6 +295,7 @@ const checkResponseMomo = (req, res) => {
 
 const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
+    .sort({ createdAt: "desc"})
     .select('_id totalAmount orderStatus paymentStatus items freeShip')
     .populate('items.productId', '_id name productPicture salePrice')
     .exec(async (error, orders) => {
@@ -265,6 +410,7 @@ const getAllOrderAfterHandle = async (req, res) => {
     ServerError(res);
   }
 };
+// get order 
 const getOrder = (req, res) => {
   const { id } = req.params;
   Order.findOne({ _id: id })
@@ -398,6 +544,7 @@ const updateOrderStatus = (req, res) => {
     }
   });
 };
+// user cancel order
 const cancelOrder = (req, res) => {
   const orderStatusData = req.body.data;
   const { orderId, status } = orderStatusData;
@@ -448,4 +595,7 @@ module.exports = {
   checkResponseMomo,
   paymentWithMomo,
   updateOrderMomoPayment,
+  paymentWithPaypal,
+  paymentPaypalSuccess,
+  addOrderPaypal,
 };

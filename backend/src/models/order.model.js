@@ -53,6 +53,9 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: 'cod',
     },
+    payerID: {
+      type: String,
+    },
     orderStatus: [
       {
         type: {
@@ -77,7 +80,6 @@ const orderSchema = new mongoose.Schema(
       },
     ],
   },
-  { collection: 'Order' },
   { timestamps: true }
 );
 
