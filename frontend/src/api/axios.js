@@ -11,13 +11,12 @@ const axiosClient = axios.create({
 });
 axiosClient.interceptors.request.use((req) => {
   const token = TokenService.getLocalAccessToken();
+  console.log('access token', token);
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
   return req;
 });
-
-// Add a response interceptor
 axiosClient.interceptors.response.use(
   async (response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
@@ -25,27 +24,27 @@ axiosClient.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const originalConfig = error.config;
-    if (originalConfig.url !== '/signin' && error.response) {
-      // Access Token was expired
-      if (error.response.status === 401 && !originalConfig._retry) {
-        originalConfig._retry = true;
-        try {
-          const rs = await axiosClient.post('/refresh-token', {
-            userId: TokenService.getUser().userId,
-          });
+    const originalRequest = error.config;
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const id = TokenService.getUser().userId;
+      const res = await axios.post('https://localhost:3000/api/refresh-token', {
+        userId: id,
+      });
 
-          const { accessToken } = rs.data;
-          TokenService.updateLocalAccessToken(accessToken);
-
-          return axiosClient(originalConfig);
-        } catch (_error) {
-          TokenService.removeData();
-          return Promise.reject(_error);
-        }
+      const { accessToken } = res.data;
+      TokenService.updateLocalAccessToken(accessToken);
+      if (res.data.success) {
+        TokenService.updateLocalAccessToken(res.data.accessToken);
+        return axiosClient(originalRequest);
       }
     }
     return Promise.reject(error);
   }
 );
+
 export default axiosClient;

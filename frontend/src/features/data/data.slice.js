@@ -34,6 +34,7 @@ const dataSlice = createSlice({
       })
       .addCase(dataThunk.getAllAPI.fulfilled, (state, action) => {
         const listCategory = getListCategory(action.payload.list[1]);
+        console.log(JSON.stringify(action.payload.list[0]));
         const allGroupProducts = getAllGroupProducts(
           listCategory,
           action.payload.list[1],

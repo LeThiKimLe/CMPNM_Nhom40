@@ -6,6 +6,8 @@ const Cart = require('./cart.model');
 const UserAddress = require('./address.model');
 const Order = require('./order.model');
 const Banner = require('./banner.model');
+const Comment = require('./comment.model');
+const Rating = require('./rating.model');
 
 module.exports = {
   User,
@@ -16,4 +18,6 @@ module.exports = {
   UserAddress,
   Order,
   Banner,
+  Comment,
+  Rating,
 };

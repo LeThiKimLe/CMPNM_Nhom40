@@ -18,28 +18,65 @@ const { Response, ServerError, Create } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 const redisClient = require('../../connections/cachingRedis');
 const getPaginationProduct = require('../../utils/pagination');
-
-const getChildren = (categories, category) => {
-  let list = [];
-  categories.map((item) => {
-    if (item.parentId == category) {
-      list.push(item._id);
+/*
+function getGreatGrandchildren(categories, categoryIds) {
+  const greatGrandchildren = [];
+  console.log('chay select');
+  // Create a hash table of categories by their parent ID
+  const categoryHash = {};
+  for (const category of categories) {
+    if (!categoryHash[category.parentId]) {
+      categoryHash[category.parentId] = [];
     }
-  });
-  return list;
-};
-const getAllCategorySelectLevelOne = (categories, categorySelect) => {
-  let list = [];
-  for (let cate of categorySelect) {
-    const category = _.find(categories,(c) => c._id == cate);
-      let newListCategory = getChildren(categories, category._id);
-      list.push(
-        ...newListCategory,
-        ...getAllCategorySelectLevelOne(categories, newListCategory)
-      );
+    categoryHash[category.parentId].push(category);
   }
-  return list;
-};
+
+  // Recursive function to scan all children categories at a certain level for a given category ID
+  function scanLevel(categoryId, level) {
+    if (categoryHash[categoryId]) {
+      const children = categoryHash[categoryId];
+      for (const child of children) {
+        if (child.level === level) {
+          const hasChildren =
+            categoryHash[child._id] && categoryHash[child._id].length > 0;
+          const isParent = categories.some(
+            (category) => category.parentId === child._id
+          );
+          if (!isParent || !hasChildren) {
+            greatGrandchildren.push(child);
+          }
+          if (hasChildren) {
+            scanLevel(child._id, level + 1);
+          }
+        }
+      }
+    }
+  }
+  // Check if there are any categories at a certain level
+  function hasCategoriesAtLevel(level) {
+    return categories.some((category) => category.level === level);
+  }
+  // Scan all levels recursively for each category ID in the list
+  for (const categoryId of categoryIds) {
+    const category = categories.find((cate) => cate._id == categoryId);
+    if (!category) {
+      console.log(`Category with ID ${categoryId} not found`);
+    } else {
+      let { level } = category;
+      while (true) {
+        const hasCategories = hasCategoriesAtLevel(level);
+        if (!hasCategoriesAtLevel) {
+          break;
+        }
+        scanLevel(categoryId, level);
+        level++;
+      }
+    }
+  }
+  console.log(greatGrandchildren);
+  return greatGrandchildren;
+}
+*/
 const createProduct = async (req, res) => {
   const { info, digital, description } = req.body.data;
 
@@ -140,28 +177,15 @@ const getProductsOption = async (req, res) => {
   const page = 1;
   const size = 12;
   const searchModel = req.body.data;
+  console.log(searchModel);
   let listProduct = [];
   const cacheResults = await redisClient.get('products');
   if (cacheResults) {
-    isCached = true;
     listProduct = JSON.parse(cacheResults);
-    let categoryCache = await redisClient.get('categories');
-    // check search model child 
-    listCategory = JSON.parse(categoryCache);
-    if (Object.keys(searchModel.category).length !== 0) {
-      let categories = [];
-      if (searchModel.child) {
-        categories = searchModel.category;
-      } else {
-        categories = getAllCategorySelectLevelOne(
-          listCategory,
-          searchModel.category
-        );
-      }
-      listProduct = listProduct.filter((product) =>
-        categories.includes(product.category)
-      );
-    }
+    console.log(searchModel.category);
+    listProduct = listProduct.filter((product) =>
+      searchModel.category.includes(product.category)
+    );
     if (Object.keys(searchModel.ram).length !== 0) {
       listProduct = _.filter(listProduct, (product) =>
         searchModel.ram.includes(product.detailsProduct.ram)

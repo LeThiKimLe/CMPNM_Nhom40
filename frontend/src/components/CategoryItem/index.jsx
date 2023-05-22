@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MenuItem, Menu, Button } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import {
-  getAllCateFromLevel,
-} from '../../utils/custome-category';
+import { getAllCateFromLevel } from '../../utils/custome-category';
 const CategoryItem = (props) => {
   const navigate = useNavigate();
   const data = useSelector((state) => state.data);
@@ -22,8 +20,10 @@ const CategoryItem = (props) => {
     setIcon(true);
   }
   const handleOnClick = (value) => {
+    console.log('value', value);
     const listCategory = getAllCateFromLevel(list, value);
-    navigate('/products', { state: { listFilter: listCategory}});
+    console.log('listCategory', listCategory);
+    navigate('/products', { state: { listFilter: listCategory } });
   };
   function handleClose() {
     setAnchorEl(null);

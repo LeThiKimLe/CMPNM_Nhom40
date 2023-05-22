@@ -79,5 +79,12 @@ userSchema.pre('save', async function save(next) {
     return next(error);
   }
 });
-
+userSchema.methods.updatePassword = async function (newPassword) {
+  try {
+    this.password = newPassword;
+    await this.save();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 module.exports = mongoose.model('User', userSchema);

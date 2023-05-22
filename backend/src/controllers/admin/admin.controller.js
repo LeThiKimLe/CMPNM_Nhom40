@@ -8,7 +8,6 @@ const redisClient = require('../../connections/cachingRedis');
 const {
   User,
   Category,
-  Product,
   Order,
   UserAddress,
   Color,

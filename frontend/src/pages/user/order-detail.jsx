@@ -68,6 +68,7 @@ const OrderDetails = () => {
             )
           );
           setLoading(false);
+          console.log(value.order);
           setOrderSelected(value.order);
         });
     }
@@ -353,6 +354,35 @@ const OrderDetails = () => {
                         {orderSelected.address.wardName},{' '}
                         {orderSelected.address.districtName},{' '}
                         {orderSelected.address.provinceName}
+                      </MDTypography>
+                    </Stack>
+                    <Stack
+                      justifyContent="flex-start"
+                      alignItems="flex-start"
+                      spacing={2}
+                      sx={{ marginBottom: '5px', marginTop: '15px' }}
+                    >
+                      <MDTypography
+                        sx={{
+                          color: '#444444',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Phương thức thanh toán
+                      </MDTypography>
+                      <MDTypography
+                        sx={{
+                          color: '#5b5b5b',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                        }}
+                      >
+                        {orderSelected.paymentType === 'momo'
+                          ? 'Thanh toán qua ví điện tử Momo'
+                          : orderSelected.paymentType === 'cod'
+                          ? 'Thanh toán khi nhận hàng'
+                          : 'Thanh toán qua ví điện tử Paypal'}
                       </MDTypography>
                     </Stack>
                   </Paper>

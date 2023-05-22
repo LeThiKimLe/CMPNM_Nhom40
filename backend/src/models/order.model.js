@@ -13,6 +13,10 @@ const orderSchema = new mongoose.Schema(
       ref: 'UserAddress',
       required: true,
     },
+    subTotal: {
+      type: Number,
+      required: true,
+    },
     totalAmount: {
       type: Number,
       required: true,
@@ -49,7 +53,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentType: {
       type: String,
-      enum: ['cod', 'card'],
+      enum: ['cod', 'paypal', 'momo'],
       required: true,
       default: 'cod',
     },
@@ -80,7 +84,8 @@ const orderSchema = new mongoose.Schema(
       },
     ],
   },
+  { strict: false },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model('Orders', orderSchema);

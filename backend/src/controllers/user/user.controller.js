@@ -11,16 +11,7 @@
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const {
-  User,
-  Category,
-  Product,
-  Color,
-  Banner,
-  Order,
-  UserAddress,
-  Cart,
-} = require('../../models');
+const { User, Category, Product, Color, Banner } = require('../../models');
 const {
   ServerError,
   BadRequest,
@@ -167,7 +158,23 @@ const reSendVerifyEmail = async (req, res) => {
     });
   });
 };
-
+// change password
+const changePassword = async (req, res) => {
+  const { password, newPassword } = req.body.data;
+  const user = await User.findOne({ email: req.user.email });
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    return BadRequest(res, 'Vui lòng xem lại mật khẩu');
+  }
+  user
+    .updatePassword(newPassword)
+    .then((value) => {
+      Response(res, 'Success! Password updated successfully');
+    })
+    .catch((error) => {
+      ServerError(res);
+    });
+};
 // forgot password
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -238,6 +245,7 @@ const uploadImage = async (req, res) => {
 };
 const reSendRefreshToken = async (req, res) => {
   const { userId } = req.body;
+  console.log('userid', userId);
   const foundUser = await User.findById(userId);
   if (foundUser) {
     jwt.verify(
@@ -324,4 +332,5 @@ module.exports = {
   uploadImage,
   reSendRefreshToken,
   getAllData,
+  changePassword,
 };

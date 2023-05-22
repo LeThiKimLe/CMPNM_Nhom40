@@ -10,6 +10,7 @@ import {
   Paper,
   Dialog,
   DialogTitle,
+  Box,
 } from '@mui/material';
 import { notification } from 'antd';
 import Breadcrumbs from '../../components/CustomBreadcrumbs';
@@ -30,6 +31,7 @@ import cartThunk from '../../features/cart/cart.service';
 import DetailProductItem from './detail-item';
 import ProductCard from '../../components/ProductItem';
 import Slider from 'react-slick';
+import CommentComponent from './comment-component';
 const settings = {
   dots: false,
   infinite: false,
@@ -251,6 +253,7 @@ const SingleProduct = () => {
               {/* Hình ảnh sản phẩm và mô tả */}
               <Grid
                 item
+                container
                 xs={7}
                 display="flex"
                 justifyContent="flex-start"
@@ -288,7 +291,13 @@ const SingleProduct = () => {
                       </div>
                     </div>
                   </MDBox>
-                  <MDTypography sx={{ fontWeight: '500', color: '#111' }}>
+                  <MDTypography
+                    sx={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#111',
+                    }}
+                  >
                     Thông tin sản phẩm
                   </MDTypography>
                   <MDBox variant="contained">
@@ -326,6 +335,7 @@ const SingleProduct = () => {
                       </Dialog>
                     </Stack>
                   </MDBox>
+                  <CommentComponent product={productSelected} />
                 </Stack>
               </Grid>
               {/* thông tin sản phẩm */}
@@ -601,9 +611,15 @@ const SingleProduct = () => {
                 </MDBox>
               </Grid>
             </Grid>
+
             <MDBox sx={{ marginTop: '10px', marginBottom: '10px' }}>
               <MDTypography
-                sx={{ fontWeight: '500', color: '#111', margin: '15px 0px' }}
+                sx={{
+                  fontWeight: '700',
+                  fontSize: '20px',
+                  color: '#111',
+                  margin: '15px 0px',
+                }}
               >
                 Xem thêm điện thoại khác
               </MDTypography>

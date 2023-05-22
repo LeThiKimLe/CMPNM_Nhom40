@@ -50,6 +50,19 @@ function Item(props) {
     />
   );
 }
+function getChildrenCategories(categoryId, categories) {
+  const childrenCategories = [];
+
+  for (let i = 0; i < categories.length; i++) {
+    const category = categories[i];
+    if (category.parentId === categoryId) {
+      childrenCategories.push(category);
+    }
+  }
+
+  return childrenCategories;
+}
+
 const { typePhone, rams, storages, sortOptions } = optionFilter;
 const AllProductPage = () => {
   const dispatch = useDispatch();
@@ -73,7 +86,7 @@ const AllProductPage = () => {
   const [checkProduct, setCheckProduct] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
 
-   const handleChangeSort = (e) => {
+  const handleChangeSort = (e) => {
     sortOptions.map((item) => {
       if (item.key === e.target.value) {
         setSortOptionValue(item.value);
@@ -136,7 +149,7 @@ const AllProductPage = () => {
 
   useEffect(() => {
     let list = [];
-    if (!location.state || Object.keys(listCategoryFilter).length === 0) {
+    if (!location.state && Object.keys(listCategoryFilter).length === 0) {
       list = categories.filter((c) => c.level === 1);
     } else {
       const listFilter = location.state.listFilter;
@@ -147,12 +160,12 @@ const AllProductPage = () => {
       }
     }
     setListCategoryFilter(list);
-  }, [location.state])
+    setCategoryOption([]);
+  }, [location.state]);
   useEffect(() => {
     setLoading(true);
-    console.log(location.state)
     if (
-      !location.state && 
+      !location.state &&
       Object.keys(osOption).length === 0 &&
       Object.keys(ramOption).length === 0 &&
       Object.keys(storageOption).length === 0
@@ -170,18 +183,20 @@ const AllProductPage = () => {
       }, 1500);
     } else {
       const searchModel = {
-        category: Object.keys(categoryOption).length !== 0 ? categoryOption : listCategoryFilter,
         os: osOption,
         ram: ramOption,
         storage: storageOption,
         sort: sortOptionValue,
       };
-      if (location.state) {
-        searchModel.child = true;
+      if (Object.keys(categoryOption).length === 0) {
+        searchModel.category = listCategoryFilter.map((item) => item._id);
+      } else {
+        searchModel.category = categoryOption;
       }
+
       console.log('searchModel', searchModel);
       setCheckProduct(2);
-
+      setLoading(false);
       dispatch(userThunk.getProductsOptionAPI(searchModel))
         .unwrap()
         .then((value) => {
@@ -254,33 +269,38 @@ const AllProductPage = () => {
                 bgColor="white"
                 variant="contained"
                 sx={{ padding: '18px 27px', marginBottom: '10px' }}
-              > <Stack sx={{ marginBottom: '15px' }}>
-      <MDTypography
-        sx={{
-          fontSize: '14px',
-          fontWeight: '600',
-          color: '#2b3445',
-          marginBottom: '8px',
-        }}
-      >
-        Thương hiệu
-      </MDTypography>
-      {listCategoryFilter && listCategoryFilter.length !== 0
-        ? listCategoryFilter.map((item, index) => {
-          const checkedValue = categoryOption.includes(item._id);
-          return ( 
-            <FormControlLabel
-              key={index}
-              label={item.name}
-              control={
-              <Checkbox
-                value={item._id}
-                checked={checkedValue}
-                onChange={handleCategoryOption}
-              />
-            }/>
-          )}): null}
-       </Stack>
+              >
+                {' '}
+                <Stack sx={{ marginBottom: '15px' }}>
+                  <MDTypography
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#2b3445',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    Thương hiệu
+                  </MDTypography>
+                  {listCategoryFilter && listCategoryFilter.length !== 0
+                    ? listCategoryFilter.map((item, index) => {
+                        const checkedValue = categoryOption.includes(item._id);
+                        return (
+                          <FormControlLabel
+                            key={index}
+                            label={item.name}
+                            control={
+                              <Checkbox
+                                value={item._id}
+                                checked={checkedValue}
+                                onChange={handleCategoryOption}
+                              />
+                            }
+                          />
+                        );
+                      })
+                    : null}
+                </Stack>
                 <Divider />
                 <Stack spacing={1} sx={{ marginBottom: '15px' }}>
                   <MDTypography
@@ -311,6 +331,7 @@ const AllProductPage = () => {
                         width: '90px',
                         height: '35px',
                         fontSize: '14px',
+                        color: 'white',
                       }}
                     />
                     <MDTypography

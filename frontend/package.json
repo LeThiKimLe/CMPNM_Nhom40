@@ -35,6 +35,7 @@
     "prop-types": "^15.8.1",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
+    "react-autosuggest": "^10.1.0",
     "react-collapse": "^5.1.1",
     "react-currency-input-field": "^3.6.9",
     "react-dom": "^18.2.0",

@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
 const paypal = require('paypal-rest-sdk');
+
 const app = express();
 const server = http.createServer(app);
 
@@ -15,10 +16,10 @@ const credentials = require('./src/middlewares/credentials');
 require('dotenv').config();
 
 paypal.configure({
-  'mode': 'sandbox', 
-  'client_id': process.env.CLIENT_ID,
-  'client_secret': process.env.CLIENT_SECRET,
-})
+  mode: 'sandbox',
+  client_id: process.env.CLIENT_ID,
+  client_secret: process.env.CLIENT_SECRET,
+});
 /**
  * * mongoose connect db cloud
  */
@@ -39,6 +40,7 @@ const bannerRouter = require('./src/routes/banner.routes');
 
 app.use(cookieParser());
 app.use(helmet());
+
 // built-in middleware for json
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));

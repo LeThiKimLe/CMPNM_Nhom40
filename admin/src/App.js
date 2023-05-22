@@ -23,6 +23,7 @@ import EditOrder from './pages/orders/edit-order';
 import Banner from './pages/banner';
 import dataThunk from './features/data/data.service';
 
+
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);

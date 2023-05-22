@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable camelcase */
 /* eslint-disable no-shadow */
 /* eslint-disable eqeqeq */
 /* eslint-disable array-callback-return */
@@ -11,8 +13,14 @@ const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
 const { Order, Cart, UserAddress, Product } = require('../../models');
-const { Response, ServerError, BadRequest, Create } = require('../../utils/response');
+const {
+  Response,
+  ServerError,
+  BadRequest,
+  Create,
+} = require('../../utils/response');
 const redisClient = require('../../connections/cachingRedis');
+const sendOrderConfirm = require('../../utils/send_mail/send-order');
 
 const partnerCode = 'MOMO';
 const accessKey = 'F8BBA842ECF85';
@@ -20,158 +28,129 @@ const secretkey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 const requestId = partnerCode + new Date().getTime();
 const orderId = requestId;
 const orderInfo = 'pay with MoMo';
-const redirectUrl = 'https://localhost:3002/checkout/checkoutMomo';
-const ipnUrl = 'https://localhost:3000/api/order/checkResponse';
+const redirectUrl = 'http://localhost:3002/checkout/checkResponse';
+const ipnUrl = 'http://localhost:3000/api/order/checkResponse';
 const requestType = 'captureWallet';
 const extraData = '';
-const orderGroupId = '';
-const autoCapture = true;
-const lang = 'vi';
-const amount = '50000';
-
 const exchangePrice = async (from, to) => {
-  let url = "";
-  if (to === "USD") {
-    url = process.env.API_URL_CURRENCY_USD; 
+  let url = '';
+  if (to === 'USD') {
+    url = process.env.API_URL_CURRENCY_USD;
   } else {
     url = process.env.API_URL_CURRENCY_VND;
   }
   const res = await fetch(url);
   const data = await res.json();
   const rate = data.conversion_rates;
-  const valueChange = _.get(rate, from)
-  return valueChange; 
-}
+  const valueChange = _.get(rate, from);
+  return valueChange;
+};
 const paymentWithPaypal = async (req, res) => {
   const orderData = req.body.data;
-  console.log(orderData);
-  const { subAmount, totalAmount, shipAmount, freeShip, items } = orderData;
-  const { name, address, mobileNumber, provinceName, districtName, wardName, wardCode } = orderData.address;
-  const exchange = await exchangePrice("USD", "VND");
-  console.log(exchange);
-  const totalPrice = (totalAmount*exchange).toFixed(2).toString();
-  const shipPrice = (shipAmount*exchange).toFixed(2).toString();
-  const shipDiscount = (freeShip*exchange).toFixed(2).toString();
-  const subPrice = (subAmount*exchange).toFixed(2).toString();
+  console.log('order data', orderData);
+  const { subTotal, totalAmount, shipAmount, freeShip, items } = orderData;
+  const {
+    name,
+    address,
+    mobileNumber,
+    provinceName,
+    districtName,
+    wardName,
+    wardCode,
+  } = orderData.address;
+  const exchange = await exchangePrice('USD', 'VND');
+  const totalPrice = (totalAmount * exchange).toFixed(2).toString();
+  const shipPrice = (shipAmount * exchange).toFixed(2).toString();
+  const shipDiscount = (freeShip * exchange).toFixed(2).toString();
+  const subPrice = (subTotal * exchange).toFixed(2).toString();
+  console.log('subPrice', subPrice);
   const listProducts = items.map((item) => {
-    const priceItem = (item.salePrice*exchange).toFixed(2).toString();
+    const priceItem = (item.salePrice * exchange).toFixed(2).toString();
     return {
-      name:`${item.name} ${item.ram} ${item.storage} ${item.colorName}`,
+      name: `${item.name} ${item.ram} ${item.storage} ${item.colorName}`,
       price: priceItem,
       quantity: item.quantity,
-      currency: "USD"
-    }
-  })
+      currency: 'USD',
+    };
+  });
   console.log(JSON.stringify(listProducts, null, 1));
   const createPaymentJson = {
-    "intent": "sale",
-    "payer": {
-      "payment_method": "paypal"
+    intent: 'sale',
+    payer: {
+      payment_method: 'paypal',
     },
-    "redirect_urls": {
-          "return_url": "http://localhost:3002/checkout/success",
-          "cancel_url": "http://localhost:3002/checkout/cancel"
+    redirect_urls: {
+      return_url: 'http://localhost:3002/checkout/success',
+      cancel_url: 'http://localhost:3002/checkout/cancel',
     },
-    "transactions": [
+    transactions: [
       {
-       "amount": {
-          "currency": "USD",
-          "total": totalPrice,
-          "details": {
-            "subtotal": subPrice,
-            "shipping": shipPrice,
-            "shipping_discount": shipDiscount,
-          }
+        amount: {
+          currency: 'USD',
+          total: totalPrice,
+          details: {
+            subtotal: subPrice,
+            shipping: shipPrice,
+            shipping_discount: shipDiscount,
+          },
         },
 
-        "item_list": {
-          "items": listProducts,
-          "shipping_address": {
-            "recipient_name": name,
-            "line1": `${address} ${wardName}`,
-            "city": districtName,
-            "state": provinceName,
-            "phone": mobileNumber,
-            "postal_code": wardCode,
-            "country_code": "VN"
-          }
+        item_list: {
+          items: listProducts,
+          shipping_address: {
+            recipient_name: name,
+            line1: `${address} ${wardName}`,
+            city: districtName,
+            state: provinceName,
+            phone: mobileNumber,
+            postal_code: wardCode,
+            country_code: 'VN',
+          },
         },
-        "description": "This is the payment description.",
-      }
-    ]
-  }
-  console.log(createPaymentJson)
+        description: 'This is the payment description.',
+      },
+    ],
+  };
+  console.log(
+    'payment with paypal',
+    createPaymentJson.transactions[0].amount.details
+  );
   paypal.payment.create(createPaymentJson, (error, payment) => {
     if (error) {
       return ServerError(res, error);
-    } 
+    }
     return Create(res, { payment });
-  })
-}
+  });
+};
 
 const paymentPaypalSuccess = (req, res) => {
-  const { paymentId, payerId, total, shipping_discount, shipping, subtotal } = req.query;
-   const executePaymentJson = {
+  const { paymentId, payerId, total, shipping_discount, shipping, subtotal } =
+    req.query;
+  const executePaymentJson = {
     payer_id: payerId,
     transactions: [
       {
         amount: {
-          currency: "USD",
-          total: total,
+          currency: 'USD',
+          total,
           details: {
-            subtotal: subtotal,
-            shipping: shipping,
-            shipping_discount: shipping_discount,
-          }
+            subtotal,
+            shipping,
+            shipping_discount,
+          },
         },
       },
     ],
   };
- 
-  paypal.payment.execute(
-    paymentId,
-    executePaymentJson,
-    (error, payment) => {
-      if (error) {
-        console.log(error.response);
-        return ServerError(res, error);
-      } 
-       console.log(JSON.stringify(payment));
-       return Response(res, { success: true, payment })
-    }
-  );
-}
-const paymentPaypalCancel = (req, res) => {
-  
-}
-const addOrderPaypal = (req, res) => {
-  const { userId } = req.user;
-  const orderData = req.body.data;
-   Cart.deleteOne({ user: userId }).exec((error, result) => {
-    if (error) return res.status(400).json({ error });
-    if (result) {
-      orderData.orderStatus = [
-        {
-          type: 'pending',
-          date: new Date(),
-          isCompleted: true,
-        },
-      ];
-      orderData.paymentType = "card"
-      orderData.paymentStatus = "completed";
-      orderData.user = userId;
-      const order = new Order(orderData);
-      order.save(async (err, data) => {
-        if (err) return res.status(400).json({ err });
-        if (data) {
-          res.status(201).json({ order });
-        }
-      });
-    }
-  });
 
-}
-const addOrder = (req, res) => {
+  paypal.payment.execute(paymentId, executePaymentJson, (error, payment) => {
+    if (error) {
+      return ServerError(res, error);
+    }
+    return Response(res, { success: true, payment });
+  });
+};
+const addOrderPaypal = (req, res) => {
   const { userId } = req.user;
   const orderData = req.body.data;
   Cart.deleteOne({ user: userId }).exec((error, result) => {
@@ -184,12 +163,93 @@ const addOrder = (req, res) => {
           isCompleted: true,
         },
       ];
+      orderData.paymentType = 'paypal';
+      orderData.paymentStatus = 'completed';
       orderData.user = userId;
       const order = new Order(orderData);
       order.save(async (err, data) => {
         if (err) return res.status(400).json({ err });
         if (data) {
-          res.status(201).json({ order });
+          // send email
+          Order.findOne({ _id: data._id })
+            .populate(
+              'items.productId',
+              '_id name productPictures salePrice color detailsProduct regularPrice category'
+            )
+            .lean()
+            .exec((error, orderFull) => {
+              if (error) return res.status(400).json({ error });
+              if (orderFull) {
+                UserAddress.findOne({
+                  user: order.user,
+                }).exec(async (err, address) => {
+                  if (err) return res.status(400).json({ err });
+                  orderFull.email = req.user.email;
+                  orderFull.address = address.address.find(
+                    (adr) =>
+                      adr._id.toString() === orderFull.addressId.toString()
+                  );
+                  console.log('order', orderFull);
+                  // * send order
+                  await sendOrderConfirm(orderFull);
+                  return Response(res, { orderFull });
+                });
+              }
+            });
+        }
+      });
+    }
+  });
+};
+const addOrder = (req, res) => {
+  const { userId } = req.user;
+  console.log(req.user);
+  console.log(req.body.data);
+  const orderData = req.body.data;
+  Cart.deleteOne({ user: userId }).exec((error, result) => {
+    if (error) return res.status(400).json({ error });
+    if (result) {
+      orderData.orderStatus = [
+        {
+          type: 'pending',
+          date: new Date(),
+          isCompleted: true,
+        },
+      ];
+      orderData.user = userId;
+      console.log('chay');
+      const order = new Order(orderData);
+      order.save(async (err, data) => {
+        if (err) return res.status(400).json({ err });
+        if (data) {
+          // send send_mail
+          Order.findOne({ _id: data._id })
+            .populate(
+              'items.productId',
+              '_id name productPictures salePrice color detailsProduct regularPrice category'
+            )
+            .lean()
+            .exec((error, orderFull) => {
+              if (error) return res.status(400).json({ error });
+              if (orderFull) {
+                UserAddress.findOne({
+                  user: order.user,
+                }).exec(async (err, address) => {
+                  if (err) return res.status(400).json({ err });
+                  orderFull.email = req.user.email;
+                  orderFull.address = address.address.find(
+                    (adr) =>
+                      adr._id.toString() === orderFull.addressId.toString()
+                  );
+                  console.log('order', orderFull);
+                  // * send order
+                  await sendOrderConfirm(orderFull);
+                  res.status(200).json({
+                    order,
+                  });
+                });
+              }
+            });
         }
       });
     }
@@ -199,7 +259,6 @@ const addOrder = (req, res) => {
 // api momo
 const paymentWithMomo = (req, res) => {
   const { totalAmount } = req.body.data;
-  console.log(totalAmount);
   const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
   console.log(rawSignature);
   const signature = crypto
@@ -259,6 +318,10 @@ const paymentWithMomo = (req, res) => {
   reqChild.end();
 };
 const checkResponseMomo = (req, res) => {
+  console.log('chay');
+  console.log(req.body.data);
+  // https://localhost:3002/checkout/checkoutMomo?partnerCode=MOMO&orderId=MOMO1682481840688&requestId=MOMO1682481840688&amount=18490000&orderInfo=pay+with+MoMo&orderType=momo_wallet&
+  // transId=2961777251&resultCode=0&message=Successful.&payType=qr&responseTime=1682488846599&extraData=&signature=e6f623e50a24dc29bb154a7364160783fdef5e1f5b4d2526b339574c582d6ec9
   try {
     const Secretkey = secretkey;
     const {
@@ -267,27 +330,77 @@ const checkResponseMomo = (req, res) => {
       orderInfo,
       orderType,
       transId,
+      orderExtra,
       resultCode,
       message,
       payType,
       responseTime,
       extraData,
-    } = req.body;
-    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
+      signature,
+    } = req.body.data;
+    const rawSignature = `accessKey=${accessKey}&amount=${req.body.data.amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
+    console.log(rawSignature);
     // Signature
-    const signature = crypto
+    const signatureCheck = crypto
       .createHmac('sha256', Secretkey)
       .update(rawSignature)
       .digest('hex');
-    console.log(signature);
-    console.log(signature.body);
-    if (signature === req.body.signature && req.body.resultCode === 0) {
-      // handle update đơn hàng
-      console.log('dúng r nè');
-
-      return Response(res);
+    console.log('signature', signatureCheck);
+    if (signatureCheck === signature && resultCode === '0') {
+      // handle save order momo
+      const { userId } = req.user;
+      console.log(req.user);
+      console.log(orderExtra);
+      const orderData = JSON.parse(orderExtra);
+      Cart.deleteOne({ user: userId }).exec((error, result) => {
+        if (error) return res.status(400).json({ error });
+        if (result) {
+          orderData.orderStatus = [
+            {
+              type: 'pending',
+              date: new Date(),
+              isCompleted: true,
+            },
+          ];
+          orderData.user = userId;
+          orderData.paymentType = 'momo';
+          orderData.paymentStatus = 'completed';
+          console.log('chay');
+          const order = new Order(orderData);
+          order.save(async (err, data) => {
+            if (err) return res.status(400).json({ err });
+            if (data) {
+              // send send_mail
+              Order.findOne({ _id: data._id })
+                .populate(
+                  'items.productId',
+                  '_id name productPictures salePrice color detailsProduct regularPrice category'
+                )
+                .lean()
+                .exec((error, orderFull) => {
+                  if (error) return res.status(400).json({ error });
+                  if (orderFull) {
+                    UserAddress.findOne({
+                      user: order.user,
+                    }).exec(async (err, address) => {
+                      if (err) return res.status(400).json({ err });
+                      orderFull.email = req.user.email;
+                      orderFull.address = address.address.find(
+                        (adr) =>
+                          adr._id.toString() === orderFull.addressId.toString()
+                      );
+                      console.log('order', orderFull);
+                      // * send order
+                      await sendOrderConfirm(orderFull);
+                      return Response(res, { orderFull });
+                    });
+                  }
+                });
+            }
+          });
+        }
+      });
     }
-    return BadRequest(res);
   } catch (error) {
     return ServerError(res);
   }
@@ -295,15 +408,15 @@ const checkResponseMomo = (req, res) => {
 
 const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
-    .sort({ createdAt: "desc"})
-    .select('_id totalAmount orderStatus paymentStatus items freeShip')
+    .sort({ createdAt: 'desc' })
+    .select('_id totalAmount subTotal orderStatus paymentStatus items freeShip')
     .populate('items.productId', '_id name productPicture salePrice')
     .exec(async (error, orders) => {
       if (error) return res.status(400).json({ error });
       if (orders) {
         const listOrder = await Order.find({})
           .select(
-            '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+            '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
           )
           .populate(
             'items.productId',
@@ -324,7 +437,7 @@ const updateOrderMomoPayment = (req, res) => {
     {
       $set: {
         paymentStatus: status,
-        paymentType: 'card',
+        paymentType: 'momo',
       },
     },
     {
@@ -335,7 +448,7 @@ const updateOrderMomoPayment = (req, res) => {
       const listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
         )
         .populate(
           'items.productId',
@@ -364,7 +477,7 @@ const getAllOrder = async (req, res) => {
       listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+          '_id totalAmount orderStatus subTotal paymentStatus paymentType items shipAmount freeShip addressId user'
         )
         .populate(
           'items.productId',
@@ -396,7 +509,7 @@ const getAllOrderAfterHandle = async (req, res) => {
     listOrder = await Order.find({})
       .sort({ createdAt: 'desc' })
       .select(
-        '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+        '_id totalAmount orderStatus subTotal paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
       )
       .populate(
         'items.productId',
@@ -410,7 +523,7 @@ const getAllOrderAfterHandle = async (req, res) => {
     ServerError(res);
   }
 };
-// get order 
+// get order
 const getOrder = (req, res) => {
   const { id } = req.params;
   Order.findOne({ _id: id })
@@ -571,7 +684,7 @@ const cancelOrder = (req, res) => {
       const listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
         )
         .populate(
           'items.productId',

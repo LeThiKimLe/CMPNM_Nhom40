@@ -14,6 +14,7 @@ const {
   getAllData,
   reSendRefreshToken,
   showProfile,
+  changePassword,
 } = require('../controllers/user/user.controller');
 const {
   getProductsOption,
@@ -29,6 +30,7 @@ router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
 router.post('/get-products', getProductsOption);
 router.use(authenticateUser, userCheckRole);
+router.post('/change-password', changePassword);
 router.post('/cancel-order', cancelOrder);
 router.get('/get-profile', showProfile);
 router.post('/forgot-password', forgotPassword);

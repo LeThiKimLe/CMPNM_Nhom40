@@ -42,7 +42,6 @@ function SignUp() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false);
   };
   // * validation shema

@@ -32,12 +32,15 @@ const OrderDetailItem = (props) => {
               sx={{
                 fontSize: '14px',
                 color: '#111111',
-                fontWeight: '500',
+                fontWeight: '600',
               }}
             >
               {name}
             </MDTypography>
-            <MDTypography sx={{ color: '#5b5b5b' }} variant="overline">
+            <MDTypography
+              sx={{ fontWeight: '500', color: '#fa113d' }}
+              variant="overline"
+            >
               {formatThousand(salePrice)}đ x {purchasedQty}
             </MDTypography>
           </MDBox>
@@ -50,10 +53,10 @@ const OrderDetailItem = (props) => {
             sx={{
               color: '#7d879c',
               fontSize: '12px',
-              fontWeight: '400',
+              fontWeight: '500',
             }}
           >
-            {ram}-{storage}-{colorName}
+            {ram} - {storage} - {colorName}
           </MDTypography>
         </Stack>
       </Grid>

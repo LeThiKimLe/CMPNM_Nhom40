@@ -126,10 +126,32 @@ const getDataUserAPI = createAsyncThunk('/get-data-user', async (thunkAPI) => {
 const getProductsOptionAPI = createAsyncThunk(
   '/get-products',
   async (searchModel, thunkAPI) => {
+    console.log('chay');
     try {
       const response = await axiosClient.post(
         '/get-products',
-        JSON.stringify({ data: searchModel }),
+        JSON.stringify({ data: searchModel })
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+const changePasswordAPI = createAsyncThunk(
+  '/changePassword',
+  async (passwordData, thunkAPI) => {
+    try {
+      const response = await axiosClient.post(
+        '/change-password',
+        JSON.stringify({ data: passwordData }),
         {
           withCredentials: true,
         }
@@ -151,6 +173,7 @@ const userThunk = {
   showProfileAPI,
   signupAPI,
   verifyEmailAPI,
+  changePasswordAPI,
   reSendVerifyEmailAPI,
   cancelOrderAPI,
   getDataUserAPI,

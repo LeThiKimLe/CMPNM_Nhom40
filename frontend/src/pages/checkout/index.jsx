@@ -1,5 +1,6 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import {
   Container,
   Paper,
@@ -9,10 +10,16 @@ import {
   CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
+  Radio,
+  FormLabel,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  Collapse,
+  IconButton,
 } from '@mui/material';
 // *socket io
 import { notification } from 'antd';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
@@ -22,11 +29,15 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MDButton from '../../components/MDButton';
 import { formatThousand } from '../../utils/custom-price';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckOutItem from '../../components/CheckOutItem';
 import getAddressAPI from '../../utils/get-details-address';
 import ModalAddress from './modal-address';
 import addressThunk from '../../features/address/address.service';
-import { customListOrderProducts, customeListOrderProductsPaypal } from '../../utils/custom-products';
+import {
+  customListOrderProducts,
+  customeListOrderProductsPaypal,
+} from '../../utils/custom-products';
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
@@ -67,7 +78,74 @@ const columns = [
     width: 2,
   },
 ];
+const BpIcon = styled('span')(({ theme }) => ({
+  borderRadius: '50%',
+  width: 16,
+  height: 16,
+  marginTop: '2px',
+  boxShadow:
+    theme.palette.mode === 'dark'
+      ? '0 0 0 1px rgb(16 22 26 / 40%)'
+      : 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+  backgroundColor: theme.palette.mode === 'dark' ? '#394b59' : '#f5f8fa',
+  backgroundImage:
+    theme.palette.mode === 'dark'
+      ? 'linear-gradient(180deg,hsla(0,0%,100%,.05),hsla(0,0%,100%,0))'
+      : 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+  '.Mui-focusVisible &': {
+    outline: '2px auto rgba(19,124,189,.6)',
+    outlineOffset: 2,
+  },
+  'input:hover ~ &': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#30404d' : '#ebf1f5',
+  },
+  'input:disabled ~ &': {
+    boxShadow: 'none',
+    background:
+      theme.palette.mode === 'dark'
+        ? 'rgba(57,75,89,.5)'
+        : 'rgba(206,217,224,.5)',
+  },
+}));
 
+const BpCheckedIcon = styled(BpIcon)({
+  backgroundColor: '#137cbd',
+  backgroundImage:
+    'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+  '&:before': {
+    display: 'block',
+    width: 16,
+    height: 16,
+    backgroundImage: 'radial-gradient(#fff,#fff 28%,transparent 32%)',
+    content: '""',
+  },
+  'input:hover ~ &': {
+    backgroundColor: '#106ba3',
+  },
+});
+
+// Inspired by blueprintjs
+function BpRadio(props) {
+  return (
+    <Radio
+      disableRipple
+      color="default"
+      checkedIcon={<BpCheckedIcon />}
+      icon={<BpIcon />}
+      {...props}
+    />
+  );
+}
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+  marginLeft: 'auto',
+  transition: theme.transitions.create('transform', {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 function getTotalPrice(items) {
   let total = 0;
@@ -108,12 +186,29 @@ const CheckOutPage = () => {
   const [paymentType, setPaymentType] = React.useState(0);
   //* modal add new Address
   const [openModalAdd, setOpenModalAdd] = useState(false);
+
+  // * SET OPEN SELECT METHOD PAYMENT
+  const [expanded, setExpanded] = React.useState(false);
+  const [selectPayment, setSelectPayment] = useState(paymentType);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+    setSelectPayment(paymentType);
+  };
+  const handleSelectMethod = (event) => {
+    const num = parseInt(event.target.value);
+    setSelectPayment(num);
+  };
+  const handleSelectedMethod = () => {
+    setExpanded(!expanded);
+    setPaymentType(selectPayment);
+  };
+  // * SET OPEN SELECT METHOD PAYMENT
+
   const onCancelModalAdd = () => {
     setOpenModalAdd(false);
   };
-  const handleChange = (event, newPaymentType) => {
-    setPaymentType(newPaymentType);
-  };
+
   const getMethodShip = async (to_district) => {
     const response = await fetch(
       `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
@@ -180,15 +275,16 @@ const CheckOutPage = () => {
       }, 1500);
       return;
     } else {
-        let orderCod = {
-          addressId: addressSelected._id,
-          totalAmount,
-          shipAmount,
-          freeShip,
-        }
-        orderCod.items = customListOrderProducts(items);
-        localStorage.setItem("orderCod", JSON.stringify(orderCod));
-        if (paymentType === 0) {
+      let orderCod = {
+        addressId: addressSelected._id,
+        totalAmount,
+        shipAmount,
+        freeShip,
+        subTotal: getTotalPrice(items),
+      };
+      orderCod.items = customListOrderProducts(items);
+      localStorage.setItem('orderCodMomo', JSON.stringify(orderCod));
+      if (paymentType === 0) {
         dispatch(orderThunk.addOrderAPI(orderCod))
           .unwrap()
           .then((value) => {
@@ -197,40 +293,53 @@ const CheckOutPage = () => {
               setCheckoutLoading(false);
               // navigation order-confirmation
               dispatch(cartActions.reset());
-              
+
               navigate('/order-confirmation', {
                 state: { id: value.order._id },
               });
             }, 1500);
           });
-      } else {
+      } else if (paymentType === 1) {
         let orderData = {
           address: addressSelected,
           totalAmount,
           shipAmount,
           freeShip,
-          subAmount: getTotalPrice(items),
-        }
+          subTotal: getTotalPrice(items),
+        };
         orderData.items = customeListOrderProductsPaypal(items, colors);
-        console.log("payment with paypal");
+        console.log('payment with paypal');
         dispatch(orderThunk.paymentWithPaypal(orderData))
           .unwrap()
           .then((value) => {
             // value have url thanh toan
-            console.log('payment with Paypal');
             console.log(value.payment);
             const { transactions } = value.payment;
             let data = transactions[0];
-            data.addressId = addressSelected._id; 
-            localStorage.setItem("orderPaypal", JSON.stringify(data));
+            data.addressId = addressSelected._id;
+            localStorage.setItem('orderPaypal', JSON.stringify(data));
             const { links } = value.payment;
             const url = links[1].href;
-            window.open(url, '_blank')
+            window.open(url, '_blank');
             setCheckoutLoading(false);
-          }).catch(() => {
-            localStorage.removeItem("orderPaypal");
+          })
+          .catch(() => {
+            localStorage.removeItem('orderPaypal');
           });
-        // checkout with paypal     
+        // checkout with paypal
+      } else {
+        // * payment with momo
+        // data order
+
+        dispatch(orderThunk.paymentWithMomo({ totalAmount }))
+          .unwrap()
+          .then((value) => {
+            // value have url thanh toan
+            console.log('payment with Momo');
+            window.open(value, '_blank');
+            setCheckoutLoading(false);
+          })
+          .catch(() => {});
       }
     }
   };
@@ -320,7 +429,7 @@ const CheckOutPage = () => {
           setAddressIndex={setAddressIndex}
           setListAddress={setListAddress}
         />
-        
+
         <Container>
           <Grid
             container
@@ -573,20 +682,123 @@ const CheckOutPage = () => {
                       direction="row"
                       justifyContent="flex-end"
                       alignItems={'center'}
-                      spacing={2}>
-    <ToggleButtonGroup
-      color="primary"
-      value={paymentType}
-      exclusive={true}
-      size="small"
-      onChange={handleChange}
-      aria-label="Platform"
-    > 
-    <ToggleButton value={0} sx={{ fontWeight: "bold", padding: "10px"}}>Cod</ToggleButton>
-      <ToggleButton value={1} sx={{ fontWeight: "bold", padding: "10px"}}>Paypal</ToggleButton>
-         </ToggleButtonGroup>
-    </Stack>
-    </Stack>
+                      spacing={2}
+                    >
+                      <MDTypography
+                        color="dark"
+                        sx={{ fontSize: '14px' }}
+                        variant="h4"
+                      >
+                        {paymentType === 0
+                          ? 'Thanh toán khi nhận hàng'
+                          : paymentType === 1
+                          ? 'Thanh toán qua ví Paypal'
+                          : 'Thanh toán qua ví Momo'}
+                      </MDTypography>
+
+                      <ExpandMore
+                        expand={expanded}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}
+                        aria-label="show more"
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
+                    </Stack>
+                  </Stack>
+                  <Stack justifyContent="center" direction="column">
+                    <Collapse
+                      in={expanded}
+                      timeout="auto"
+                      unmountOnExit
+                      sx={{ marginBottom: '15px' }}
+                    >
+                      <FormControl>
+                        <RadioGroup
+                          value={selectPayment}
+                          defaultValue={paymentType}
+                          aria-labelledby="demo-customized-radios"
+                          name="customized-radios"
+                          onChange={handleSelectMethod}
+                        >
+                          <FormControlLabel
+                            value={0}
+                            control={<BpRadio />}
+                            label={
+                              <MDTypography
+                                sx={{
+                                  fontWeight: '500',
+                                  fontSize: '14px',
+                                  color: '#344767',
+                                }}
+                              >
+                                Thanh toán khi nhận hàng
+                              </MDTypography>
+                            }
+                          />
+                          <FormControlLabel
+                            value={1}
+                            control={<BpRadio />}
+                            label={
+                              <MDTypography
+                                sx={{
+                                  fontWeight: '500',
+                                  fontSize: '14px',
+                                  color: '#344767',
+                                }}
+                              >
+                                Thanh toán qua ví Paypal
+                              </MDTypography>
+                            }
+                          />
+                          <FormControlLabel
+                            value={2}
+                            control={<BpRadio />}
+                            label={
+                              <MDTypography
+                                sx={{
+                                  fontWeight: '500',
+                                  fontSize: '14px',
+                                  color: '#344767',
+                                }}
+                              >
+                                Thanh toán qua ví Momo
+                              </MDTypography>
+                            }
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                      <Stack
+                        alignItems="flex-end"
+                        spacing={2}
+                        direction="row"
+                        justifyContent="flex-end"
+                      >
+                        <MDButton
+                          size="small"
+                          color="success"
+                          sx={{
+                            textTransform: 'initial !important',
+                            fontWeight: '500',
+                          }}
+                          onClick={handleSelectedMethod}
+                        >
+                          Xác nhận
+                        </MDButton>
+                        <MDButton
+                          size="small"
+                          color="primary"
+                          sx={{
+                            textTransform: 'initial !important',
+                            fontWeight: '500',
+                          }}
+                          onClick={handleExpandClick}
+                        >
+                          Hủy
+                        </MDButton>
+                      </Stack>
+                    </Collapse>
+                  </Stack>
                   {items && items.length > 0 ? (
                     <>
                       <Stack
@@ -622,15 +834,14 @@ const CheckOutPage = () => {
                       >
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                           variant="body"
                         >
                           Tổng tiền hàng:
                         </MDTypography>
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
-                          variant="body1"
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                         >
                           {formatThousand(getTotalPrice(items))}đ
                         </MDTypography>
@@ -644,17 +855,16 @@ const CheckOutPage = () => {
                       >
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                           variant="body"
                         >
                           Tổng phí vận chuyển:
                         </MDTypography>
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                           variant="body1"
                         >
-                          {' '}
                           {shipAmount ? formatThousand(shipAmount) : 0}đ
                         </MDTypography>
                       </Stack>
@@ -666,14 +876,14 @@ const CheckOutPage = () => {
                       >
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                           variant="body"
                         >
                           Tổng giảm phí vận chuyển:
                         </MDTypography>
                         <MDTypography
                           color="dark"
-                          sx={{ fontSize: '14px' }}
+                          sx={{ fontSize: '14px', fontWeight: '500' }}
                           variant="body1"
                         >
                           - {formatThousand(freeShip)}đ

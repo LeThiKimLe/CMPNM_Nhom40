@@ -12,8 +12,6 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a lo
 import { Carousel } from 'react-responsive-carousel';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useNavigate } from 'react-router-dom';
-import { getShuffledArr } from '../../utils/custom-products';
 import InfoComponent from './Info.component';
 function Item(props) {
   const { sx, ...other } = props;
@@ -46,10 +44,9 @@ const Home = () => {
   const data = useSelector((state) => state.data);
   const { productGroups, banners } = data;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 1500);

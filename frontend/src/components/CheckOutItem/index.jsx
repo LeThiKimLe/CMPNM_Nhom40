@@ -36,7 +36,7 @@ const CheckOutItem = (props) => {
               display="block"
               sx={{
                 fontSize: '14px',
-                color: '#111111',
+                color: '#344767',
                 fontWeight: '500',
               }}
             >
@@ -51,13 +51,11 @@ const CheckOutItem = (props) => {
           <MDTypography
             sx={{
               fontSize: '0.875rem',
-              fontWeight: '400',
-              color: '#000000',
+              fontWeight: '500',
+              color: '#344767',
             }}
           >
-            <MDTypography sx={{ color: '#5b5b5b' }} variant="overline">
-              {ram}-{storage}-{colorName}
-            </MDTypography>
+            {ram} - {storage} - {colorName}
           </MDTypography>
         </Stack>
       </Grid>
@@ -65,7 +63,7 @@ const CheckOutItem = (props) => {
       <Grid xs={2}>
         <Stack direction="row" spacing={1}>
           <MDTypography
-            sx={{ fontSize: '0.875rem', fontWeight: '400', color: '#000000' }}
+            sx={{ fontSize: '0.875rem', fontWeight: '500', color: '#344767' }}
           >
             {formatThousand(Number(salePrice))}đ
           </MDTypography>
@@ -74,7 +72,7 @@ const CheckOutItem = (props) => {
               fontSize: '0.875rem',
               fontWeight: '400',
               textDecoration: 'line-through',
-              color: '#5b5b5b',
+              color: '#344767',
             }}
           >
             {formatThousand(Number(regularPrice))}đ
@@ -85,11 +83,10 @@ const CheckOutItem = (props) => {
       <Grid xs={1.5}>
         {' '}
         <MDTypography
-          color="dark"
           sx={{
             fontSize: '0.875rem',
-            fontWeight: '400',
-            color: '#000000',
+            fontWeight: '500',
+            color: '#344767',
           }}
         >
           {quantity}
@@ -98,11 +95,10 @@ const CheckOutItem = (props) => {
       <Grid xs={2}>
         <Stack direction="row" spacing={1}>
           <MDTypography
-            color="dark"
             sx={{
+              color: '#344767',
               fontSize: '0.875rem',
-              fontWeight: '400',
-              color: '#000000',
+              fontWeight: '500',
             }}
           >
             {formatThousand(Number(salePrice) * quantity)}đ

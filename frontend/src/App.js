@@ -33,6 +33,7 @@ import OrderDetails from './pages/user/order-detail';
 import AllProductPage from './pages/all-products';
 import ProductPage from './pages/product-type';
 import PaypalSuccessPage from './pages/checkout/paypal-success';
+import MomoSuccessPage from './pages/checkout/momo-success';
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -107,6 +108,10 @@ function App() {
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/products" exact element={<AllProductPage />} />
             <Route path="/product-page" element={<ProductPage />} />
+            <Route
+              path="/checkout/checkResponse"
+              element={<MomoSuccessPage />}
+            />
             <Route path="/checkout/success" element={<PaypalSuccessPage />} />
             <Route path="/products/*" element={<SingleProduct />} />
             <Route path="/finish-signup" element={<FinishSignUp />} />
