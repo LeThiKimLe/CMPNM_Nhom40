@@ -173,27 +173,26 @@ const updateAddress = (req, res) => {
     });
   }
 };
-const getAllAddress = (req, res) => {
+const getAllAddress = async (req, res) => {
   const { userId } = req.user;
-  UserAddress.find({ user: userId, 'address.isActive': true }).exec(
-    (error, data) => {
-      if (error) {
-        ServerError(res, error);
-      }
-      if (data) {
-        if (!data[0]?.address) {
-          Response(res, { addresses: [] });
-        } else {
-          Response(res, { addresses: data[0]?.address });
-        }
-      }
+
+  const address = await UserAddress.find({
+    user: userId,
+    'address.isActive': true,
+  });
+  if (address) {
+    console.log(address);
+    if (!address[0]?.address) {
+      Response(res, { addresses: [] });
+    } else {
+      Response(res, { addresses: address[0]?.address });
     }
-  );
+  }
 };
 const deleteAddress = (req, res) => {
   const addressId = req.body.data;
   const { userId } = req.user;
-  UserAddress.updateOnde(
+  UserAddress.updateOne(
     { user: userId, 'address._id': addressId },
     {
       $set: {

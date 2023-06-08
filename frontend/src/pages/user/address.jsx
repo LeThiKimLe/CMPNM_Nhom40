@@ -88,7 +88,7 @@ const AddressPage = () => {
         listAddress && listAddress.length > 0 ? (
           listAddress.map((item, index) => {
             return (
-              <div key={index}>
+              <div key={index} style={{ paddingRight: '0px' }}>
                 <AddressItem item={item} setListAddress={setListAddress} />
                 <Divider sx={{ width: '100%' }} />
               </div>

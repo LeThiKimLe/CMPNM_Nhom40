@@ -9,6 +9,7 @@ const {
   paymentWithPaypal,
   paymentPaypalSuccess,
   addOrderPaypal,
+  getAllOrderByStatus,
 } = require('../controllers/order/order.controller');
 const { authenticateUser } = require('../middlewares/authenticate');
 const { userCheckRole } = require('../middlewares/authorization');
@@ -18,6 +19,7 @@ router.use(authenticateUser, userCheckRole);
 router.post('/add-item', addOrder);
 router.post('/add-paypal', addOrderPaypal);
 router.get('/get-all', getAllOrderOfUser);
+router.get('/get-all-by-status/:status', getAllOrderByStatus);
 router.get('/get-order/:id', getOrder);
 router.post('/momo', paymentWithMomo);
 router.post('/paypal', paymentWithPaypal);

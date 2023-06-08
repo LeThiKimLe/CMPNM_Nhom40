@@ -8,6 +8,7 @@ const Order = require('./order.model');
 const Banner = require('./banner.model');
 const Comment = require('./comment.model');
 const Rating = require('./rating.model');
+const Review = require('./review.model');
 
 module.exports = {
   User,
@@ -20,4 +21,5 @@ module.exports = {
   Banner,
   Comment,
   Rating,
+  Review,
 };

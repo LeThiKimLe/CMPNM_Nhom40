@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Container,
@@ -18,6 +18,7 @@ import {
   Collapse,
   IconButton,
 } from '@mui/material';
+import ServiceModal from './modal-service';
 // *socket io
 import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,6 +35,7 @@ import CheckOutItem from '../../components/CheckOutItem';
 import getAddressAPI from '../../utils/get-details-address';
 import ModalAddress from './modal-address';
 import addressThunk from '../../features/address/address.service';
+import _ from 'lodash';
 import {
   customListOrderProducts,
   customeListOrderProductsPaypal,
@@ -41,6 +43,8 @@ import {
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
+const districtIdStore = 3695;
+const wardCodeStore = '90737';
 const columns = [
   {
     key: 'name',
@@ -146,7 +150,23 @@ const ExpandMore = styled((props) => {
     duration: theme.transitions.duration.shortest,
   }),
 }));
+function formatDate(leadtime) {
+  const date = new Date(leadtime * 1000); // chuyển đổi timestamp thành đối tượng Date
+  const daysOfWeek = ['CN', 'Th02', 'Th03', 'Th04', 'Th05', 'Th06', 'Th07']; // Mảng chứa các tên thứ trong tuần
+  const dayOfWeek = daysOfWeek[date.getDay()];
 
+  const month = date.getMonth() + 1; // Lấy tháng từ đối tượng Date (lưu ý phải cộng thêm 1 vì tháng bắt đầu từ 0)
+  const dayOfMonth = date.getDate(); // Lấy ngày trong tháng từ đối tượng Date
+  const formattedDate = `${dayOfMonth}/${month} ${dayOfWeek}`;
+  // Lấy tên thứ từ đối tượng Date
+  return formattedDate; // Trả về chuỗi kết quả
+}
+function getNewTimestamp(leadtime, daysToAdd) {
+  const date = new Date(leadtime * 1000); // chuyển đổi timestamp thành đối tượng Date
+  date.setDate(date.getDate() + daysToAdd); // cộng thêm số ngày vào đối tượng Date
+  const newTimestamp = Math.floor(date.getTime() / 1000); // chuyển đổi lại thành giá trị timestamp
+  return newTimestamp;
+}
 function getTotalPrice(items) {
   let total = 0;
   items.map((item, index) => {
@@ -167,20 +187,26 @@ const CheckOutPage = () => {
   const { cartItems } = cart;
   const [items, setItems] = useState(cartItems);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  // address handle
   const [listAddress, setListAddress] = useState(addressUser.addresses);
-  const [addressIndexSelected, setAddressIndexSelected] = useState(
-    getAddressAPI.getIndexDefault(addressUser.addresses)
-  );
-  const [addressSelected, setAddressSelected] = useState(
-    getAddressAPI.getAddressDefault(addressUser.addresses, addressIndexSelected)
-  );
-  const [addressIndex, setAddressIndex] = useState(0);
+  const [addressIndexSelected, setAddressIndexSelected] = useState(-1);
+  const [addressSelected, setAddressSelected] = useState(-1);
+  const [addressIndex, setAddressIndex] = useState(-1);
   // * address handle
+  const [addressLoading, setAddressLoading] = useState(true);
   const [openModalAddress, setOpenModalAddress] = useState(false);
   const [shipAmount, setShipAmount] = useState(0);
-  const [methodShip, setMethodShip] = useState(null);
+  const [listService, setListService] = useState([]);
+  const [serviceId, setServiceId] = useState(null);
+  const [serviceTypeId, setServiceTypeId] = useState(null);
+  const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('');
+  const [openModalService, setOpenModalService] = useState(false);
+  const [serviceName, setServiceName] = useState('');
+  const [loadingService, setLoadingService] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
   const [freeShip, setFreeShip] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [percentShip, setPercentShip] = useState(1);
 
   // modal change payment
   const [paymentType, setPaymentType] = React.useState(0);
@@ -203,57 +229,117 @@ const CheckOutPage = () => {
     setExpanded(!expanded);
     setPaymentType(selectPayment);
   };
+
   // * SET OPEN SELECT METHOD PAYMENT
 
   const onCancelModalAdd = () => {
     setOpenModalAdd(false);
   };
-
-  const getMethodShip = async (to_district) => {
+  const getListService = async (to_district) => {
     const response = await fetch(
-      `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3076334&from_district=1442&to_district=${to_district}`,
+      'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services',
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Origin: 'cors',
-          Host: 'api.producthunt.com',
-          token: `53cff26c-f9d5-11ec-ad26-3a4226f77ff0`,
+          token: '76a0afe5-fb9a-11ed-8a8c-6e4795e6d902',
         },
+        body: JSON.stringify({
+          shop_id: 4176886,
+          from_district: districtIdStore,
+          to_district: parseInt(to_district),
+        }),
       }
     ).then((response) => response.json());
 
     // update the state
     if (response.code === 200) {
-      return response.data[0].service_id;
+      //      const { service_id, short_name, service_type_id } = response.data;
+      return response.data;
     }
   };
-  const getShipOrder = async (totalAmount, value, address, number = 1) => {
+  const getShipOrder = async (
+    totalAmount,
+    address,
+    service_type_id,
+    service_id,
+    number = 1
+  ) => {
     const response = await fetch(
-      `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=${value}&insurance_value=${totalAmount}&to_ward_code=${
-        address.wardCode
-      }&to_district_id=${address.districtId}&from_district_id=1442&weight=${
-        200 * number
-      }&length=50&width=50&height=7&to_district=${value}`,
+      'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee',
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
-          Accept: 'application/json',
           'Content-Type': 'application/json',
-          Origin: 'cors',
-          Host: 'api.producthunt.com',
-          token: `53cff26c-f9d5-11ec-ad26-3a4226f77ff0`,
-          shop_id: '3076334',
+          Token: '76a0afe5-fb9a-11ed-8a8c-6e4795e6d902',
+          ShopId: '4176886',
         },
+        body: JSON.stringify({
+          from_district_id: 3695,
+          from_ward_code: wardCodeStore,
+          service_id: service_id,
+          service_type_id: service_type_id,
+          to_district_id: parseInt(address.districtId),
+          to_ward_code: address.wardCode,
+          height: 50,
+          length: 20,
+          weight: 200 * number,
+          width: 20,
+          insurance_value: totalAmount,
+          cod_failed_amount: 2000,
+          coupon: null,
+        }),
       }
     ).then((response) => response.json());
 
-    // update the state
     if (response.code === 200) {
       return response.data.total;
     }
   };
+
+  const getEstimatedDeliveryDate = async (
+    to_district_id,
+    to_ward_code,
+    service_id
+  ) => {
+    const url =
+      'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime';
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Origin: 'cors',
+      ShopId: '4176886',
+      Token: '76a0afe5-fb9a-11ed-8a8c-6e4795e6d902',
+    };
+    const data = {
+      from_district_id: districtIdStore,
+      from_ward_code: wardCodeStore,
+      to_district_id: parseInt(to_district_id),
+      to_ward_code: to_ward_code,
+      service_id: service_id,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        return responseData.data.leadtime;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
   const handleCancel = () => {
     setOpenModalAddress(false);
     setAddressIndex(addressIndexSelected);
@@ -262,7 +348,12 @@ const CheckOutPage = () => {
     if (addressIndexSelected === addressIndex) {
       return;
     } else {
+      setAddressSelected(listAddress[addressIndex]);
       setAddressIndexSelected(addressIndex);
+      localStorage.setItem(
+        'selectedAddress',
+        JSON.stringify(listAddress[addressIndex])
+      );
     }
     setOpenModalAddress(false);
   };
@@ -344,49 +435,112 @@ const CheckOutPage = () => {
     }
   };
   useEffect(() => {
-    setItems(cartItems);
     dispatch(addressThunk.getAllAPI())
       .unwrap()
       .then((data) => {
         if (data.length === 0) {
           setListAddress([]);
         } else {
+          if (JSON.parse(localStorage.getItem('selectedAddress')) == null) {
+            const pos = data.addresses.map((e) => e.isDefault).indexOf(true);
+            localStorage.setItem(
+              'selectedAddress',
+              JSON.stringify(data.addresses[pos])
+            );
+            setAddressIndexSelected(pos);
+            setAddressIndex(pos);
+          } else {
+            // tìm vị trí
+            const exitsAddress = JSON.parse(
+              localStorage.getItem('selectedAddress')
+            );
+            const indexExits = _.findIndex(data.addresses, {
+              _id: exitsAddress._id,
+            });
+            setAddressSelected(
+              JSON.parse(localStorage.getItem('selectedAddress'))
+            );
+            setAddressIndex(indexExits);
+            setAddressIndexSelected(indexExits);
+          }
           setListAddress(data.addresses);
-          setAddressIndexSelected(
-            getAddressAPI.getIndexDefault(data.addresses)
+        }
+        setAddressLoading(false);
+      });
+  }, [dispatch]);
+  useEffect(() => {
+    setItems(cartItems);
+  }, [cartItems]);
+  const createNewListService = useCallback(
+    async (list) => {
+      let i = 0;
+      const newList = [];
+      const totalPrice = getTotalPrice(items);
+
+      if (Object.keys(list).length > 0) {
+        for (const item of list) {
+          const { service_id, short_name, service_type_id } = item;
+          const shipIndex = await getShipOrder(
+            totalPrice,
+            addressSelected,
+            service_type_id,
+            service_id,
+            items.length
           );
-          setAddressIndex(getAddressAPI.getIndexDefault(data.addresses));
+          const time = await getEstimatedDeliveryDate(
+            addressSelected.districtId,
+            addressSelected.wardCode,
+            service_id
+          );
+          const timeAdd = getNewTimestamp(time, 5);
+          if (i === 0) {
+            setEstimatedDeliveryDate(
+              `Nhận hàng vào ${formatDate(time)} - ${formatDate(timeAdd)}`
+            );
+          }
+          newList.push({
+            service_id,
+            short_name,
+            service_type_id,
+            shipFee: shipIndex,
+            fromTime: formatDate(time),
+            toTime: formatDate(timeAdd),
+          });
+          i++;
         }
-      });
-  }, [cartItems, dispatch]);
+      }
+      setListService(newList);
+
+      setLoadingService(false);
+    },
+    [items, addressSelected]
+  );
+
   useEffect(() => {
-    const address = getAddressAPI.getAddressDefault(
-      addressUser.addresses,
-      addressIndexSelected
-    );
-    if (Object.keys(address).length !== 0) {
-      getMethodShip(address.districtId).then((value) => {
-        setMethodShip(value);
-      });
-      setAddressSelected(address);
-    }
-  }, [addressIndexSelected, addressUser.addresses]);
-  useEffect(() => {
-    if (methodShip) {
-      if (items.length > 0) {
-        const totalPrice = getTotalPrice(items);
-        let freeShip = 0;
-        if (totalPrice >= 5000000) {
-          freeShip = 100;
-        } else if (3000000 <= totalPrice < 5000000) {
-          freeShip = 70;
-        } else {
-          freeShip = 30;
-        }
-        getShipOrder(
+    if (items.length > 0) {
+      const totalPrice = getTotalPrice(items);
+      let freeShip = 0;
+      if (totalPrice >= 5000000) {
+        freeShip = 100;
+      } else if (3000000 <= totalPrice < 5000000) {
+        freeShip = 70;
+      } else {
+        freeShip = 30;
+      }
+      setPercentShip(freeShip);
+      setTotalItems(totalPrice);
+      getListService(addressSelected.districtId).then((list) => {
+        createNewListService(list);
+        const { service_id, short_name, service_type_id } = list[0];
+
+        setServiceId(service_id);
+        setServiceName(short_name);
+        setServiceTypeId(service_type_id);
+        return getShipOrder(
           totalPrice,
-          methodShip,
           addressSelected,
+          service_type_id,
+          service_id,
           items.length
         ).then((value) => {
           setShipAmount(value);
@@ -394,9 +548,9 @@ const CheckOutPage = () => {
           setFreeShip(freeShipPrice);
           setTotalAmount(value + totalPrice - freeShipPrice);
         });
-      }
+      });
     }
-  }, [addressSelected, items, methodShip, freeShip]);
+  }, [addressSelected, items, createNewListService]);
 
   return (
     <>
@@ -417,6 +571,21 @@ const CheckOutPage = () => {
           setOpen={setOpenModalAdd}
           onCancel={onCancelModalAdd}
           setListAddress={setListAddress}
+        />
+        <ServiceModal
+          setServiceId={setServiceId}
+          setServiceName={setServiceName}
+          setServiceTypeId={setServiceTypeId}
+          open={openModalService}
+          serviceId={serviceId}
+          setOpen={setOpenModalService}
+          listService={listService}
+          setShipAmount={setShipAmount}
+          setFreeShip={setFreeShip}
+          percent={percentShip}
+          setTotalAmount={setTotalAmount}
+          totalPrice={totalItems}
+          setEstimatedDeliveryDate={setEstimatedDeliveryDate}
         />
         <ModalAddress
           open={openModalAddress}
@@ -481,7 +650,7 @@ const CheckOutPage = () => {
                         alignItems="center"
                         spacing={2}
                       >
-                        {addressUser.getLoading ? (
+                        {addressLoading ? (
                           <MDBox
                             display="flex"
                             justifyContent="center"
@@ -643,6 +812,89 @@ const CheckOutPage = () => {
                       );
                     })
                   )}
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={2}
+                    sx={{ marginBottom: '5px' }}
+                  >
+                    {loadingService ? (
+                      <MDBox
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        p={2}
+                      >
+                        <CircularProgress />
+                      </MDBox>
+                    ) : (
+                      <>
+                        {' '}
+                        <Stack
+                          direction="row"
+                          justifyContent="flex-start"
+                          alignItems="flex-start"
+                          sx={{ marginTop: '0px' }}
+                        >
+                          <MDTypography
+                            color="primary"
+                            sx={{ fontSize: '14px', marginRight: '20px' }}
+                            variant="h4"
+                          >
+                            Phương thức vận chuyển
+                          </MDTypography>
+                          <Stack
+                            direction="column"
+                            justifyContent="flex-start"
+                            alignItems={'flex-start'}
+                          >
+                            <MDTypography
+                              color="dark"
+                              sx={{ fontSize: '14px', fontWeight: '500' }}
+                            >
+                              {serviceName}
+                            </MDTypography>
+                            <MDTypography
+                              color="dark"
+                              sx={{ fontSize: '12px', fontWeight: '400' }}
+                            >
+                              {estimatedDeliveryDate !== null
+                                ? estimatedDeliveryDate
+                                : null}
+                            </MDTypography>
+                          </Stack>
+                          <MDTypography
+                            color="primary"
+                            sx={{ fontSize: '14px', marginLeft: '20px' }}
+                            variant="h4"
+                          >
+                            {formatThousand(shipAmount)}đ
+                          </MDTypography>
+                        </Stack>
+                        <Stack
+                          justifyContent="flex-end"
+                          alignItems="center"
+                          spacing={2}
+                        >
+                          {Object.keys(listService).length === 0 ? null : (
+                            <MDButton
+                              size="small"
+                              color="dark"
+                              sx={{
+                                textTransform: 'initial !important',
+                                fontWeight: '500',
+                              }}
+                              onClick={() => setOpenModalService(true)}
+                            >
+                              <EditIcon sx={{ marginRight: '4px' }} />
+                              Thay đổi
+                            </MDButton>
+                          )}
+                        </Stack>
+                      </>
+                    )}
+                  </Stack>
                 </Paper>
               </MDBox>
             </Grid>

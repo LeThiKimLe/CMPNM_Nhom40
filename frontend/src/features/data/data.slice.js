@@ -12,8 +12,6 @@ const initialState = {
   products: [],
   colors: [],
   banners: [],
-  productGroups: [],
-  categoryGroups: [],
   message: '',
   error: false,
   loading: false,
@@ -33,19 +31,6 @@ const dataSlice = createSlice({
         state.loading = true;
       })
       .addCase(dataThunk.getAllAPI.fulfilled, (state, action) => {
-        const listCategory = getListCategory(action.payload.list[1]);
-        console.log(JSON.stringify(action.payload.list[0]));
-        const allGroupProducts = getAllGroupProducts(
-          listCategory,
-          action.payload.list[1],
-          action.payload.list[0]
-        );
-        state.loading = false;
-        state.categoryGroups = listCategory;
-        state.productGroups = _.sampleSize(
-          allGroupProducts.slice(),
-          allGroupProducts.length
-        );
         state.categories = action.payload.list[0];
         localStorage.setItem(
           'categories',
@@ -54,6 +39,7 @@ const dataSlice = createSlice({
         state.products = action.payload.list[1];
         state.colors = action.payload.list[2];
         state.banners = action.payload.list[3];
+        state.loading = false;
       })
       .addCase(dataThunk.getAllAPI.rejected, (state, action) => {
         console.log(action.payload);

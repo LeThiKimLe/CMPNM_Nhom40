@@ -4,7 +4,7 @@ import { Chip } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
 import { Link } from 'react-router-dom';
 const AddressItem = (props) => {
-  const { item, keyIndex, addressSelected, setAddressSelected } = props;
+  const { item, keyIndex, addressIndex, setAddressIndex } = props;
   const {
     name,
     mobileNumber,
@@ -17,7 +17,7 @@ const AddressItem = (props) => {
   } = item;
 
   const handleOnChange = () => {
-    setAddressSelected(keyIndex);
+    setAddressIndex(keyIndex);
   };
 
   return (
@@ -32,7 +32,7 @@ const AddressItem = (props) => {
       <Row style={{ width: '100%' }}>
         <Col span={2}>
           <Checkbox
-            checked={addressSelected === keyIndex ? true : false}
+            checked={addressIndex === keyIndex ? true : false}
             onChange={handleOnChange}
           />
         </Col>

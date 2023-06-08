@@ -30,12 +30,7 @@ export const customGroupProduct = (group, categories, category) => {
   let listOption = [];
   const productSelected = group[0];
 
-  productGroup.category = category;
-  productGroup.categoryOne = getCategoryLevelOne(categories, category);
-  productGroup.categoryOneName = getCategoryName(
-    categories,
-    productGroup.categoryOne
-  );
+  productGroup.categorySlug = getCategorySlug(categories, category);
   group.map((item) => {
     listProductIDs.push(item._id);
     const { ram, storage } = item.detailsProduct;
@@ -147,7 +142,10 @@ export const getCategoryName = (list, id) => {
   const category = _.find(list, { _id: id });
   return category.name;
 };
-
+export const getCategorySlug = (list, id) => {
+  const category = _.find(list, { _id: id });
+  return category.slug;
+};
 export const getProduct = (products, ram, color, storage) => {
   const product = _.find(products, {
     color: color,
@@ -197,16 +195,21 @@ export const customListOrderProducts = (products) => {
 
 export const customeListOrderProductsPaypal = (products, colors) => {
   let list = [];
-  console.log(colors)
+  console.log(colors);
   products.map((item) => {
     const { ram, storage } = item.detailsProduct;
     const { name, salePrice, quantity } = item;
     const colorName = getColorProduct(item, colors);
 
     const newItem = {
-      name, ram, storage, salePrice, quantity, colorName
-    }
+      name,
+      ram,
+      storage,
+      salePrice,
+      quantity,
+      colorName,
+    };
     list.push(newItem);
   });
   return list;
-}
+};

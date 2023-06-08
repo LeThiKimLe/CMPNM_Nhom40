@@ -15,6 +15,10 @@ const {
   reSendRefreshToken,
   showProfile,
   changePassword,
+  searchProduct,
+  getProduct,
+  createReview,
+  getReview,
 } = require('../controllers/user/user.controller');
 const {
   getProductsOption,
@@ -29,7 +33,12 @@ router.get('/get-all-data', getAllData);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
 router.post('/get-products', getProductsOption);
+router.get('/search-product', searchProduct);
+router.get('/get-product/:categorySlug', getProduct);
+router.get('/get-review/:productid', getReview);
 router.use(authenticateUser, userCheckRole);
+
+router.post('/create-review', createReview);
 router.post('/change-password', changePassword);
 router.post('/cancel-order', cancelOrder);
 router.get('/get-profile', showProfile);

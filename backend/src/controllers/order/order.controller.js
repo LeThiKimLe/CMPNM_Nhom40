@@ -405,18 +405,38 @@ const checkResponseMomo = (req, res) => {
     return ServerError(res);
   }
 };
+const getAllOrderByStatus = (req, res) => {
+  const { status } = req.params;
+  console.log(status);
+  if (!status) {
+    return res.status(400).json({ error: 'Missing orderStatus parameter' });
+  }
+
+  Order.find({ user: req.user.userId, 'orderStatus.type': status })
+    .select('_id totalAmount subTotal orderStatus paymentStatus items freeShip')
+    .populate('items.productId', '_id name productPicture salePrice')
+    .exec(async (error, orders) => {
+      if (error) return res.status(400).json({ error });
+      if (orders) {
+        console.log(orders);
+        return res.status(200).json({ orders });
+      }
+    });
+};
 
 const getAllOrderOfUser = (req, res) => {
   Order.find({ user: req.user.userId })
     .sort({ createdAt: 'desc' })
-    .select('_id totalAmount subTotal orderStatus paymentStatus items freeShip')
+    .select(
+      '_id totalAmount subTotal orderStatus paymentStatus items freeShip deliveryDate estimatedDeliveryTime createdAt'
+    )
     .populate('items.productId', '_id name productPicture salePrice')
     .exec(async (error, orders) => {
       if (error) return res.status(400).json({ error });
       if (orders) {
         const listOrder = await Order.find({})
           .select(
-            '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
+            '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
           )
           .populate(
             'items.productId',
@@ -448,7 +468,7 @@ const updateOrderMomoPayment = (req, res) => {
       const listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
         )
         .populate(
           'items.productId',
@@ -477,7 +497,7 @@ const getAllOrder = async (req, res) => {
       listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount orderStatus subTotal paymentStatus paymentType items shipAmount freeShip addressId user'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
         )
         .populate(
           'items.productId',
@@ -509,7 +529,7 @@ const getAllOrderAfterHandle = async (req, res) => {
     listOrder = await Order.find({})
       .sort({ createdAt: 'desc' })
       .select(
-        '_id totalAmount orderStatus subTotal paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+        '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
       )
       .populate(
         'items.productId',
@@ -684,7 +704,7 @@ const cancelOrder = (req, res) => {
       const listOrder = await Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user createdAt'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
         )
         .populate(
           'items.productId',
@@ -711,4 +731,5 @@ module.exports = {
   paymentWithPaypal,
   paymentPaypalSuccess,
   addOrderPaypal,
+  getAllOrderByStatus,
 };

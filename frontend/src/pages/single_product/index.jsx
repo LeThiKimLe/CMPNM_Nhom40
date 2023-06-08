@@ -77,13 +77,11 @@ const listTitle = [
   'SIM',
   'Pin, Sạc',
 ];
-const breakPoints = [{ itemsToShow: 4, itemsToScroll: 1 }];
 const SingleProduct = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const data = useSelector((state) => state.data);
-  const user = useSelector((state) => state.user);
-  const { productGroups, banners } = data;
+  const { productGroups } = data;
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const { colors } = data;
   const id = location.state?.id;

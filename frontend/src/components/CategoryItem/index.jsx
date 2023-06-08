@@ -4,15 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { MenuItem, Menu, Button } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { getAllCateFromLevel } from '../../utils/custome-category';
+
 const CategoryItem = (props) => {
   const navigate = useNavigate();
-  const data = useSelector((state) => state.data);
-  const list = data.categories;
   const { name, index, value, categories } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [icon, setIcon] = useState(false);
-  const listCategory = categories.filter((item) => item.parentId === value);
+  const listCategory = categories.filter((item) => item.parent == value);
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
@@ -21,9 +19,10 @@ const CategoryItem = (props) => {
   }
   const handleOnClick = (value) => {
     console.log('value', value);
-    const listCategory = getAllCateFromLevel(list, value);
-    console.log('listCategory', listCategory);
-    navigate('/products', { state: { listFilter: listCategory } });
+    //navigate(`/products?category=${value}&level=2`);
+    const newUrl = `/products?category=${value}&level=2`;
+    window.history.pushState({}, '', newUrl);
+    window.dispatchEvent(new Event('popstate'));
   };
   function handleClose() {
     setAnchorEl(null);

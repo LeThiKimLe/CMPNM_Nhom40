@@ -6,29 +6,25 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 32,
+      unique: true,
     },
     slug: {
       type: String,
       required: true,
+      trim: true,
+      lowercase: true,
       unique: true,
     },
-    categoryImage: { type: String },
-    parentId: {
+    description: {
       type: String,
+      trim: true,
+      maxlength: 2000,
     },
-    level: {
-      type: Number,
-      enum: [1, 2, 3, 4],
-      default: 1,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    createdBy: {
+    parent: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+      ref: 'Category',
+      default: null,
     },
   },
   { timestamps: true }

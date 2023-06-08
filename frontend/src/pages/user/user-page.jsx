@@ -194,7 +194,7 @@ const UserPage = ({ children }) => {
               </Stack>
             </MDBox>
           </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={10} sx={{ paddingRight: '0px' }}>
             <MDBox variant="contained">{children}</MDBox>
           </Grid>
         </Grid>

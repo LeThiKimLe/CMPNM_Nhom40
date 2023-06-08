@@ -65,7 +65,10 @@ const AddressItem = (props) => {
       });
   };
   return (
-    <MDBox key={_id} style={{ display: 'flex', paddingLeft: '10px' }}>
+    <MDBox
+      key={_id}
+      style={{ display: 'flex', paddingLeft: '10px', paddingRight: '0px' }}
+    >
       <ModalEditAddress
         open={open}
         setOpen={setOpen}

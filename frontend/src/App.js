@@ -7,7 +7,7 @@ import MainLayout from './containers/layout';
 import Home from './pages/home';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import React, { useEffect } from 'react';
+import React, { useEffect, memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Material Dashboard 2 React themes
 import theme from './assets/theme';
@@ -34,22 +34,35 @@ import AllProductPage from './pages/all-products';
 import ProductPage from './pages/product-type';
 import PaypalSuccessPage from './pages/checkout/paypal-success';
 import MomoSuccessPage from './pages/checkout/momo-success';
-function App() {
+const App = memo(() => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const cartItemsLocal =
     localStorage.getItem('cartItems') == null
       ? null
       : JSON.parse(localStorage.getItem('cartItems'));
-
-  // thêm input để khi auth.aut, henticate thay đổi thì useEffect() chạy
-  useEffect(() => {
-    dispatch(dataThunk.getAllAPI())
-      .unwrap()
-      .then((value) => {
-        localStorage.setItem('categories', JSON.stringify(value.list[0]));
-      });
+  const getAllAPI = useCallback(async () => {
+    try {
+      const value = await dispatch(dataThunk.getAllAPI()).unwrap();
+      localStorage.setItem('categories', JSON.stringify(value.list[0]));
+    } catch (error) {
+      console.log(error);
+    }
   }, [dispatch]);
+  const getAllItemsAPI = useCallback(() => {
+    dispatch(cartThunk.getAllItemsAPI());
+  }, [dispatch]);
+  const addLocalToCartAPI = useCallback(
+    (newCartItems) => {
+      dispatch(cartThunk.addLocalToCartAPI(newCartItems))
+        .unwrap()
+        .then(() => {
+          dispatch(cartThunk.getAllItemsAPI());
+        });
+    },
+    [dispatch]
+  );
+  
   useEffect(() => {
     if (!user.isLoggedIn) {
       dispatch(userActions.isUserLoggedIn());
@@ -57,13 +70,10 @@ function App() {
   }, [dispatch, user.isLoggedIn]);
   useEffect(() => {
     if (user.isLoggedIn) {
-      const { userId } = user.user;
-      dispatch(cartThunk.getAllItemsAPI());
+      const userId = user?.user?.userId;
+      getAllItemsAPI();
 
-      // get cart in mongoose
-      // * cartItems in state change
       if (cartItemsLocal !== null) {
-        // TODO add to mongose
         let newCartItems = [];
         cartItemsLocal.map((item) => {
           const newItem = {
@@ -72,16 +82,10 @@ function App() {
           };
           newCartItems.push(newItem);
         });
-        dispatch(
-          cartThunk.addLocalToCartAPI({
-            user: userId,
-            cartItems: newCartItems,
-          })
-        )
-          .unwrap()
-          .then(() => {
-            dispatch(cartThunk.getAllItemsAPI());
-          });
+        addLocalToCartAPI({
+          user: userId,
+          cartItems: newCartItems,
+        });
         localStorage.removeItem('cartItems');
       }
     } else {
@@ -89,7 +93,17 @@ function App() {
         dispatch(cartActions.getAllItemsLocal(cartItemsLocal));
       }
     }
-  }, [user.isLoggedIn, cartItemsLocal, dispatch, user.user]);
+  }, [
+    user.isLoggedIn,
+    cartItemsLocal,
+    dispatch,
+    user.user,
+    getAllItemsAPI,
+    addLocalToCartAPI,
+  ]);
+useEffect(() => {
+    getAllAPI();
+  }, [getAllAPI]);
 
   return (
     <>
@@ -107,7 +121,11 @@ function App() {
             <Route path="/checkout" element={<CheckOutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/products" exact element={<AllProductPage />} />
-            <Route path="/product-page" element={<ProductPage />} />
+            <Route
+              path="/product-page/:categorySlug"
+              element={<ProductPage />}
+            />
+
             <Route
               path="/checkout/checkResponse"
               element={<MomoSuccessPage />}
@@ -123,6 +141,6 @@ function App() {
       </ThemeProvider>
     </>
   );
-}
+});
 
 export default App;

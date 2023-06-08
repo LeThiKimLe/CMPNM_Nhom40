@@ -45,6 +45,25 @@ const addOrderPaypalAPI = createAsyncThunk(
     }
   }
 );
+const getAllOrderByStatus = createAsyncThunk(
+  'get-all-order',
+  async (status, thunkAPI) => {
+    try {
+      const response = await axiosClient.get(
+        `/order/get-all-by-status/${status}`
+      );
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const getAllOrder = createAsyncThunk('get-all-order', async (thunkAPI) => {
   try {
@@ -177,5 +196,6 @@ const orderThunk = {
   paymentPaypalSuccess,
   addOrderPaypalAPI,
   checkResponseMomo,
+  getAllOrderByStatus,
 };
 export default orderThunk;

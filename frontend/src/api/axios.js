@@ -11,7 +11,6 @@ const axiosClient = axios.create({
 });
 axiosClient.interceptors.request.use((req) => {
   const token = TokenService.getLocalAccessToken();
-  console.log('access token', token);
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
@@ -32,16 +31,14 @@ axiosClient.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       const id = TokenService.getUser().userId;
-      const res = await axios.post('https://localhost:3000/api/refresh-token', {
+      const res = await axiosClient.post('/refresh-token', {
         userId: id,
       });
 
       const { accessToken } = res.data;
-      TokenService.updateLocalAccessToken(accessToken);
-      if (res.data.success) {
-        TokenService.updateLocalAccessToken(res.data.accessToken);
-        return axiosClient(originalRequest);
-      }
+      console.log(accessToken);
+      localStorage.setItem('accesstoken', accessToken);
+      return axiosClient(originalRequest);
     }
     return Promise.reject(error);
   }

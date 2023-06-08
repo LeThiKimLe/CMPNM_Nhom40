@@ -15,7 +15,6 @@ router.get('/get-all-handle', getAllAfterHandle);
 router.post('/create', createProduct);
 router.get('/:id', getProductById);
 router.get('/', getAll);
-
 router.post('/delete', deleteProduct);
 
 module.exports = router;

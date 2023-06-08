@@ -43,8 +43,8 @@ const ModalAddress = (props) => {
             <AddressItem
               item={item}
               keyIndex={index}
-              addressSelected={addressIndex}
-              setAddressSelected={setAddressIndex}
+              addressIndex={addressIndex}
+              setAddressIndex={setAddressIndex}
             />
             {index === listAddress.length - 1 ? null : <Divider />}
           </div>

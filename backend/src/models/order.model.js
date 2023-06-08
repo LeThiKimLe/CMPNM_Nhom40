@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// A.
 
 const orderSchema = new mongoose.Schema(
   {
@@ -83,6 +82,14 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    // ngày giao hàng dự kiến
+    deliveryDate: {
+      type: Date,
+    },
+    // thời gian vận chuyển
+    estimatedDeliveryTime: {
+      type: Number,
+    },
   },
   { strict: false },
   { timestamps: true }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Box, Paper, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
-import ProductCard from '../../components/ProductItem';
+import ProductCard from '../../components/ProductCard';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -42,15 +42,17 @@ function Item(props) {
 
 const Home = () => {
   const data = useSelector((state) => state.data);
-  const { productGroups, banners } = data;
+  const { products, banners } = data;
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }, []);
+    if (!data.loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+    }
+  }, [data.loading]);
 
   return (
     <MDBox
@@ -145,7 +147,7 @@ const Home = () => {
                 display="flex"
                 spacing={0.5}
                 sx={{ cursor: 'pointer' }}
-                to="/products"
+                to="/products?category=all"
               >
                 <MDTypography
                   sx={{
@@ -170,23 +172,15 @@ const Home = () => {
                 gridTemplateColumns: 'repeat(5, 1fr)',
               }}
             >
-              {productGroups.length > 0
-                ? productGroups.map((item, index) => {
+              {products.length > 0
+                ? products.map((item, index) => {
                     if (index < 15) {
+                      console.log(`product ${index}`, item);
                       return (
                         <Item key={index}>
                           <ProductCard
-                            index={item.category}
-                            rams={item.rams}
-                            storages={item.storages}
                             category={item.category}
-                            categoryOne={item.categoryOne}
-                            categoryOneName={item.categoryOneName}
-                            options={item.options}
-                            productSelected={item.productSelected}
-                            productGroup={item.products}
-                            colors={item.colors}
-                            groupColors={item.groupColors}
+                            products={item.products}
                           />
                         </Item>
                       );

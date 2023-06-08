@@ -14,23 +14,42 @@ import Grid from '@mui/material/Unstable_Grid2';
 import React, { useState, useEffect } from 'react';
 import MDBox from '../../components/MDBox';
 import { Link, useNavigate } from 'react-router-dom';
-import AdbIcon from '@mui/icons-material/Adb';
-import MDTypography from '../../components/MDTypography';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Autosuggest from 'react-autosuggest';
+import './style.css';
 import logo from '../../assets/images/tmshop.png';
+import userThunk from '../../features/user/user.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn, userActions } from '../../features/user/user.slice';
 import { cartActions } from '../../features/cart/cart.slice';
 import { addressActions } from '../../features/address/address.slice';
+import { formatThousand } from '../../utils/custom-price';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const location = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [phrase, setPhrase] = useState('');
+
+  const handlePhraseChange = (e) => {
+    console.log(e.target.value);
+    dispatch(userThunk.searchProductAPI(e.target.value))
+      .unwrap()
+      .then((data) => {
+        const { hits } = data;
+        const list = hits.map((hit) => hit._source);
+        console.log(list);
+        setSuggestions(list);
+      })
+      .catch(() => setSuggestions([]));
+
+    setPhrase(e.target.value);
+  };
+
   const cart = useSelector((state) => state.cart);
   const cartItemsLocal =
     localStorage.getItem('cartItems') == null
@@ -57,6 +76,20 @@ const Navbar = () => {
     });
     navigate('/');
   };
+  const [suggestions, setSuggestions] = useState([]);
+
+  const renderSuggestion = (suggestion) => (
+    <Link to="/product-page">
+      <div className="suggestion-item">
+        <img src={suggestion.productPictures[0]} alt={suggestion.name} />
+        <div className="suggestion-item-details">
+          <div className="suggestion-item-name">{suggestion.name}</div>
+          <div className="suggestion-item-price">{suggestion.price}</div>
+        </div>
+      </div>
+    </Link>
+  );
+  const suggestionListHeight = suggestions.length * 67.5;
   useEffect(() => {
     if (!isLoggedIn) {
       if (cartItemsLocal === null) {
@@ -104,20 +137,59 @@ const Navbar = () => {
                 component="form"
                 sx={{
                   display: 'flex',
-                  width: '100%',
                   borderRadius: '10px',
                 }}
                 variant="outlined"
               >
                 <InputBase
-                  sx={{ ml: 1, flex: 1, fontSize: '14px' }}
+                  sx={{ ml: 1, flex: 1, fontSize: '14px', width: '800px' }}
                   placeholder="Tìm kiếm sản phẩm..."
-                />
+                  value={phrase}
+                  onChange={handlePhraseChange}
+                />{' '}
                 <IconButton type="button" sx={{ p: '10px' }}>
                   <SearchIcon />
                 </IconButton>
               </Paper>
             </Stack>
+
+            {suggestions.length != 0 && (
+              <div
+                className="suggestion-list"
+                style={{ height: `${suggestionListHeight}px` }}
+              >
+                {suggestions.map((suggestion, key) => {
+                  const { ram, storage } = suggestion.detailsProduct;
+                  return (
+                    <Link
+                      to={`/product-page/${suggestion.category.slug}?ram=${ram}&storage=${storage}`}
+                      key={key}
+                    >
+                      <div className="suggestion-item">
+                        <img
+                          src={suggestion.productPictures[0]}
+                          alt={suggestion.name}
+                        />
+                        <div className="suggestion-item-details">
+                          <div className="suggestion-item-name">
+                            {suggestion.name}
+                          </div>
+                          <div className="suggestion-item-price">
+                            <div className="sale-price">
+                              {formatThousand(suggestion.salePrice)}đ
+                            </div>
+                            <div className="regular-price">
+                              {formatThousand(suggestion.regularPrice)}đ{' '}
+                            </div>
+                            <div className="sale">{suggestion.sale}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </Grid>
           <Stack
             direction="row"
