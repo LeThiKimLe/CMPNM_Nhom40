@@ -6,12 +6,11 @@ const {
   getAll,
   deleteProduct,
   getProductById,
-  getAllAfterHandle,
 } = require('../controllers/product/product.controller');
 const { adminCheckRole, authenticateAdmin } = require('../middlewares');
 
 router.use(authenticateAdmin, adminCheckRole);
-router.get('/get-all-handle', getAllAfterHandle);
+
 router.post('/create', createProduct);
 router.get('/:id', getProductById);
 router.get('/', getAll);

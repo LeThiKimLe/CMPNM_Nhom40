@@ -3,15 +3,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
-const crypto = require('crypto');
-const redisClient = require('../../connections/cachingRedis');
-const {
-  User,
-  Category,
-  Order,
-  UserAddress,
-  Color,
-} = require('../../models');
+
+const { User, Category, Order, UserAddress } = require('../../models');
 const {
   Unauthenticated,
   createTokenUser,
@@ -22,7 +15,6 @@ const {
   ServerError,
   BadRequest,
   Create,
-  sendVerificationEmail,
 } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 /**
@@ -31,7 +23,6 @@ const cloudinary = require('../../utils/upload_file/cloudinary');
  * * DESCRIPTION -- admin signin
  */
 // const oneDay = 60 * 60 * 24;
-const fiveMinutes = 60 * 60 * 5;
 const origin = `http://localhost:3001/`;
 const signin = async (req, res) => {
   const { email, password } = req.body;
@@ -87,7 +78,7 @@ const createUser = async (req, res) => {
     if (user) return BadRequest(res, 'Địa chỉ email đã được đăng ký');
 
     let newUser;
-    console.log('new user ', req.body.data);
+
     // eslint-disable-next-line prefer-const
     newUser = new User({
       ...req.body.data,
@@ -127,31 +118,14 @@ const getAllUser = async (req, res) => {
       Response(res, { list: [] });
     } else {
       // remove account admin
-      listUser.shift();
+
       return Response(res, { list: listUser });
     }
-    Response(res, { list: listUser });
   } catch (error) {
     ServerError(res);
   }
 };
-const getAllUserAfterHandle = async (req, res) => {
-  let listUser = [];
-  try {
-    listUser = await User.find({}).select(
-      '_id firstName lastName email roles createdAt isVerified contactNumber profilePicture'
-    );
-    if (listUser.length === 1) {
-      Response(res, { list: [] });
-    } else {
-      // remove account admin
-      listUser.shift();
-      Response(res, { list: listUser });
-    }
-  } catch (error) {
-    ServerError(res);
-  }
-};
+
 const deleteUser = (req, res) => {
   const listID = req.body.data;
   User.deleteMany(
@@ -169,60 +143,11 @@ const deleteUser = (req, res) => {
     }
   );
 };
-const getAllData = async (req, res) => {
-  let listUserAddress = [];
-  let listCategory = [];
-  let listOrder = [];
-  let listColor = [];
-  try {
-    const cacheListCategory = await redisClient.get('categories');
-    const cacheListOrder = await redisClient.get('orders');
-    const cacheListColor = await redisClient.get('colors');
-    listUserAddress = await UserAddress.find({})
-      .select('user address')
-      .populate('user', '_id');
 
-    if (cacheListCategory) {
-      listCategory = JSON.parse(cacheListCategory);
-    } else {
-      listCategory = await Category.find({ isActive: true }).select(
-        '_id name slug isActive level parentId categoryImage createdAt'
-      );
-      await redisClient.set('categories', JSON.stringify(listCategory));
-    }
-    if (cacheListOrder) {
-      listOrder = JSON.parse(cacheListOrder);
-    } else {
-      listOrder = await Order.find({})
-        .select(
-          '_id totalAmount orderStatus paymentStatus paymentType items shipAmount freeShip addressId user'
-        )
-        .populate(
-          'items.productId',
-          '_id name productPictures salePrice detailsProduct'
-        );
-      await redisClient.set('orders', JSON.stringify(listOrder));
-    }
-
-    if (cacheListColor) {
-      listColor = JSON.parse(cacheListColor);
-    } else {
-      listColor = await Color.find({});
-      await redisClient.set('colors', JSON.stringify(listColor));
-    }
-    Response(res, {
-      list: [listUserAddress, listCategory, listOrder, listColor],
-    });
-  } catch (error) {
-    ServerError(res);
-  }
-};
 module.exports = {
   signin,
   createUser,
   getAllUser,
-  getAllUserAfterHandle,
   deleteUser,
   getUserById,
-  getAllData,
 };

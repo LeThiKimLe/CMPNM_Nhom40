@@ -19,7 +19,6 @@ import { userActions } from './features/user/user.slice';
 import VerifyEmail from './pages/verify-email';
 import dataThunk from './features/data/data.service';
 import SingleProduct from './pages/single_product';
-import { cartActions } from './features/cart/cart.slice';
 import CartPage from './pages/cart';
 import cartThunk from './features/cart/cart.service';
 import ProfilePage from './pages/user/profile';
@@ -37,74 +36,30 @@ import MomoSuccessPage from './pages/checkout/momo-success';
 const App = memo(() => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const cartItemsLocal =
-    localStorage.getItem('cartItems') == null
-      ? null
-      : JSON.parse(localStorage.getItem('cartItems'));
-  const getAllAPI = useCallback(async () => {
-    try {
-      const value = await dispatch(dataThunk.getAllAPI()).unwrap();
-      localStorage.setItem('categories', JSON.stringify(value.list[0]));
-    } catch (error) {
-      console.log(error);
-    }
-  }, [dispatch]);
+  // get all data not token
+
+  // get all cart items
   const getAllItemsAPI = useCallback(() => {
     dispatch(cartThunk.getAllItemsAPI());
   }, [dispatch]);
-  const addLocalToCartAPI = useCallback(
-    (newCartItems) => {
-      dispatch(cartThunk.addLocalToCartAPI(newCartItems))
-        .unwrap()
-        .then(() => {
-          dispatch(cartThunk.getAllItemsAPI());
-        });
-    },
-    [dispatch]
-  );
-  
+  // add cart local
+
+  useEffect(() => {
+    dispatch(dataThunk.getAllAPI());
+  }, [dispatch]);
+
   useEffect(() => {
     if (!user.isLoggedIn) {
       dispatch(userActions.isUserLoggedIn());
     }
   }, [dispatch, user.isLoggedIn]);
+
+  // check sign in
   useEffect(() => {
     if (user.isLoggedIn) {
-      const userId = user?.user?.userId;
       getAllItemsAPI();
-
-      if (cartItemsLocal !== null) {
-        let newCartItems = [];
-        cartItemsLocal.map((item) => {
-          const newItem = {
-            product: item._id,
-            quantity: item.quantity,
-          };
-          newCartItems.push(newItem);
-        });
-        addLocalToCartAPI({
-          user: userId,
-          cartItems: newCartItems,
-        });
-        localStorage.removeItem('cartItems');
-      }
-    } else {
-      if (cartItemsLocal !== null) {
-        dispatch(cartActions.getAllItemsLocal(cartItemsLocal));
-      }
     }
-  }, [
-    user.isLoggedIn,
-    cartItemsLocal,
-    dispatch,
-    user.user,
-    getAllItemsAPI,
-    addLocalToCartAPI,
-  ]);
-useEffect(() => {
-    getAllAPI();
-  }, [getAllAPI]);
-
+  }, [user.isLoggedIn, dispatch, getAllItemsAPI]);
   return (
     <>
       <ThemeProvider theme={theme}>

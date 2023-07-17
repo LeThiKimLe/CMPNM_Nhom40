@@ -26,8 +26,12 @@ const categorySchema = new mongoose.Schema(
       ref: 'Category',
       default: null,
     },
+    status: {
+      type: Boolean,
+      default: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 module.exports = mongoose.model('Category', categorySchema);

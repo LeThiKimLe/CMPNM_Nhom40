@@ -1,7 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axios';
-import TokenService from '../token/token.service';
-import { create } from 'lodash';
 
 const signupAPI = createAsyncThunk('signup', async (userData, thunkAPI) => {
   try {
@@ -17,9 +15,12 @@ const signupAPI = createAsyncThunk('signup', async (userData, thunkAPI) => {
 });
 const signinAPI = createAsyncThunk('signin', async (userData, thunkAPI) => {
   try {
-    const response = await axiosClient.post('/sign-in', userData);
-    localStorage.setItem('accesstoken', response.data.accessToken);
-    TokenService.setUser(response.data.userData);
+    const response = await axiosClient.post('/sign-in', userData, {
+      withCredentials: true,
+    });
+
+    localStorage.setItem('userId', response.data.userId);
+    localStorage.setItem('accessToken', response.data.accessToken);
     return response.data;
   } catch (error) {
     const message =
@@ -29,6 +30,7 @@ const signinAPI = createAsyncThunk('signin', async (userData, thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
+
 const getProductAPI = createAsyncThunk(
   '/get-product',
   async (data, thunkAPI) => {
@@ -48,10 +50,10 @@ const getProductAPI = createAsyncThunk(
     }
   }
 );
+
 const searchProductAPI = createAsyncThunk(
   '/search-product',
   async (phrase, thunkAPI) => {
-    console.log(phrase);
     try {
       const response = await axiosClient.get('/search-product', {
         params: {
@@ -169,13 +171,11 @@ const getDataUserAPI = createAsyncThunk('/get-data-user', async (thunkAPI) => {
 const getProductsOptionAPI = createAsyncThunk(
   '/get-products',
   async (searchModel, thunkAPI) => {
-    console.log('chay');
     try {
       const response = await axiosClient.post(
         '/get-products',
         JSON.stringify({ data: searchModel })
       );
-      console.log(response.data);
       return response.data;
     } catch (error) {
       const message =
@@ -217,7 +217,6 @@ const createReviewAPI = createAsyncThunk(
     try {
       const response = await axiosClient.post(
         '/create-review',
-
         JSON.stringify({ data: reviewData })
       );
       console.log(response);
@@ -251,6 +250,56 @@ const getReviewAPI = createAsyncThunk(
     }
   }
 );
+const checkTokenAPI = createAsyncThunk(
+  '/check-token',
+  async (tokenData, thunkAPI) => {
+    try {
+      console.log(tokenData);
+      const response = await axiosClient.post(
+        '/check-token',
+        JSON.stringify({ data: tokenData }),
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+const reSendTokenAPI = createAsyncThunk(
+  '/re-send-token',
+  async (userId, thunkAPI) => {
+    try {
+      console.log(userId);
+      const response = await axiosClient.post(
+        '/refresh-token',
+        JSON.stringify({ data: userId }),
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const userThunk = {
   signinAPI,
@@ -266,6 +315,8 @@ const userThunk = {
   getProductAPI,
   createReviewAPI,
   getReviewAPI,
+  reSendTokenAPI,
+  checkTokenAPI,
 };
 
 export default userThunk;

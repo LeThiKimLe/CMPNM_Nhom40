@@ -14,7 +14,7 @@ const createAccessToken = (user) => {
   const accessToken = createJWT({
     payload: { user },
     secret: process.env.ACCESS_TOKEN_SECRET,
-    time: '1h',
+    time: '1d',
   });
 
   return accessToken;
@@ -23,7 +23,7 @@ const createRefreshToken = (user) => {
   const refreshToken = createJWT({
     payload: { user },
     secret: process.env.FRESH_TOKEN_SECRET,
-    time: '1d',
+    time: '7d',
   });
 
   return refreshToken;

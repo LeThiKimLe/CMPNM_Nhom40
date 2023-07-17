@@ -61,7 +61,6 @@ const OrderDetails = () => {
       dispatch(orderThunk.getOrder(orderId))
         .unwrap()
         .then((value) => {
-          console.log(value.order);
           setDateDelivered(
             new Date(
               value.order.orderStatus[value.order.orderStatus.length - 1].date
@@ -119,7 +118,7 @@ const OrderDetails = () => {
                 </Stack>
                 {orderSelected.orderStatus &&
                 orderSelected.orderStatus[orderSelected.orderStatus.length - 1]
-                  .type == 'delivered' ? (
+                  .type === 'delivered' ? (
                   <MDButton
                     size="medium"
                     color="warning"
@@ -286,13 +285,7 @@ const OrderDetails = () => {
                               fontWeight: '500',
                             }}
                           >
-                            {new Date(
-                              dateDelivered.setDate(dateDelivered.getDate() + 7)
-                            ).toLocaleDateString('en-AU', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: 'numeric',
-                            })}
+                            {orderSelected.estimatedDeliveryDate}
                           </MDTypography>
                         </Stack>
                       </Grid>

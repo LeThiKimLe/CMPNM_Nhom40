@@ -6,7 +6,7 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import CartItem from '../../components/CartItem';
 import { useDispatch, useSelector } from 'react-redux';
-import { cartActions } from '../../features/cart/cart.slice';
+
 import MDButton from '../../components/MDButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import { formatThousand } from '../../utils/custom-price';
@@ -14,6 +14,7 @@ import emptyCart from '../../assets/images/empty-cart.png';
 import { Link, useNavigate } from 'react-router-dom';
 import cartThunk from '../../features/cart/cart.service';
 import { notification } from 'antd';
+
 const columns = [
   {
     key: 'name',
@@ -62,40 +63,23 @@ const CartPage = () => {
   const { cartItems } = cart;
 
   const user = useSelector((state) => state.user);
-  const cartItemsLocal =
-    localStorage.getItem('cartItems') == null
-      ? null
-      : JSON.parse(localStorage.getItem('cartItems'));
-  const [getLoading, setGetLoading] = useState(false);
-  const [items, setItems] = useState(
-    cartItemsLocal === null ? [] : cartItemsLocal
-  );
+
+  const [getLoading, setGetLoading] = useState(true);
+  const [items, setItems] = useState([]);
   const handleDelete = (id) => {
     setGetLoading(true);
-    if (user.isLoggedIn) {
-      dispatch(cartThunk.deleteCartItemAPI(id))
-        .unwrap()
-        .then(() => {
-          return dispatch(cartThunk.getAllItemsAPI()).unwrap();
-        })
-        .then(() => {
-          notification.success({
-            message: 'Xóa sản phẩm thành công!',
-            placement: 'top',
-          });
-          setGetLoading(false);
+    dispatch(cartThunk.deleteCartItemAPI(id))
+      .unwrap()
+      .then(() => {
+        return dispatch(cartThunk.getAllItemsAPI()).unwrap();
+      })
+      .then(() => {
+        notification.success({
+          message: 'Xóa sản phẩm thành công!',
+          placement: 'top',
         });
-    } else {
-      console.log(id);
-      dispatch(cartActions.deleteCartItemLocal(id));
-      notification.success({
-        message: 'Xóa sản phẩm thành công!',
-        placement: 'top',
-      });
-      setTimeout(() => {
         setGetLoading(false);
-      }, 1000);
-    }
+      });
   };
   const handleCheckOut = () => {
     if (!user.isLoggedIn) {
@@ -106,6 +90,9 @@ const CartPage = () => {
   };
   useEffect(() => {
     setItems(cartItems);
+    setTimeout(() => {
+      setGetLoading(false);
+    }, 1000);
   }, [cartItems]);
   if (getLoading) {
     return (

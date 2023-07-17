@@ -6,15 +6,9 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 const slugify = require('slugify');
-const redisClient = require('../../connections/cachingRedis');
-const { Category, Color } = require('../../models');
-const {
-  Response,
-  ServerError,
-  Create,
-  Delete,
-  BadRequest,
-} = require('../../utils');
+
+const { Category } = require('../../models');
+const { Response, ServerError, Create, BadRequest } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 
 const create = async (req, res) => {
@@ -45,7 +39,6 @@ const create = async (req, res) => {
 
   if (req.body.data.parentId) {
     const { parentId } = req.body.data;
-    console.log(parentId);
     const cateParent = await Category.findOne({ _id: parentId });
     categoryObj.parentId = parentId;
     categoryObj.level = cateParent.level + 1;
@@ -61,68 +54,34 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   let listCategory = [];
   try {
-    const cacheResults = await redisClient.get('categories');
-    if (cacheResults) {
-      listCategory = JSON.parse(cacheResults);
-    } else {
-      listCategory = await Category.find({}).select(
-        '_id name slug categoryImage isActive parentId level createdAt'
-      );
-      await redisClient.set('categories', JSON.stringify(listCategory));
-    }
-
+    listCategory = await Category.find({})
+      .select('_id name slug categoryImage isActive parentId level createdAt')
+      .lean()
+      .exec();
     Response(res, { list: listCategory });
   } catch (error) {
     ServerError(res);
   }
 };
-const getAllAfterHandle = async (req, res) => {
-  let listCategory = [];
+// sửa lại
+const deleteCategory = async (req, res) => {
+  const { listIds } = req.body;
   try {
-    listCategory = await Category.find({}).select(
-      '_id name slug categoryImage isActive parentId level createdAt'
+    const result = await Category.updateMany(
+      { _id: { $in: listIds } },
+      { status: false }
     );
-    await redisClient.set('categories', JSON.stringify(listCategory));
-
-    Response(res, { list: listCategory });
+    if (result.nModified === 0) {
+      return res.status(400).json({ error: 'Categories not found' });
+    }
+    res.status(200).json({ message: 'Categories deleted successfully' });
   } catch (error) {
-    ServerError(res);
+    res.status(400).json({ error });
   }
 };
 
-const deleteCategory = (req, res) => {
-  const listID = req.body.data;
-  Category.deleteMany(
-    {
-      _id: {
-        $in: listID,
-      },
-    },
-    (error, result) => {
-      if (error) {
-        if (error) return ServerError(res, error.message);
-      } else {
-        Color.deleteMany(
-          {
-            category: {
-              $in: listID,
-            },
-          },
-          (err) => {
-            if (err) {
-              if (err) return ServerError(res, err.message);
-            } else {
-              return Response(res, 'Delete successfully');
-            }
-          }
-        );
-      }
-    }
-  );
-};
 module.exports = {
   create,
   getAll,
   deleteCategory,
-  getAllAfterHandle,
 };

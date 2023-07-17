@@ -7,7 +7,7 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
 const { Cart, CartItem, Product } = require('../../models');
-const { Response, ServerError } = require('../../utils');
+const { Response, ServerError, BadRequest } = require('../../utils');
 
 function runUpdate(filter, updateData, options) {
   return new Promise((resolve, reject) => {
@@ -116,10 +116,19 @@ const addItems = (req, res) => {
     }
   });
 };
-const addItem = (req, res) => {
+const addItem = async (req, res) => {
   const { cartItem } = req.body.data;
   const { userId } = req.user;
   const { product, quantity } = cartItem;
+  const productData = await Product.findOne({ _id: product })
+    .select('stock')
+    .lean();
+  const { stock } = productData;
+  if (quantity > stock) {
+    return BadRequest(res, {
+      message: 'Số lượng sản phẩm vượt quá số lượng trong kho',
+    });
+  }
   Cart.findOne({
     user: userId,
   }).exec((error, cart) => {
@@ -127,6 +136,11 @@ const addItem = (req, res) => {
       const item = cart.cartItems.find((c) => c.product == product);
       if (item) {
         const newQuantity = Number(item.quantity + Number(quantity));
+        if (newQuantity > stock) {
+          return BadRequest(res, {
+            message: 'Số lượng sản phẩm vượt quá số lượng trong kho',
+          });
+        }
         Cart.updateOne(
           {
             user: userId,
@@ -187,37 +201,38 @@ const addItem = (req, res) => {
     }
   });
 };
-const updateCartItem = (req, res) => {
+const updateCartItem = async (req, res) => {
   const { cartItem } = req.body.data;
   const { userId } = req.user;
   const { product, quantity } = cartItem;
-  Cart.findOne({
-    user: userId,
-  }).exec((error, cart) => {
-    if (cart) {
-      const item = cart.cartItems.find((c) => c.product == product);
-      if (item) {
-        Cart.updateOne(
-          {
-            user: userId,
-            'cartItems.product': product,
-          },
-          {
-            $set: {
-              'cartItems.$.quantity': quantity,
-            },
-          },
-          {
-            arrayFilters: [{ 'cartItems.product': product }],
-          }
-        ).exec((err, data) => {
-          if (data) {
-            return Response(res);
-          }
-          return ServerError(res, err);
-        });
-      }
+  const productData = await Product.findOne({ _id: product })
+    .select('stock')
+    .lean();
+  const { stock } = productData;
+  if (quantity > stock) {
+    return BadRequest(res, {
+      message: 'Số lượng sản phẩm vượt quá số lượng trong kho',
+    });
+  }
+
+  Cart.updateOne(
+    {
+      user: userId,
+      'cartItems.product': product,
+    },
+    {
+      $set: {
+        'cartItems.$.quantity': quantity,
+      },
+    },
+    {
+      arrayFilters: [{ 'cartItems.product': product }],
     }
+  ).exec((err, data) => {
+    if (data) {
+      return Response(res);
+    }
+    return ServerError(res, err);
   });
 };
 const deleteCartItem = (req, res) => {

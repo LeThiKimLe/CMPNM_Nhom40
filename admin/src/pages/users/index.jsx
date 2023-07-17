@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Row,
   Col,
@@ -40,7 +40,6 @@ function Users() {
   const [visibleDelete, setVisibleDelete] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [data, setData] = useState([]);
   const [getLoading, setGetLoading] = useState(true);
   // form
   const [formAdd] = Form.useForm();
@@ -213,6 +212,74 @@ function Users() {
       });
   };
   //* get all users initial
+
+  const data = useMemo(() => {
+    if (listUser.length > 0) {
+      return listUser.map((user) => ({
+        key: user._id,
+        name: (
+          <>
+            <Avatar.Group>
+              <Avatar
+                className="shape-avatar"
+                shape="square"
+                size={50}
+                src={user.profilePicture ? user.profilePicture : avatar}
+              ></Avatar>
+              <div className="avatar-info">
+                <Typography.Title level={5}>
+                  {user.lastName + user.firstName}
+                </Typography.Title>
+                <p>{user.email}</p>
+              </div>
+            </Avatar.Group>{' '}
+          </>
+        ),
+        contactNumber: (
+          <>
+            <div className="ant-employed">
+              <Typography.Title level={5}>
+                {!user.contactNumber ? 'Chưa cập nhật' : user.contactNumber}
+              </Typography.Title>
+            </div>
+          </>
+        ),
+        role: (
+          <>
+            <div className="author-info">
+              <Typography.Title level={5}>
+                {user.roles === 'user' ? (
+                  <Tag color="orange">Người dùng</Tag>
+                ) : (
+                  <Tag color="blue">Quản trị viên</Tag>
+                )}
+              </Typography.Title>
+            </div>
+          </>
+        ),
+        status: (
+          <>
+            {user.isVerified ? (
+              <Switch defaultChecked style={{ backgroundColor: '#00CED1' }} />
+            ) : (
+              <Switch />
+            )}
+          </>
+        ),
+        created: (
+          <>
+            <div className="ant-employed">
+              <Typography.Title level={5}>
+                {new Date(user.createdAt).toLocaleDateString()}
+              </Typography.Title>
+            </div>
+          </>
+        ),
+      }));
+    } else {
+      return [];
+    }
+  }, [listUser]);
   useEffect(() => {
     setGetLoading(true);
     if (Object.keys(listUser).length === 0) {
@@ -224,86 +291,9 @@ function Users() {
         });
     } else {
       setGetLoading(false);
-      setTimeout(() => {
-        setGetLoading(false);
-      }, 2000);
     }
   }, [listUser, dispatch]);
-  useEffect(() => {
-    if (listUser.length > 0) {
-      setData(
-        listUser.map((user) => {
-          return {
-            key: user._id,
-            name: (
-              <>
-                <Avatar.Group>
-                  <Avatar
-                    className="shape-avatar"
-                    shape="square"
-                    size={50}
-                    src={user.profilePicture ? user.profilePicture : avatar}
-                  ></Avatar>
-                  <div className="avatar-info">
-                    <Typography.Title level={5}>
-                      {user.lastName + user.firstName}
-                    </Typography.Title>
-                    <p>{user.email}</p>
-                  </div>
-                </Avatar.Group>{' '}
-              </>
-            ),
-            contactNumber: (
-              <>
-                <div className="ant-employed">
-                  <Typography.Title level={5}>
-                    {!user.contactNumber ? 'Chưa cập nhật' : user.contactNumber}
-                  </Typography.Title>
-                </div>
-              </>
-            ),
-            role: (
-              <>
-                <div className="author-info">
-                  <Typography.Title level={5}>
-                    {user.roles === 'user' ? (
-                      <Tag color="orange">Người dùng</Tag>
-                    ) : (
-                      <Tag color="blue">Quản trị viên</Tag>
-                    )}
-                  </Typography.Title>
-                </div>
-              </>
-            ),
 
-            status: (
-              <>
-                {user.isVerified ? (
-                  <Switch
-                    defaultChecked
-                    style={{ backgroundColor: '#00CED1' }}
-                  />
-                ) : (
-                  <Switch />
-                )}
-              </>
-            ),
-            created: (
-              <>
-                <div className="ant-employed">
-                  <Typography.Title level={5}>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </Typography.Title>
-                </div>
-              </>
-            ),
-          };
-        })
-      );
-    } else {
-      setData([]);
-    }
-  }, [listUser]);
   return (
     <>
       <ConfirmDeleteUser
@@ -334,27 +324,10 @@ function Users() {
             <Title level={3}>Danh sách Người dùng</Title>
           </Col>
           <Col xs="24" xl={24}>
-            <Row>
-              <Col span={12}>
-                <MenuSearch />
-              </Col>
-            </Row>
             <Row
               gutter={[32, 16]}
               style={{ marginTop: '10px', marginBottom: '20px' }}
             >
-              <Col>
-                <Button
-                  style={{
-                    background: '#FFB266',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<SearchOutlined />}
-                >
-                  Tìm kiếm
-                </Button>
-              </Col>
               <Col>
                 <Button
                   style={{

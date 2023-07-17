@@ -14,10 +14,10 @@ const { Client } = require('@elastic/elasticsearch');
 const mongoose = require('mongoose');
 
 const client = new Client({
-  node: 'http://localhost:9200',
+  node: 'http://localhost:9200/',
   auth: {
     username: 'elastic',
-    password: '150208bt',
+    password: 'VP3oN4L+treCsA10=F+I',
   },
 });
 const jwt = require('jsonwebtoken');
@@ -45,7 +45,7 @@ const {
   createRefreshToken,
   Unauthenticated,
 } = require('../../utils');
-const redisClient = require('../../connections/cachingRedis');
+
 // time expire token send email
 const oneDay = 60 * 60 * 24;
 async function testConnection() {
@@ -59,7 +59,7 @@ async function testConnection() {
 async function indexCategories() {
   try {
     const categories = await Category.find({});
-
+    console.log(categories);
     const body = categories.flatMap((category) => [
       { index: { _index: 'categories', _id: category._id.toString() } },
       {
@@ -76,6 +76,7 @@ async function indexCategories() {
     } else {
       console.log(`Indexed ${categories.length} categories in Elasticsearch`);
     }
+
     // Or using optional chaining
     bulkResponse?.errors
       ? console.log(`Failed to index some categories in Elasticsearch`)
@@ -131,7 +132,6 @@ const signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
     if (user) return BadRequest(res, 'Email đã được đăng ký tài khoản');
-    const userSize = await User.count();
     const { firstName, lastName, email, password } = req.body;
     const verificationToken = crypto.randomBytes(40).toString('hex');
     let newUser;
@@ -145,9 +145,6 @@ const signup = (req, res) => {
       verificationToken,
       verifyDate,
     });
-    if (userSize === 0) {
-      newUser.roles = 'admin';
-    }
     // eslint-disable-next-line no-shadow,
     newUser.save(async (error, user) => {
       if (error) return ServerError(res, error.message);
@@ -168,7 +165,6 @@ const signup = (req, res) => {
 };
 
 const signin = async (req, res) => {
-  await testConnection();
   const { email, password } = req.body;
   const user = await User.findOne({ email }).exec();
   if (!user) {
@@ -187,15 +183,62 @@ const signin = async (req, res) => {
 
   const accessToken = createAccessToken(userData);
   const newRefreshToken = createRefreshToken(userData);
+
   // Saving refreshToken with current user
   user.refreshToken = newRefreshToken;
+
   await user.save();
   // Creates Secure Cookie with refresh token
 
   Response(res, {
-    userData,
+    userId: userData.userId,
     accessToken,
   });
+};
+const checkToken = async (req, res) => {
+  const tokenData = req.body.data;
+  const { userId, accessToken } = tokenData;
+  try {
+    await jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    return Response(res, { accessToken, allow: true });
+  } catch (error) {
+    try {
+      const foundUser = await User.findById(userId);
+      if (foundUser) {
+        jwt.verify(
+          foundUser.refreshToken,
+          process.env.FRESH_TOKEN_SECRET,
+          // eslint-disable-next-line no-unused-vars
+          async (err, decoded) => {
+            // return new access-token
+            const adminData = createTokenUser(foundUser);
+            const accessToken = createAccessToken(adminData);
+            const refreshToken = createRefreshToken(adminData);
+            foundUser.refreshToken = refreshToken;
+
+            foundUser.save(async (error, data) => {
+              if (error) return ServerError(res, error.message);
+              if (data) {
+                return Response(res, {
+                  accessToken,
+                  allow: true,
+                });
+              }
+            });
+            if (err) {
+              return Response(res, {
+                allow: false,
+              });
+            }
+          }
+        );
+      }
+    } catch {
+      return res
+        .status(401)
+        .json({ message: 'Invalid access token or refresh token' });
+    }
+  }
 };
 const verifyEmail = (req, res) => {
   const { email, token } = req.body;
@@ -340,9 +383,10 @@ const uploadImage = async (req, res) => {
   }
 };
 const reSendRefreshToken = async (req, res) => {
-  const { userId } = req.body;
-  console.log('userid', userId);
+  console.log(req.body);
+  const userId = req.body.data;
   const foundUser = await User.findById(userId);
+  console.log(foundUser);
   if (foundUser) {
     jwt.verify(
       foundUser.refreshToken,
@@ -359,7 +403,6 @@ const reSendRefreshToken = async (req, res) => {
           if (error) return ServerError(res, error.message);
           if (data) {
             return Response(res, {
-              adminData,
               accessToken,
             });
           }
@@ -398,71 +441,15 @@ const getProduct = async (req, res) => {
       },
     },
   ]);
-  const listColor = await Color.aggregate([
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category',
-      },
-    },
-    {
-      $match: {
-        'category.slug': categorySlug,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          id: '$category._id',
-        },
-        colors: {
-          $push: '$$ROOT',
-        },
-      },
-    },
-  ]);
 
-  console.log(listColor);
-  return Response(res, { list: { listColor, products } });
+  return Response(res, { products });
 };
 const getAllData = async (req, res) => {
   try {
-    // Fetch all categories and their parent information
-    const listCategory = await Category.find({})
-      .select('_id name slug parent level')
-      .lean()
-      .exec();
-    // Fetch all other data from MongoDB
+    const listCategory = await Category.find({}).lean().exec();
     const listBanner = await Banner.find({}).lean().exec();
-    const listColor = await Color.aggregate([
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'category',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
-        $unwind: '$category',
-      },
-      {
-        $group: {
-          _id: {
-            id: '$category._id',
-            name: '$category.name',
-            slug: '$category.slug',
-          },
-          colors: {
-            $push: '$$ROOT',
-          },
-        },
-      },
-    ]);
-    // Fetch all products and their details
-    const listProduct = await Promise.all(
+
+    let listProduct = await Promise.all(
       listCategory.map(async (category) => {
         const { _id, slug, name } = category;
 
@@ -497,6 +484,7 @@ const getAllData = async (req, res) => {
             },
           },
         ]);
+
         if (products.length > 0) {
           return { category: { _id, name, slug }, products };
         }
@@ -506,245 +494,13 @@ const getAllData = async (req, res) => {
     const products = listProduct.filter(Boolean);
 
     Response(res, {
-      list: [listCategory, products, listColor, listBanner],
+      list: [listCategory, products, listBanner],
     });
   } catch (error) {
     ServerError(res);
   }
 };
 
-/*
-const getAllData = async (req, res) => {
-  try {
-    const listCategory = await Category.find({}).select(
-      '_id name slug isActive level'
-    );
-const products = await Product.aggregate([
-      {
-        $group: {
-          _id: {
-            category: '$category',
-            ram: '$detailsProduct.ram',
-            storage: '$detailsProduct.storage',
-          },
-          colors: { $addToSet: '$color' },
-          products: {
-            $push: {
-              _id: '$_id',
-              name: '$name',
-              slug: '$slug',
-              regularPrice: '$regularPrice',
-              salePrice: '$salePrice',
-              color: '$color',
-              stock: '$stock',
-              productPictures: '$productPictures',
-              category: '$category',
-              active: '$active',
-              createdAt: '$createdAt',
-              detailsProduct: '$detailsProduct',
-              sale: '$sale',
-              description: '$description',
-              quantitySold: '$quantitySold',
-            },
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: '_id.category',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
-        $unwind: '$category',
-      },
-      {
-        $project: {
-          _id: 0,
-          category: {
-            _id: '$category._id',
-            name: '$category.name',
-            slug: '$category.slug',
-            level: '$category.level',
-            children: '$category.children',
-          },
-          ram: '$_id.ram',
-          storage: '$_id.storage',
-          colors: 1,
-          products: {
-            $map: {
-              input: '$products',
-              as: 'product',
-              in: {
-                _id: '$$product._id',
-                name: '$$product.name',
-                slug: '$$product.slug',
-                regularPrice: '$$product.regularPrice',
-                salePrice: '$$product.salePrice',
-                color: '$$product.color',
-                stock: '$$product.stock',
-                productPictures: '$$product.productPictures',
-                active: '$$product.active',
-                createdAt: '$$product.createdAt',
-                detailsProduct: '$$product.detailsProduct',
-                sale: '$$product.sale',
-                description: '$$product.description',
-                quantitySold: '$$product.quantitySold',
-              },
-            },
-          },
-        },
-      },
-    ]);
-    const result = await Promise.all(
-      listCategory.map(async (category) => {
-        const categoryId = category._id;
-
-        const products = await Product.aggregate([
-          {
-            $match: {
-              category: categoryId,
-            },
-          },
-          {
-            $group: {
-              _id: {
-                ram: '$detailsProduct.ram',
-                storage: '$detailsProduct.storage',
-              },
-              colors: {
-                $push: '$color',
-              },
-              products: {
-                $push: '$$ROOT',
-              },
-            },
-          },
-        ]);
-
-        return { products };
-      })
-    );
-    const categories = await Category.find({})
-      .sort({ createdAt: -1 })
-      .populate('parent', '_id name slug')
-      .exec();
-    const result1 = [];
-
-    // Get all root categories (categories without a parent)
-    const rootCategories = categories.filter((category) => !category.parent);
-    // Recursively get all child categories for each root category
-    for (let i = 0; i < rootCategories.length; i + 1) {
-      const rootCategory = rootCategories[i];
-
-      const findChildCategories = (category) => {
-        const childCategories = categories.filter(
-          (c) => String(c.parent._id) === String(category._id)
-        );
-
-        if (childCategories.length === 0) {
-          return;
-        }
-
-        for (let j = 0; j < childCategories.length; j + 1) {
-          const childCategory = childCategories[j];
-          result1.push(childCategory);
-          findChildCategories(childCategory);
-        }
-      };
-      console.log(result1);
-      result1.push(rootCategory);
-      findChildCategories(rootCategory);
-    }
-    console.log(result1);
-    // Convert parentId field to ObjectId type
-    // Fetch all other data from MongoDB
-    const listBanner = await Banner.find({});
-    const listProduct = await Product.find({}).select(
-      '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
-    );
-    const listColor = await Color.find({});
-
-    Response(res, {
-      list: [listCategory, listProduct, listColor, listBanner, result],
-    });
-  } catch (error) {
-    ServerError(res);
-  }
-};
-*/
-const searchProductsByPrefix = async (index, phrase) => {
-  let hits = [];
-  console.log('chay');
-  // only string values are searchable
-  const searchResult = await client
-    .search({
-      index,
-      body: {
-        query: {
-          multi_match: {
-            fields: ['name', 'category.name'],
-            query: phrase,
-            type: 'phrase_prefix',
-          },
-        },
-        highlight: {
-          fields: {
-            name: {},
-            'category.name': {},
-          },
-        },
-        size: 50, // Giới hạn kết quả tìm kiếm đến 5 sản phẩm
-      },
-    })
-    .catch((e) => console.log('errr', e));
-  if (
-    searchResult &&
-    searchResult.hits &&
-    searchResult.hits.hits &&
-    searchResult.hits.hits.length > 0
-  ) {
-    const categories = {};
-    console.log(searchResult.hits.hits.length);
-
-    // Thêm sản phẩm vào object map
-    searchResult.hits.hits.forEach((hit) => {
-      const category = hit._source.category._id;
-      if (!categories[category]) {
-        categories[category] = [hit];
-      } else {
-        categories[category].push(hit);
-      }
-    });
-
-    // Lấy mỗi category 1 sản phẩm
-    Object.keys(categories).forEach((category) => {
-      if (hits.length < 6) {
-        hits.push(categories[category][0]);
-      }
-    });
-  }
-  return {
-    hitsCount: hits.length,
-    hits,
-  };
-};
-
-const searchProduct = async (req, res) => {
-  const { phrase } = req.query;
-  if (!phrase) {
-    return res.status(400).json({ error: 'Missing required parameter' });
-  }
-  console.log('phrase', phrase);
-  const { hitsCount, hits } = await searchProductsByPrefix('products', phrase);
-
-  return res.json({
-    hitsCount,
-    hits,
-  });
-};
 const createReview = async (req, res) => {
   try {
     const reviewData = req.body.data;
@@ -770,6 +526,55 @@ const createReview = async (req, res) => {
     Response(res);
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+const searchProduct = async (req, res) => {
+  const { phrase } = req.query;
+  try {
+    const products = await Product.aggregate([
+      {
+        $match: {
+          name: { $regex: phrase, $options: 'i' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $unwind: '$category',
+      },
+      {
+        $group: {
+          _id: '$category',
+          product: { $first: '$$ROOT' },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$product',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          productPictures: 1,
+          sale: 1,
+          salePrice: 1,
+          regularPrice: 1,
+          detailsProduct: 1,
+          category: '$category.slug',
+        },
+      },
+    ]);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 const getReview = async (req, res) => {
@@ -817,4 +622,5 @@ module.exports = {
   getProduct,
   createReview,
   getReview,
+  checkToken,
 };

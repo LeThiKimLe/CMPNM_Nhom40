@@ -1,20 +1,18 @@
-/* eslint-disable array-callback-return */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import CircularProgress from '@mui/material/CircularProgress';
 // Material Dashboard 2 React components
 import MDBox from '../MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../MDTypography';
-import MDButton from '../MDButton';
-import { Button, Chip, Stack } from '@mui/material';
+import { Button, Chip, Dialog, DialogContent } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useSelector } from 'react-redux';
 import { renderScreen } from '../../utils/custom-products';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+
 function getOptions(products) {
   let option = products.reduce((acc, curr) => {
     const option = `${curr.ram}-${curr.storage}`;
@@ -41,13 +39,37 @@ function getOptions(products) {
 
   return option;
 }
-function ProductCard({ category, products }) {
+function ProductCard({
+  category,
+  countCompare,
+  products,
+  setShowCompare,
+  setCountCompare,
+  compareLocal,
+  setCompareLocal,
+  compareProductLocal,
+  setCompareProductLocal,
+}) {
   const [optionSelected, setOptionSelected] = useState(0);
+  const [checkCompare, setCheckCompare] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const options = products.map((item) => item._id);
   const optionsCustom = getOptions(options);
   const product = useMemo(() => {
     return products[optionSelected].products[0];
   }, [optionSelected, products]);
+  const exitIndex = useCallback(() => {
+    if (Object.keys(compareLocal).length > 0) {
+      const index = compareLocal.findIndex((item) => item === product._id);
+      if (index === -1) {
+        setCheckCompare(false);
+      } else {
+        setCheckCompare(true);
+      }
+    } else {
+      setCheckCompare(false);
+    }
+  }, [compareLocal, product._id]);
   const {
     name,
     productPictures,
@@ -57,7 +79,51 @@ function ProductCard({ category, products }) {
     detailsProduct,
   } = product;
   const screenCustom = renderScreen(detailsProduct.screen);
+  const handleAddCompare = () => {
+    if (!checkCompare) {
+      if (countCompare === 3) {
+        setShowDialog(true);
+      } else {
+        console.log('chay');
+        setCompareLocal([...compareLocal, product._id]);
+        localStorage.setItem(
+          'compare',
+          JSON.stringify([...compareLocal, product._id])
+        );
+        if (!compareProductLocal) {
+          localStorage.setItem('compareLocal', JSON.stringify([product]));
+          setCompareProductLocal([product]);
+        } else {
+          localStorage.setItem(
+            'compareLocal',
+            JSON.stringify([...compareProductLocal, product])
+          );
 
+          setCompareProductLocal([...compareProductLocal, product]);
+        }
+
+        setShowCompare(true);
+        setCountCompare(countCompare + 1);
+        setCheckCompare(true);
+      }
+    } else {
+      const index = compareLocal.findIndex((item) => item === product._id);
+      // xoa index trong local and products
+      const newProductsCompare = [...compareProductLocal];
+      newProductsCompare.splice(index, 1);
+      const newCompareLocal = [...compareLocal];
+      newCompareLocal.splice(index, 1);
+      setCountCompare(newCompareLocal.length);
+      setCompareLocal(newCompareLocal);
+      localStorage.setItem('compare', JSON.stringify(newCompareLocal));
+      localStorage.setItem('compareLocal', JSON.stringify(newProductsCompare));
+      setCompareProductLocal(newProductsCompare);
+      setCheckCompare(false);
+    }
+  };
+  useEffect(() => {
+    exitIndex();
+  }, [exitIndex]);
   return (
     <Card
       key={category._id}
@@ -69,6 +135,16 @@ function ProductCard({ category, products }) {
         overflow: 'visible',
       }}
     >
+      <Dialog
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <p>Vui lòng xóa bớt sản phẩm để tiếp tục so sánh </p>
+        </DialogContent>
+      </Dialog>
       <>
         <Link
           to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
@@ -210,8 +286,8 @@ function ProductCard({ category, products }) {
           </MDBox>
           <MDBox
             display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+            justifycontent="space-between"
+            alignitems="center"
           >
             <MDTypography
               sx={{
@@ -223,9 +299,43 @@ function ProductCard({ category, products }) {
             >
               {formatThousand(salePrice)}đ
             </MDTypography>
-            <MDBox display="flex">
-              <FavoriteIcon fontSize="medium" color="primary" />
-            </MDBox>
+          </MDBox>
+          <MDBox
+            display="flex"
+            justifycontent="flex-start"
+            alignitems="center"
+            sx={{ cursor: 'pointer' }}
+            onClick={handleAddCompare}
+          >
+            {checkCompare === true ? (
+              <>
+                <CheckCircleOutlineRoundedIcon fontSize="small" />
+                <MDTypography
+                  color="dark"
+                  sx={{
+                    fontSize: '14px',
+                    marginLeft: '4px',
+                    fontWeight: '500',
+                  }}
+                >
+                  Đã thêm so sánh
+                </MDTypography>
+              </>
+            ) : (
+              <>
+                <AddCircleOutlineRoundedIcon fontSize="small" />
+                <MDTypography
+                  color="dark"
+                  sx={{
+                    fontSize: '14px',
+                    marginLeft: '4px',
+                    fontWeight: '500',
+                  }}
+                >
+                  So sánh
+                </MDTypography>
+              </>
+            )}
           </MDBox>
         </MDBox>
       </>

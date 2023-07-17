@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import addressThunk from '../../features/address/address.service';
 const { Option } = Select;
 const ModalAddAddress = (props) => {
-  const { open, onCancel, setOpen, setListAddress } = props;
+  const { open, onCancel, setOpen, getAddressList } = props;
   const dispatch = useDispatch();
   const addressUser = useSelector((state) => state.addressUser);
   const [form] = Form.useForm();
@@ -86,15 +86,7 @@ const ModalAddAddress = (props) => {
         notification.success({ message: 'Thêm địa chỉ thành công!' });
         setOpen(false);
         form.resetFields();
-        dispatch(addressThunk.getAllAPI())
-          .unwrap()
-          .then((data) => {
-            if (data.length === 0) {
-              setListAddress([]);
-            } else {
-              setListAddress(data.addresses);
-            }
-          });
+        getAddressList();
       });
   };
   useEffect(() => {

@@ -10,7 +10,6 @@ import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 import finishSignup from '../../assets/images/finish-signup.png';
-
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
 import SideNavigation from '../../containers/side-navigation';

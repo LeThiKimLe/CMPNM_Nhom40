@@ -14,8 +14,6 @@ const AddProductModal = (props) => {
     handleAddProduct,
     formTabInfo,
     formTabDigital,
-    setColorSubmit,
-    colorSubmit,
     fileList,
     description,
     setDescription,
@@ -29,8 +27,6 @@ const AddProductModal = (props) => {
       children: (
         <TabInfo
           form={formTabInfo}
-          setColorSubmit={setColorSubmit}
-          colorSubmit={colorSubmit}
           handleChangeUpload={handleChangeUpload}
           fileList={fileList}
         />
@@ -85,16 +81,31 @@ const AddProductModal = (props) => {
             <Button
               onClick={handleAddProduct}
               style={{
+                width: '200px',
                 marginRight: '20px',
                 backgroundColor: '#2ad3ff',
                 color: '#ffffff',
+                border: 'none', // loại bỏ đường viền
+                borderRadius: '4px', // bo tròn góc
+                fontSize: '16px', // tăng kích thước chữ
+                fontWeight: 'bold', // in đậm chữ
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)', // thêm hiệu ứng bóng đổ
               }}
             >
               Thêm
             </Button>
             <Button
               onClick={handleCancel}
-              style={{ backgroundColor: '#e06666', color: '#ffffff' }}
+              style={{
+                width: '200px',
+                backgroundColor: '#e06666',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+              }}
             >
               Hủy
             </Button>

@@ -1,33 +1,50 @@
-/* eslint-disable array-callback-return */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import CircularProgress from '@mui/material/CircularProgress';
+
 // Material Dashboard 2 React components
 import MDBox from '../MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../MDTypography';
-import MDButton from '../MDButton';
-import { Button, Chip, Stack } from '@mui/material';
+import { Button, Chip } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useSelector } from 'react-redux';
 import { renderScreen } from '../../utils/custom-products';
 
-function ProductCard({
-  index,
-  rams,
-  storages,
-  options,
-  productSelected,
-  productGroup,
-  groupColors,
-  categorySlug,
-}) {
+function getOptions(products) {
+  let option = products.reduce((acc, curr) => {
+    const option = `${curr.ram}-${curr.storage}`;
+    if (!acc.includes(option)) {
+      acc.push(option);
+    }
+    return acc;
+  }, []);
+
+  const uniqueRam = products.reduce((acc, curr) => {
+    if (!acc.includes(curr.ram)) {
+      acc.push(curr.ram);
+    }
+    return acc;
+  }, []);
+
+  const option2 = products.map((product) => product.storage);
+
+  if (uniqueRam.length === 1) {
+    option = option2.filter((item, index) => option2.indexOf(item) === index);
+  }
+
+  option = option.filter((item, index) => option.indexOf(item) === index);
+
+  return option;
+}
+function ProductCard({ category, products }) {
   const [optionSelected, setOptionSelected] = useState(0);
-  const [product, setProduct] = useState(productSelected);
+
+  const options = products.map((item) => item._id);
+  const optionsCustom = getOptions(options);
+  const product = useMemo(() => {
+    return products[optionSelected].products[0];
+  }, [optionSelected, products]);
 
   const {
     name,
@@ -37,61 +54,11 @@ function ProductCard({
     sale,
     detailsProduct,
   } = product;
-
-  const [ramSelected, setRamSelected] = useState(detailsProduct.ram);
-  const [storageSelected, setStorageSelected] = useState(
-    detailsProduct.storage
-  );
   const screenCustom = renderScreen(detailsProduct.screen);
-  const customOptions = useMemo(() => {
-    let custom = [];
-    if (
-      rams.length > 1 &&
-      storages.length > 1 &&
-      rams.length <= 2 &&
-      storages.length <= 2
-    ) {
-      custom = options;
-    } else if (rams.length === 1 || storages.length === 1) {
-      custom = storages;
-    } else {
-      custom = Object.keys(groupColors);
-    }
-    return custom;
-  }, [groupColors, storages, rams, options]);
 
-  useEffect(() => {
-    if (customOptions.length === storages.length) {
-      rams.map((item, index) => {
-        if (optionSelected === index) {
-          setRamSelected(item);
-        }
-      });
-      setStorageSelected(storages[optionSelected]);
-    } else {
-      customOptions.map((item, index) => {
-        if (index === optionSelected) {
-          setRamSelected(item.split('-')[0]);
-          setStorageSelected(item.split('-')[1]);
-        }
-      });
-    }
-  }, [customOptions, optionSelected, rams, storages.length, storages]);
-  // get Product from id
-  useEffect(() => {
-    productGroup.map((item) => {
-      const {
-        detailsProduct: { ram, storage },
-      } = item;
-      if (ram === ramSelected && storage === storageSelected) {
-        setProduct(item);
-        return;
-      }
-    });
-  }, [storageSelected, ramSelected, productGroup]);
   return (
     <Card
-      key={index}
+      key={category._id}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -102,14 +69,7 @@ function ProductCard({
     >
       <>
         <Link
-          to={`/product-page/${categorySlug}?ram=${ramSelected}&storage=${storageSelected}`}
-          state={{
-            product: product,
-            option: customOptions,
-            rams: rams,
-            storages: storages,
-            groupColors: groupColors,
-          }}
+          to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
         >
           <MDBox
             position="relative"
@@ -139,16 +99,7 @@ function ProductCard({
         <MDBox mb={0.5} mx={0.5}>
           <MDBox mb={0.5}>
             <Link
-              to={`/product-page/${categorySlug}?ram=${ramSelected}&storage=${storageSelected}`}
-              state={{
-                product: product,
-                option: customOptions,
-                optionSelected: optionSelected,
-                rams: rams,
-                storages: storages,
-                productGroup: productGroup,
-                groupColors: groupColors,
-              }}
+              to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
             >
               <MDTypography
                 sx={{
@@ -206,7 +157,7 @@ function ProductCard({
               alignItems="flex-start"
               xs={12}
             >
-              {customOptions.map((item, index) => {
+              {optionsCustom.map((item, index) => {
                 return (
                   <Button
                     key={index}
@@ -257,8 +208,8 @@ function ProductCard({
           </MDBox>
           <MDBox
             display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+            justifycontent="space-between"
+            alignitems="center"
           >
             <MDTypography
               sx={{
@@ -270,9 +221,6 @@ function ProductCard({
             >
               {formatThousand(salePrice)}đ
             </MDTypography>
-            <MDBox display="flex">
-              <FavoriteIcon fontSize="medium" color="primary" />
-            </MDBox>
           </MDBox>
         </MDBox>
       </>

@@ -16,6 +16,9 @@ const categorySlice = createSlice({
       state.message = '';
       state.error = null;
     },
+    setCategories: (state, action) => {
+      state.categories = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -39,17 +42,6 @@ const categorySlice = createSlice({
         state.categories = action.payload.list;
       })
       .addCase(categoryThunk.getAllAPI.rejected, (state, action) => {
-        state.error = true;
-        state.getLoading = false;
-      })
-      .addCase(categoryThunk.getAllAfterHandle.pending, (state) => {
-        state.getLoading = true;
-      })
-      .addCase(categoryThunk.getAllAfterHandle.fulfilled, (state, action) => {
-        state.getLoading = false;
-        state.categories = action.payload.list;
-      })
-      .addCase(categoryThunk.getAllAfterHandle.rejected, (state, action) => {
         state.error = true;
         state.getLoading = false;
       })

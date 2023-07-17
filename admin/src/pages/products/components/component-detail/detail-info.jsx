@@ -1,11 +1,24 @@
 import { Col, List, Row, Typography } from 'antd';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { formatThousand } from '../../../../utils';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 const DetailInfo = (props) => {
   const { info } = props;
-  const data = useSelector((state) => state.data);
-
+  const { categories } = useSelector((state) => state.category);
   const {
     color,
     createdAt,
@@ -18,18 +31,15 @@ const DetailInfo = (props) => {
     stock,
     category,
   } = info;
-  const getColorProduct = (color, category) => {
-    let colorName = '';
-    data.colors.map((item) => {
-      if (item.value === color && item.category == category) {
-        colorName = item.name;
-      }
-    });
-    return colorName;
+
+  const searchColorByName = (colorValue) => {
+    const color = colorList.find((item) => item.value === colorValue);
+
+    return color ? color.name : null;
   };
   const getCategoryById = (id) => {
     let name;
-    data.categories.map((cat) => {
+    categories.map((cat) => {
       if (cat._id === id) {
         name = cat.name;
       }
@@ -47,7 +57,7 @@ const DetailInfo = (props) => {
     },
     {
       name: 'Màu sắc',
-      value: color && getColorProduct(color, category),
+      value: color && searchColorByName(color),
     },
     {
       name: 'Giá gốc',

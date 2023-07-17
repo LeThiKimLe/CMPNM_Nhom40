@@ -7,12 +7,25 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import { formatThousand } from '../../utils/custom-price';
 import { getColorProduct } from '../../utils/custom-products';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 const CheckOutItem = (props) => {
   const { product, keyIndex } = props;
-  const data = useSelector((state) => state.data);
   const { ram, storage } = product.detailsProduct;
   const { productPicture, name, salePrice, regularPrice, quantity } = product;
-  const colorName = getColorProduct(product, data.colors);
+
+  const colorName = getColorProduct(product, colorList);
   return (
     <Grid
       key={keyIndex}

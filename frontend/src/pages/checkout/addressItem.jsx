@@ -71,19 +71,6 @@ const AddressItem = (props) => {
             </Row>
           }
         </Col>
-        <Col span={4}>
-          <MDTypography
-            component={Link}
-            sx={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: 'info',
-              paddingRight: '4px',
-            }}
-          >
-            Cập nhật
-          </MDTypography>
-        </Col>
       </Row>
     </div>
   );

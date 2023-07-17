@@ -17,6 +17,7 @@ const PaypalSuccessPage = () => {
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState('');
   const data = JSON.parse(localStorage.getItem('orderPaypal'));
+  console.log(data);
   const orderCod = JSON.parse(localStorage.getItem('orderCodMomo'));
   const paymentId = searchParams.get('paymentId');
   const PayerID = searchParams.get('PayerID');
@@ -44,8 +45,6 @@ const PaypalSuccessPage = () => {
       .then((value) => {
         setLoading(false);
         setOrderId(value.orderFull._id);
-        localStorage.removeItem('orderCodMomo');
-        localStorage.removeItem('orderPaypal');
         notification.success({ message: 'Đặt hàng thành công!' });
         dispatch(cartActions.reset());
       })

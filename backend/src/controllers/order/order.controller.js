@@ -12,14 +12,11 @@ const paypal = require('paypal-rest-sdk');
 const crypto = require('crypto');
 const https = require('https');
 const _ = require('lodash');
+const moment = require('moment');
+const mongoose = require('mongoose');
 const { Order, Cart, UserAddress, Product } = require('../../models');
-const {
-  Response,
-  ServerError,
-  BadRequest,
-  Create,
-} = require('../../utils/response');
-const redisClient = require('../../connections/cachingRedis');
+const { Response, ServerError, Create } = require('../../utils/response');
+
 const sendOrderConfirm = require('../../utils/send_mail/send-order');
 
 const partnerCode = 'MOMO';
@@ -47,7 +44,7 @@ const exchangePrice = async (from, to) => {
 };
 const paymentWithPaypal = async (req, res) => {
   const orderData = req.body.data;
-  console.log('order data', orderData);
+
   const { subTotal, totalAmount, shipAmount, freeShip, items } = orderData;
   const {
     name,
@@ -59,11 +56,18 @@ const paymentWithPaypal = async (req, res) => {
     wardCode,
   } = orderData.address;
   const exchange = await exchangePrice('USD', 'VND');
-  const totalPrice = (totalAmount * exchange).toFixed(2).toString();
   const shipPrice = (shipAmount * exchange).toFixed(2).toString();
   const shipDiscount = (freeShip * exchange).toFixed(2).toString();
   const subPrice = (subTotal * exchange).toFixed(2).toString();
-  console.log('subPrice', subPrice);
+  const totalPrice = (
+    parseFloat(subPrice) +
+    parseFloat(shipPrice) -
+    parseFloat(shipDiscount)
+  )
+    .toFixed(2)
+    .toString();
+
+  console.log(totalPrice);
   const listProducts = items.map((item) => {
     const priceItem = (item.salePrice * exchange).toFixed(2).toString();
     return {
@@ -73,7 +77,7 @@ const paymentWithPaypal = async (req, res) => {
       currency: 'USD',
     };
   });
-  console.log(JSON.stringify(listProducts, null, 1));
+
   const createPaymentJson = {
     intent: 'sale',
     payer: {
@@ -122,6 +126,61 @@ const paymentWithPaypal = async (req, res) => {
     return Create(res, { payment });
   });
 };
+const getMonthlyRevenue = async (req, res) => {
+  try {
+    const currentDate = moment().endOf('month');
+    const fiveMonthsAgo = moment().subtract(5, 'months').startOf('month');
+
+    const pipeline = [
+      {
+        $match: {
+          paymentStatus: 'completed',
+          'orderStatus.type': 'delivered',
+          createdAt: {
+            $gte: fiveMonthsAgo.toDate(),
+            $lte: currentDate.toDate(),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            monthYear: {
+              $dateToString: { format: '%Y-%m', date: '$createdAt' },
+            },
+          },
+          totalRevenue: { $sum: '$totalAmount' },
+        },
+      },
+    ];
+
+    const result = await Order.aggregate(pipeline);
+
+    // Chuyển kết quả từ mảng sang Map để tối ưu hóa việc truy xuất
+    const monthlyRevenue = new Map(
+      result.map((item) => [item._id.monthYear, item.totalRevenue])
+    );
+
+    const months = [];
+    let currentMonth = fiveMonthsAgo.clone();
+    while (currentMonth.isSameOrBefore(currentDate)) {
+      const monthYear = currentMonth.format('YYYY-MM');
+      const totalRevenue = monthlyRevenue.get(monthYear) || 0;
+
+      months.push({
+        month: currentMonth.format('MMMM'),
+        totalRevenue,
+      });
+
+      currentMonth.add(1, 'month');
+    }
+
+    res.status(200).json(months);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 const paymentPaypalSuccess = (req, res) => {
   const { paymentId, payerId, total, shipping_discount, shipping, subtotal } =
@@ -162,6 +221,11 @@ const addOrderPaypal = (req, res) => {
           date: new Date(),
           isCompleted: true,
         },
+        {
+          type: 'packed',
+          date: new Date(),
+          isCompleted: true,
+        },
       ];
       orderData.paymentType = 'paypal';
       orderData.paymentStatus = 'completed';
@@ -189,7 +253,6 @@ const addOrderPaypal = (req, res) => {
                     (adr) =>
                       adr._id.toString() === orderFull.addressId.toString()
                   );
-                  console.log('order', orderFull);
                   // * send order
                   await sendOrderConfirm(orderFull);
                   return Response(res, { orderFull });
@@ -203,8 +266,6 @@ const addOrderPaypal = (req, res) => {
 };
 const addOrder = (req, res) => {
   const { userId } = req.user;
-  console.log(req.user);
-  console.log(req.body.data);
   const orderData = req.body.data;
   Cart.deleteOne({ user: userId }).exec((error, result) => {
     if (error) return res.status(400).json({ error });
@@ -217,7 +278,6 @@ const addOrder = (req, res) => {
         },
       ];
       orderData.user = userId;
-      console.log('chay');
       const order = new Order(orderData);
       order.save(async (err, data) => {
         if (err) return res.status(400).json({ err });
@@ -361,6 +421,11 @@ const checkResponseMomo = (req, res) => {
               date: new Date(),
               isCompleted: true,
             },
+            {
+              type: 'packed',
+              date: new Date(),
+              isCompleted: true,
+            },
           ];
           orderData.user = userId;
           orderData.paymentType = 'momo';
@@ -405,23 +470,20 @@ const checkResponseMomo = (req, res) => {
     return ServerError(res);
   }
 };
-const getAllOrderByStatus = (req, res) => {
+const getAllOrderByStatus = async (req, res) => {
   const { status } = req.params;
-  console.log(status);
-  if (!status) {
-    return res.status(400).json({ error: 'Missing orderStatus parameter' });
+  try {
+    const list = await Order.aggregate([
+      { $match: { user: mongoose.Types.ObjectId(req.user.userId) } },
+      {
+        $addFields: { lastOrderStatus: { $arrayElemAt: ['$orderStatus', -1] } },
+      },
+      { $match: { 'lastOrderStatus.type': status } },
+    ]);
+    return res.status(200).json({ orders: list });
+  } catch (error) {
+    return res.status(400).json({ error });
   }
-
-  Order.find({ user: req.user.userId, 'orderStatus.type': status })
-    .select('_id totalAmount subTotal orderStatus paymentStatus items freeShip')
-    .populate('items.productId', '_id name productPicture salePrice')
-    .exec(async (error, orders) => {
-      if (error) return res.status(400).json({ error });
-      if (orders) {
-        console.log(orders);
-        return res.status(200).json({ orders });
-      }
-    });
 };
 
 const getAllOrderOfUser = (req, res) => {
@@ -434,15 +496,6 @@ const getAllOrderOfUser = (req, res) => {
     .exec(async (error, orders) => {
       if (error) return res.status(400).json({ error });
       if (orders) {
-        const listOrder = await Order.find({})
-          .select(
-            '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
-          )
-          .populate(
-            'items.productId',
-            '_id name productPictures salePrice detailsProduct'
-          );
-        await redisClient.set('orders', JSON.stringify(listOrder));
         res.status(200).json({ orders });
       }
     });
@@ -465,16 +518,6 @@ const updateOrderMomoPayment = (req, res) => {
     }
   ).exec(async (error, data) => {
     if (data) {
-      const listOrder = await Order.find({})
-        .sort({ createdAt: 'desc' })
-        .select(
-          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
-        )
-        .populate(
-          'items.productId',
-          '_id name productPictures salePrice detailsProduct'
-        );
-      await redisClient.set('orders', JSON.stringify(listOrder));
       Response(res);
     } else {
       ServerError(res, error);
@@ -484,27 +527,20 @@ const updateOrderMomoPayment = (req, res) => {
 
 // *todo get-all-order [admin]
 const getAllOrder = async (req, res) => {
-  let listUserAddress = [];
-  let listOrder = [];
   try {
-    const cacheListOrder = await redisClient.get('orders');
-    listUserAddress = await UserAddress.find({})
-      .select('user address')
-      .populate('user', '_id');
-    if (cacheListOrder) {
-      listOrder = JSON.parse(cacheListOrder);
-    } else {
-      listOrder = await Order.find({})
+    const [listUserAddress, listOrder] = await Promise.all([
+      UserAddress.find({}).select('user address').populate('user', '_id'),
+      Order.find({})
         .sort({ createdAt: 'desc' })
         .select(
-          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
+          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryDate createdAt'
         )
         .populate(
           'items.productId',
           '_id name productPictures salePrice detailsProduct'
-        );
-      await redisClient.set('orders', JSON.stringify(listOrder));
-    }
+        ),
+    ]);
+
     Response(res, {
       list: [listUserAddress, listOrder],
     });
@@ -512,37 +548,7 @@ const getAllOrder = async (req, res) => {
     ServerError(res);
   }
 };
-const getAllOrderAfterHandle = async (req, res) => {
-  console.log('chay order');
-  let listUserAddress = [];
-  let listOrder = [];
-  try {
-    const cacheListAddress = await redisClient.get('userAddress');
-    if (cacheListAddress) {
-      listUserAddress = JSON.parse(cacheListAddress);
-    } else {
-      listUserAddress = await UserAddress.find({})
-        .select('user address')
-        .populate('user', '_id');
-      await redisClient.set('userAddress', JSON.stringify(listUserAddress));
-    }
-    listOrder = await Order.find({})
-      .sort({ createdAt: 'desc' })
-      .select(
-        '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
-      )
-      .populate(
-        'items.productId',
-        '_id name productPictures salePrice detailsProduct'
-      );
-    await redisClient.set('orders', JSON.stringify(listOrder));
-    Response(res, {
-      list: [listUserAddress, listOrder],
-    });
-  } catch (error) {
-    ServerError(res);
-  }
-};
+
 // get order
 const getOrder = (req, res) => {
   const { id } = req.params;
@@ -701,16 +707,6 @@ const cancelOrder = (req, res) => {
     }
   ).exec(async (error, data) => {
     if (data) {
-      const listOrder = await Order.find({})
-        .sort({ createdAt: 'desc' })
-        .select(
-          '_id totalAmount subTotal orderStatus paymentStatus paymentType items shipAmount freeShip addressId user deliveryDate estimatedDeliveryTime createdAt'
-        )
-        .populate(
-          'items.productId',
-          '_id name productPictures salePrice detailsProduct'
-        );
-      await redisClient.set('orders', JSON.stringify(listOrder));
       Response(res);
     } else {
       ServerError(res, error);
@@ -724,7 +720,6 @@ module.exports = {
   getAllOrderOfUser,
   updateOrderStatus,
   cancelOrder,
-  getAllOrderAfterHandle,
   checkResponseMomo,
   paymentWithMomo,
   updateOrderMomoPayment,
@@ -732,4 +727,5 @@ module.exports = {
   paymentPaypalSuccess,
   addOrderPaypal,
   getAllOrderByStatus,
+  getMonthlyRevenue,
 };

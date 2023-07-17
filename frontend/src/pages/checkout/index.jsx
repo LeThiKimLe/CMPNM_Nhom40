@@ -8,10 +8,7 @@ import {
   Stack,
   Chip,
   CircularProgress,
-  ToggleButtonGroup,
-  ToggleButton,
   Radio,
-  FormLabel,
   RadioGroup,
   FormControl,
   FormControlLabel,
@@ -32,7 +29,7 @@ import { formatThousand } from '../../utils/custom-price';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckOutItem from '../../components/CheckOutItem';
-import getAddressAPI from '../../utils/get-details-address';
+
 import ModalAddress from './modal-address';
 import addressThunk from '../../features/address/address.service';
 import _ from 'lodash';
@@ -180,8 +177,7 @@ function getTotalPrice(items) {
 const CheckOutPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data);
-  const { colors } = data;
+
   const cart = useSelector((state) => state.cart);
   const addressUser = useSelector((state) => state.addressUser);
   const { cartItems } = cart;
@@ -276,7 +272,7 @@ const CheckOutPage = () => {
           ShopId: '4176886',
         },
         body: JSON.stringify({
-          from_district_id: 3695,
+          from_district_id: districtIdStore,
           from_ward_code: wardCodeStore,
           service_id: service_id,
           service_type_id: service_type_id,
@@ -284,14 +280,16 @@ const CheckOutPage = () => {
           to_ward_code: address.wardCode,
           height: 50,
           length: 20,
-          weight: 200 * number,
+          weight: 200,
           width: 20,
           insurance_value: totalAmount,
           cod_failed_amount: 2000,
           coupon: null,
         }),
       }
-    ).then((response) => response.json());
+    )
+      .then((response) => response.json())
+      .catch((error) => console.log(error));
 
     if (response.code === 200) {
       return response.data.total;
@@ -329,7 +327,7 @@ const CheckOutPage = () => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
+        console.log('Thoi gian', responseData);
         return responseData.data.leadtime;
       } else {
         return null;
@@ -357,6 +355,7 @@ const CheckOutPage = () => {
     }
     setOpenModalAddress(false);
   };
+  // handle order
   const handleOrder = () => {
     setCheckoutLoading(true);
     if (Object.keys(addressSelected).length === 0) {
@@ -372,7 +371,9 @@ const CheckOutPage = () => {
         shipAmount,
         freeShip,
         subTotal: getTotalPrice(items),
+        estimatedDeliveryDate,
       };
+
       orderCod.items = customListOrderProducts(items);
       localStorage.setItem('orderCodMomo', JSON.stringify(orderCod));
       if (paymentType === 0) {
@@ -397,14 +398,13 @@ const CheckOutPage = () => {
           shipAmount,
           freeShip,
           subTotal: getTotalPrice(items),
+          estimatedDeliveryDate,
         };
-        orderData.items = customeListOrderProductsPaypal(items, colors);
-        console.log('payment with paypal');
+        orderData.items = customeListOrderProductsPaypal(items);
+
         dispatch(orderThunk.paymentWithPaypal(orderData))
           .unwrap()
           .then((value) => {
-            // value have url thanh toan
-            console.log(value.payment);
             const { transactions } = value.payment;
             let data = transactions[0];
             data.addressId = addressSelected._id;
@@ -434,87 +434,108 @@ const CheckOutPage = () => {
       }
     }
   };
-  useEffect(() => {
+  const createNewListService = useCallback(
+    async (list, totalPrice, items) => {
+      let i = 0;
+      const newList = [];
+      if (Object.keys(list).length > 0) {
+        const { service_id, short_name, service_type_id } = list[0];
+        const shipIndex = await getShipOrder(
+          totalPrice,
+          addressSelected,
+          service_type_id,
+          service_id
+        );
+        const time = await getEstimatedDeliveryDate(
+          addressSelected.districtId,
+          addressSelected.wardCode,
+          service_id
+        );
+        const timeAdd = getNewTimestamp(time, 5);
+        if (i === 0) {
+          setEstimatedDeliveryDate(
+            `${formatDate(time)} - ${formatDate(timeAdd)}`
+          );
+        }
+        newList.push({
+          service_id,
+          short_name,
+          service_type_id,
+          shipFee: shipIndex,
+          fromTime: formatDate(time),
+          toTime: formatDate(timeAdd),
+        });
+      }
+      setListService(newList);
+      setLoadingService(false);
+    },
+    [addressSelected]
+  );
+  const getFreShip = useCallback(
+    (totalPrice, items, freeShipRate) => {
+      if (
+        Object.keys(listAddress).length > 0 &&
+        Object.keys(addressSelected).length > 0
+      ) {
+        getListService(addressSelected.districtId)
+          .then((list) => {
+            createNewListService(list, totalPrice, items);
+            const { service_id, short_name, service_type_id } = list[0];
+
+            setServiceId(service_id);
+            setServiceName(short_name);
+            setServiceTypeId(service_type_id);
+            //createNewListService(list);
+            return getShipOrder(
+              totalPrice,
+              addressSelected,
+              service_type_id,
+              service_id,
+              items.length
+            ).then((value) => {
+              setShipAmount(value);
+              const freeShipPrice = ~~((value * freeShipRate) / 100);
+              console.log('freeShipPrice', freeShipPrice);
+              setFreeShip(freeShipPrice);
+              setTotalAmount(value + totalPrice - freeShipPrice);
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        setLoadingService(false);
+      }
+    },
+    [addressSelected, createNewListService, listAddress]
+  );
+  const getAddressList = useCallback(() => {
     dispatch(addressThunk.getAllAPI())
       .unwrap()
       .then((data) => {
-        if (data.length === 0) {
+        console.log(data);
+        if (data.list.length === 0) {
+          setLoadingService(false);
           setListAddress([]);
         } else {
-          if (JSON.parse(localStorage.getItem('selectedAddress')) == null) {
-            const pos = data.addresses.map((e) => e.isDefault).indexOf(true);
-            localStorage.setItem(
-              'selectedAddress',
-              JSON.stringify(data.addresses[pos])
-            );
-            setAddressIndexSelected(pos);
-            setAddressIndex(pos);
-          } else {
-            // tìm vị trí
-            const exitsAddress = JSON.parse(
-              localStorage.getItem('selectedAddress')
-            );
-            const indexExits = _.findIndex(data.addresses, {
-              _id: exitsAddress._id,
-            });
-            setAddressSelected(
-              JSON.parse(localStorage.getItem('selectedAddress'))
-            );
-            setAddressIndex(indexExits);
-            setAddressIndexSelected(indexExits);
-          }
-          setListAddress(data.addresses);
+          const pos = data.list.map((e) => e.isDefault).indexOf(true);
+          console.log(pos);
+          setAddressIndexSelected(pos);
+          setAddressIndex(pos);
+          setAddressSelected(data.list[pos]);
+          setListAddress(data.list);
         }
         setAddressLoading(false);
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    getAddressList();
+  }, [getAddressList]);
+
   useEffect(() => {
     setItems(cartItems);
   }, [cartItems]);
-  const createNewListService = useCallback(
-    async (list) => {
-      let i = 0;
-      const newList = [];
-      const totalPrice = getTotalPrice(items);
-
-      if (Object.keys(list).length > 0) {
-        for (const item of list) {
-          const { service_id, short_name, service_type_id } = item;
-          const shipIndex = await getShipOrder(
-            totalPrice,
-            addressSelected,
-            service_type_id,
-            service_id,
-            items.length
-          );
-          const time = await getEstimatedDeliveryDate(
-            addressSelected.districtId,
-            addressSelected.wardCode,
-            service_id
-          );
-          const timeAdd = getNewTimestamp(time, 5);
-          if (i === 0) {
-            setEstimatedDeliveryDate(
-              `Nhận hàng vào ${formatDate(time)} - ${formatDate(timeAdd)}`
-            );
-          }
-          newList.push({
-            service_id,
-            short_name,
-            service_type_id,
-            shipFee: shipIndex,
-            fromTime: formatDate(time),
-            toTime: formatDate(timeAdd),
-          });
-          i++;
-        }
-      }
-      setListService(newList);
-
-      setLoadingService(false);
-    },
-    [items, addressSelected]
-  );
 
   useEffect(() => {
     if (items.length > 0) {
@@ -529,28 +550,9 @@ const CheckOutPage = () => {
       }
       setPercentShip(freeShip);
       setTotalItems(totalPrice);
-      getListService(addressSelected.districtId).then((list) => {
-        createNewListService(list);
-        const { service_id, short_name, service_type_id } = list[0];
-
-        setServiceId(service_id);
-        setServiceName(short_name);
-        setServiceTypeId(service_type_id);
-        return getShipOrder(
-          totalPrice,
-          addressSelected,
-          service_type_id,
-          service_id,
-          items.length
-        ).then((value) => {
-          setShipAmount(value);
-          const freeShipPrice = ~~((value * freeShip) / 100);
-          setFreeShip(freeShipPrice);
-          setTotalAmount(value + totalPrice - freeShipPrice);
-        });
-      });
+      getFreShip(totalPrice, items, freeShip);
     }
-  }, [addressSelected, items, createNewListService]);
+  }, [addressSelected, items, getFreShip]);
 
   return (
     <>
@@ -570,7 +572,7 @@ const CheckOutPage = () => {
           open={openModalAdd}
           setOpen={setOpenModalAdd}
           onCancel={onCancelModalAdd}
-          setListAddress={setListAddress}
+          getAddressList={getAddressList}
         />
         <ServiceModal
           setServiceId={setServiceId}
@@ -596,7 +598,7 @@ const CheckOutPage = () => {
           handleChangeAddress={handleChangeAddress}
           addressIndex={addressIndex}
           setAddressIndex={setAddressIndex}
-          setListAddress={setListAddress}
+          getAddressList={getAddressList}
         />
 
         <Container>
@@ -661,7 +663,9 @@ const CheckOutPage = () => {
                           </MDBox>
                         ) : (
                           <>
-                            {listAddress.length === 0 ? (
+                            {!listAddress ||
+                            (listAddress !== null &&
+                              Object.keys(listAddress).length === 0) ? (
                               <MDTypography
                                 color="dark"
                                 sx={{
@@ -673,45 +677,31 @@ const CheckOutPage = () => {
                               </MDTypography>
                             ) : (
                               <>
-                                {Object.keys(addressSelected).length === 0 ? (
-                                  <MDTypography
-                                    color="dark"
-                                    sx={{
-                                      fontSize: '14px',
-                                      fontWeight: '500',
-                                    }}
-                                  >
-                                    Vui lòng chọn địa chỉ
-                                  </MDTypography>
-                                ) : (
-                                  <>
-                                    <MDTypography
-                                      color="dark"
-                                      sx={{
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                      }}
-                                    >
-                                      {`${addressSelected.name} | ${addressSelected.mobileNumber}`}
-                                    </MDTypography>
-                                    <MDTypography
-                                      color="dark"
-                                      sx={{
-                                        fontSize: '14px',
-                                        fontWeight: '400',
-                                      }}
-                                    >
-                                      {`${addressSelected.address}, ${addressSelected.wardName}, ${addressSelected.districtName}, ${addressSelected.provinceName}`}
-                                    </MDTypography>
-                                    {addressSelected.isDefault ? (
-                                      <Chip
-                                        size="small"
-                                        label="Mặc định"
-                                        color="primary"
-                                      />
-                                    ) : null}
-                                  </>
-                                )}
+                                <MDTypography
+                                  color="dark"
+                                  sx={{
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                  }}
+                                >
+                                  {`${addressSelected.name} | ${addressSelected.mobileNumber}`}
+                                </MDTypography>
+                                <MDTypography
+                                  color="dark"
+                                  sx={{
+                                    fontSize: '14px',
+                                    fontWeight: '400',
+                                  }}
+                                >
+                                  {`${addressSelected.address}, ${addressSelected.wardName}, ${addressSelected.districtName}, ${addressSelected.provinceName}`}
+                                </MDTypography>
+                                {addressSelected.isDefault ? (
+                                  <Chip
+                                    size="small"
+                                    label="Mặc định"
+                                    color="primary"
+                                  />
+                                ) : null}
                               </>
                             )}
                           </>
@@ -723,7 +713,7 @@ const CheckOutPage = () => {
                       alignItems="center"
                       spacing={2}
                     >
-                      {listAddress.length === 0 ? (
+                      {Object.keys(listAddress).length === 0 ? (
                         <MDButton
                           size="small"
                           color="dark"
@@ -828,6 +818,16 @@ const CheckOutPage = () => {
                       >
                         <CircularProgress />
                       </MDBox>
+                    ) : Object.keys(listAddress).length === 0 ? (
+                      <MDTypography
+                        color="dark"
+                        sx={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Vui lòng chọn địa chỉ
+                      </MDTypography>
                     ) : (
                       <>
                         {' '}

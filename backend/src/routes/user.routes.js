@@ -19,6 +19,7 @@ const {
   getProduct,
   createReview,
   getReview,
+  checkToken,
 } = require('../controllers/user/user.controller');
 const {
   getProductsOption,
@@ -29,6 +30,7 @@ const { userCheckRole } = require('../middlewares/authorization');
 router.post('/sign-up', signup);
 router.post('/sign-in', signin);
 router.post('/refresh-token', reSendRefreshToken);
+router.post('/check-token', checkToken);
 router.get('/get-all-data', getAllData);
 router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);

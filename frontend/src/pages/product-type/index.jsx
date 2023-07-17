@@ -9,13 +9,14 @@ import {
   CircularProgress,
   Dialog,
   DialogTitle,
+  TextField,
 } from '@mui/material';
 import { notification } from 'antd';
 import _ from 'lodash';
 import Breadcrumbs from '../../components/CustomBreadcrumbs';
 import MDBox from '../../components/MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import MDTypography from '../../components/MDTypography';
 import MDButton from '../../components/MDButton';
@@ -24,13 +25,13 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import './style.css';
-import { cartActions, selectCartItems } from '../../features/cart/cart.slice';
 import userThunk from '../../features/user/user.service';
 import { selectIsLoggedIn } from '../../features/user/user.slice';
 import cartThunk from '../../features/cart/cart.service';
 import DetailProductItem from './detai-item';
 import ReviewComponent from './review.jsx';
-
+import Slider from 'react-slick';
+import ProductCard from '../../components/ProductItem';
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -57,6 +58,19 @@ function Item(props) {
     />
   );
 }
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 const listTitle = [
   'Màn hình',
   'Hệ điều hành',
@@ -94,12 +108,21 @@ function getOptions(products) {
 
   return option;
 }
+const settings = {
+  dots: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 5,
+  slidesToScroll: 2,
+  initialSlide: 0,
+};
 const ProductPage = () => {
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data);
+  const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
-  const { colors } = data;
+  const data = useSelector((state) => state.data);
 
+  const { products } = data;
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const { categorySlug } = useParams();
@@ -116,8 +139,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [colorSelected, setColorSelected] = useState('');
   const [colorIndex, setColorIndex] = useState(-1);
-  const [colorList, setColorList] = useState([]);
-  const [colorCategory, setColorCategory] = useState([]);
+  const [colorListProduct, setColorListProduct] = useState([]);
   const [productSelected, setProductSelected] = useState(null);
   const [amount, setAmount] = useState(1);
   const [productPictureIndex, setProductPictureIndex] = useState(0);
@@ -137,11 +159,17 @@ const ProductPage = () => {
     e.preventDefault();
     setProductPictureIndex(id);
   };
-
+  const onChangeInput = (event) => {
+    const inputValue = event.target.value;
+    if (inputValue === '' || inputValue <= 0) {
+      setAmount(1); // hoặc setAmount(Math.max(1, inputValue)) nếu bạn muốn giữ lại giá trị nhập vào nếu nó lớn hơn 1
+    } else {
+      setAmount(inputValue);
+    }
+  };
   const handleAddItemToCart = () => {
     if (isLoggedIn) {
       let newCartItem = { product: productSelected._id, quantity: amount };
-
       dispatch(
         cartThunk.addToCartAPI({
           cartItem: newCartItem,
@@ -154,11 +182,15 @@ const ProductPage = () => {
             placement: 'top',
           });
           dispatch(cartThunk.getAllItemsAPI());
+        })
+        .catch(() => {
+          notification.error({
+            message: 'Sản phẩm vượt quá số lượng trong kho!',
+            placement: 'top',
+          });
         });
     } else {
-      dispatch(
-        cartActions.addToCartItemLocal({ product: productSelected, amount })
-      );
+      navigate('/sign-in');
     }
   };
   const handleColorClick = useCallback(
@@ -187,11 +219,10 @@ const ProductPage = () => {
       }?${urlSearchParams.toString()}`;
       window.history.replaceState(null, null, newUrl);
     },
-    [ramSelected, storageSelected, colorList, productList]
+    [ramSelected, storageSelected, productList]
   );
   const handleOptionClick = useCallback(
     (index) => {
-      console.log(dataOption, options);
       setOptionIndex(index);
       const { ram, storage } = dataOption[index];
       setRamSelected(ram);
@@ -199,7 +230,7 @@ const ProductPage = () => {
 
       dataProducts.map((item, index) => {
         if (item._id.ram === ram && item._id.storage === storage) {
-          setColorList(item.colors);
+          setColorListProduct(item.colors);
           setProductList(item.products);
           let indexColor = -1;
           const colorIndexExits = item.colors.indexOf(colorSelected);
@@ -219,17 +250,19 @@ const ProductPage = () => {
         }
       });
     },
-    [dataOption, options, colorIndex, colorSelected, dataProducts]
+    [dataOption, colorIndex, colorSelected, dataProducts]
   );
   useEffect(() => {
     // initial data
     dispatch(userThunk.getProductAPI(categorySlug))
       .unwrap()
       .then((value) => {
-        const { listColor, products } = value.list;
-        setColorCategory(listColor[0].colors);
+        console.log(value);
+        const { products } = value;
+
         setDataProducts(products);
         const options = products.map((item) => item._id);
+        console.log(options);
         setDataOption(options);
         const optionsCustom = getOptions(options);
         console.log(optionsCustom);
@@ -237,7 +270,7 @@ const ProductPage = () => {
         let result = -1;
         products.map((item, index) => {
           if (item._id.ram === ram && item._id.storage === storage) {
-            setColorList(item.colors);
+            setColorListProduct(item.colors);
             setProductList(item.products);
             setProductSelected(item.products[0]);
 
@@ -253,7 +286,7 @@ const ProductPage = () => {
         setOptionIndex(result);
         setLoading(false);
       });
-  }, [dispatch, categorySlug, ram, storage, colors]);
+  }, [dispatch, categorySlug, ram, storage]);
 
   return (
     <MDBox
@@ -378,7 +411,7 @@ const ProductPage = () => {
                         open={openDescription}
                         onClick={handleClose}
                       >
-                        <DialogTitle fullScreen={true} fullWidth={true}>
+                        <DialogTitle fullWidth={true}>
                           Thông tin sản phẩm
                         </DialogTitle>
                         {productSelected ? (
@@ -436,9 +469,9 @@ const ProductPage = () => {
                       : null}
                   </MDBox>
                   <MDBox variant="contained">
-                    {colorList
-                      ? colorList.map((item, index) => {
-                          for (let color of colorCategory) {
+                    {colorListProduct
+                      ? colorListProduct.map((item, index) => {
+                          for (let color of colorList) {
                             if (color.value === item) {
                               return (
                                 <MDButton
@@ -528,7 +561,7 @@ const ProductPage = () => {
                       }}
                     >
                       {productSelected.stock && productSelected.stock > 0
-                        ? 'Còn hàng'
+                        ? `Còn ${productSelected.stock} sản phẩm`
                         : 'Hết hàng'}
                     </span>
                   </MDBox>
@@ -563,23 +596,27 @@ const ProductPage = () => {
                         }}
                       />
                     </MDButton>
-                    <MDTypography
-                      sx={{
-                        maxWidth: '50px',
-                        minWidth: '20px',
-                        minHeight: '15px',
-                        borderRadius: '0.3rem',
-                        padding: '1px 1px',
-                        color: '#2F4F4F',
-                        textAlign: 'center',
-                        fontSize: '1.25rem',
-                        fontWeight: '400',
+                    <TextField
+                      type="text"
+                      value={amount}
+                      onChange={onChangeInput}
+                      InputProps={{
+                        inputProps: {
+                          min: 1,
+                        },
+                        sx: {
+                          maxWidth: '50px',
+                          maxHeight: '24px',
+                          minWidth: '35px',
+                          borderRadius: '0.3rem',
+                          padding: '1px 1px',
+                          color: '#2F4F4F',
+                          textAlign: 'center',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                        },
                       }}
-                      variant="outlined"
-                      size="small"
-                    >
-                      {amount}
-                    </MDTypography>
+                    />
                     <MDButton
                       variant="outlined"
                       color="dark"
@@ -600,6 +637,7 @@ const ProductPage = () => {
                       />
                     </MDButton>
                   </MDBox>
+
                   <MDBox
                     display="flex"
                     justifyContent="flex-start"
@@ -618,19 +656,6 @@ const ProductPage = () => {
                     >
                       <ShoppingCartCheckoutIcon size="large" color="white" />
                       &nbsp; Thêm vào giỏ hàng
-                    </MDButton>
-                    <MDButton
-                      variant="contained"
-                      color="success"
-                      sx={{
-                        fontSize: '0.75rem',
-                        fontWeight: '400',
-                        padding: '2px 10px',
-                        marginRight: '5px',
-                      }}
-                    >
-                      <ShoppingCartCheckoutIcon size="large" color="white" />
-                      &nbsp; Mua ngay
                     </MDButton>
                   </MDBox>
                 </Stack>
@@ -677,11 +702,23 @@ const ProductPage = () => {
               >
                 Xem thêm điện thoại khác
               </MDTypography>
+              <Slider {...settings}>
+                {products.length > 0
+                  ? products.map((item, index) => {
+                      if (index < 6) {
+                        return (
+                          <Item key={index}>
+                            <ProductCard
+                              category={item.category}
+                              products={item.products}
+                            />
+                          </Item>
+                        );
+                      }
+                    })
+                  : null}
+              </Slider>
             </MDBox>
-            {/* Xem thêm điện thoại khác
-            <div className="list-product-sample">
-             
-            </div> */}
           </>
         ) : (
           <Grid

@@ -10,59 +10,34 @@ import {
   notification,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import ColorInput from './color-input';
 import { useSelector, useDispatch } from 'react-redux';
 import categoryThunk from '../../../../features/category/category.service';
-import colorThunk from '../../../../features/color/color.service';
+
 const { Option } = Select;
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
+
 const TabInfo = (props) => {
-  const { form, setColorSubmit, colorSubmit, fileList, handleChangeUpload } =
-    props;
+  const { form, fileList, handleChangeUpload } = props;
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
-  const [categorySelect, setCategorySelect] = useState('');
-
-  const [btnAddCheck, setBtnAddCheck] = useState(false);
-  const [btnRemoveCheck, setBtnRemoveCheck] = useState(false);
-  // * color
-  const [colorList, setColorList] = useState([]);
   // * color selected
-
-  const onChangeSelect = (value) => {
-    setCategorySelect(value);
-    dispatch(colorThunk.getColorAllByCategoryAPI(value))
-      .unwrap()
-      .then((res) => {
-        setColorList(res.list);
-      });
-  };
 
   const onSearch = (value) => {
     console.log('search:', value);
   };
-  // * color input
-  const removeColorBtnOpen = () => {
-    if (!form.getFieldValue('category')) {
-      notification.error({
-        message: 'Vui lòng chọn nhãn hiệu',
-        placement: 'top',
-      });
-    } else {
-      setBtnRemoveCheck(true);
-      setColorSubmit('');
-    }
-  };
-  const addColorBtnOpen = () => {
-    if (!form.getFieldValue('category')) {
-      notification.error({
-        message: 'Vui lòng chọn nhãn hiệu',
-        placement: 'top',
-      });
-    } else {
-      setBtnAddCheck(true);
-      setColorSubmit('');
-    }
-  };
+
   // *color input
   useEffect(() => {
     if (category.categories.length === 0) {
@@ -171,7 +146,6 @@ const TabInfo = (props) => {
             showSearch
             placeholder="Chọn nhãn hiệu"
             optionFilterProp="children"
-            onChange={onChangeSelect}
             size="large"
             onSearch={onSearch}
             style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
@@ -195,19 +169,20 @@ const TabInfo = (props) => {
           style={{ fontWeight: '600' }}
           name="color"
         >
-          <ColorInput
-            setColorList={setColorList}
-            category={categorySelect}
-            colorList={colorList}
-            addBtn={btnAddCheck}
-            removeBtn={btnRemoveCheck}
-            removeBtnOpen={removeColorBtnOpen}
-            addBtnOpen={addColorBtnOpen}
-            handleCloseAdd={() => setBtnAddCheck(false)}
-            handleCloseRemove={() => setBtnRemoveCheck(false)}
-            setColorSubmit={setColorSubmit}
-            colorSubmit={colorSubmit}
-          />
+          <Select
+            placeholder="Chọn màu sắc"
+            size="large"
+            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+          >
+            {' '}
+            {colorList.map((item, index) => {
+              return (
+                <Option key={index} value={item.value}>
+                  {item.name}
+                </Option>
+              );
+            })}
+          </Select>
         </Form.Item>
         <Form.Item
           className="username"

@@ -1,29 +1,20 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MenuItem, Menu, Button } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const CategoryItem = (props) => {
-  const navigate = useNavigate();
   const { name, index, value, categories } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [icon, setIcon] = useState(false);
-  const listCategory = categories.filter((item) => item.parent == value);
+  const listCategory = categories.filter((item) => item.parent === value);
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
     }
     setIcon(true);
   }
-  const handleOnClick = (value) => {
-    console.log('value', value);
-    //navigate(`/products?category=${value}&level=2`);
-    const newUrl = `/products?category=${value}&level=2`;
-    window.history.pushState({}, '', newUrl);
-    window.dispatchEvent(new Event('popstate'));
-  };
   function handleClose() {
     setAnchorEl(null);
     setIcon(false);
@@ -71,12 +62,13 @@ const CategoryItem = (props) => {
         >
           {listCategory.map((item) => {
             return (
-              <MenuItem
-                key={item._id}
-                value={item._id}
-                onClick={() => handleOnClick(item._id)}
-              >
-                {item.name}
+              <MenuItem key={item._id} value={item._id}>
+                <Link
+                  style={{ color: 'black' }}
+                  to={`/products?category=${item.slug}&level=2`}
+                >
+                  {item.name}
+                </Link>
               </MenuItem>
             );
           })}

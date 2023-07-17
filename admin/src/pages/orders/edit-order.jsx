@@ -105,7 +105,6 @@ const EditOrder = () => {
     setOrderStatusSelected(value);
   };
   const handleUpdateStatus = () => {
-    console.log('select', orderStatusSelected);
     dispatch(
       orderThunk.updateOrderStatus({ orderId, status: orderStatusSelected })
     )
@@ -117,14 +116,15 @@ const EditOrder = () => {
         });
         dispatch(orderThunk.getOrder(orderId))
           .unwrap()
-          .then((value) => {
+          .then(async (value) => {
             setListStatus(customOrderStatusList(value.order.orderStatus));
             setOrderSelected(value.order);
-            return dispatch(orderThunk.getAllOrderAfter()).unwrap();
-          })
-          .then(() => {
-            if (orderStatusSelected === 'delivered') {
-              dispatch(productThunk.getAllAfterHandle());
+            const delivered = value.order.orderStatus.some(
+              (status) => status.type === 'delivered'
+            );
+            console.log(delivered);
+            if (delivered) {
+              await dispatch(productThunk.getAllAPI());
             }
           });
       });
@@ -218,11 +218,11 @@ const EditOrder = () => {
                   </Typography.Text>
                 </Col>
                 <Col gutter={[8, 0]}>
-                    <Typography.Text style={{ fontSize: '14px', color: 'black'}}>
-                      {
-                        orderSelected.paymentStatus === "completed" ? "Đã thanh toán": "Chưa thanh toán"
-                      }
-                    </Typography.Text>
+                  <Typography.Text style={{ fontSize: '14px', color: 'black' }}>
+                    {orderSelected.paymentStatus === 'completed'
+                      ? 'Đã thanh toán'
+                      : 'Chưa thanh toán'}
+                  </Typography.Text>
                 </Col>
               </Row>
               <Row
@@ -392,10 +392,12 @@ const EditOrder = () => {
                     style={{ fontSize: '14px', color: '#7d879c' }}
                     strong
                   >
-                      {
-                        orderSelected.paymentType === 'card' ? "Thanh toán qua ví điện tử Paypal" : " Thanh toán khi nhận hàng"
-                      }
-                    </Typography.Text>
+                    {orderSelected.paymentType === 'paypal'
+                      ? 'Thanh toán qua ví điện tử Paypal'
+                      : orderSelected.paymentType === 'momo'
+                      ? 'Thanh toán qua ví điện tử Momo'
+                      : ' Thanh toán khi nhận hàng'}
+                  </Typography.Text>
                 </Row>
               </div>
             </Col>

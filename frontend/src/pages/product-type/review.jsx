@@ -6,8 +6,6 @@ import {
   Stack,
   Divider,
   DialogTitle,
-  DialogContent,
-  DialogContentText,
   Dialog,
 } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
@@ -20,40 +18,6 @@ import userThunk from '../../features/user/user.service';
 import ReviewItem from './review-item.jsx';
 import './style.css';
 
-const arrayStar = [
-  {
-    star: '5',
-    percentage: 70,
-  },
-  {
-    star: '4',
-    percentage: 40,
-  },
-  {
-    star: '3',
-    percentage: 30,
-  },
-  {
-    star: '2',
-    percentage: 20,
-  },
-  {
-    star: '1',
-    percentage: 10,
-  },
-];
-const imageUrls = [
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-  'https://picsum.photos/200/300',
-];
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -111,20 +75,24 @@ const ReviewComponent = (props) => {
   };
   const indexReviewUser = useMemo(() => {
     let value = -1;
-    if (
-      reviewData &&
-      reviewData.reviews &&
-      Object.keys(reviewData.reviews).length > 0
-    ) {
-      reviewData.reviews.map((item, index) => {
-        if (item.user._id == user.user.userId && item.product === product._id) {
-          value = index;
-        }
-      });
+    if (user.user) {
+      if (
+        reviewData &&
+        reviewData.reviews &&
+        Object.keys(reviewData.reviews).length > 0
+      ) {
+        reviewData.reviews.map((item, index) => {
+          if (
+            item.user._id === user.user.userId &&
+            item.product === product._id
+          ) {
+            value = index;
+          }
+        });
+      }
     }
-
     return value;
-  }, [product._id, reviewData, user.user.userId]);
+  }, [product._id, reviewData, user]);
   const onCloseHandle = () => {
     setComment('');
     setShow(0);
@@ -132,6 +100,7 @@ const ReviewComponent = (props) => {
     setValue(3);
     setOpenReview(false);
   };
+
   const handleAddRating = async () => {
     setLoading(true);
     let reviewData = {};
@@ -160,16 +129,16 @@ const ReviewComponent = (props) => {
         return dispatch(userThunk.getReviewAPI(product._id)).unwrap();
       })
       .then((value) => {
+        console.log('review dât', value);
         setReviewData(value);
       });
   };
   useEffect(() => {
     if (product) {
-      console.log('chay');
       dispatch(userThunk.getReviewAPI(product._id))
         .unwrap()
         .then((value) => {
-          console.log(value.images);
+          console.log(value);
           setReviewData(value);
         });
     }
@@ -345,7 +314,9 @@ const ReviewComponent = (props) => {
               textAlign: 'center',
             }}
           >
-            Xem 35 đánh giá
+            {reviewData && reviewData.reviewCount > 0
+              ? `Xem ${reviewData.reviewCount} đánh giá`
+              : 'Chưa có đánh giá'}
           </MDButton>
         </MDBox>
       ) : null}

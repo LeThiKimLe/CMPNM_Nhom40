@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
+/* eslint-disable prefer-arrow-callback */
 const express = require('express');
-
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
@@ -12,7 +12,6 @@ const server = http.createServer(app);
 const helmet = require('helmet');
 
 const corsOptions = require('./src/configs/cors-options');
-const credentials = require('./src/middlewares/credentials');
 
 require('dotenv').config();
 
@@ -25,14 +24,13 @@ paypal.configure({
  * * mongoose connect db cloud
  */
 const connect = require('./src/connections/connect');
-const redisClient = require('./src/connections/cachingRedis');
 
 const urlMongoose = process.env.MONGO_CONNECTION;
 
 const userRouter = require('./src/routes/user.routes');
 const adminRouter = require('./src/routes/admin/admin.routes');
 const categoryRouter = require('./src/routes/category.routes');
-const colorRouter = require('./src/routes/color.routes');
+
 const productRouter = require('./src/routes/product.routes');
 const cartRouter = require('./src/routes/cart.routes');
 const addressRouter = require('./src/routes/address.routes');
@@ -42,19 +40,38 @@ const bannerRouter = require('./src/routes/banner.routes');
 app.use(cookieParser());
 app.use(helmet());
 
+app.use(cookieParser());
+app.use(
+  session({
+    secret: 'buitiep',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, sameSite: 'none' },
+  })
+);
 // built-in middleware for json
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
-app.use(credentials);
-
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type'
+  );
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
 app.use('/api/category', categoryRouter);
 app.use('/api/product', productRouter);
-app.use('/api/color', colorRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/order/', orderRouter);
@@ -65,8 +82,6 @@ app.use('/api', userRouter);
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   connect(urlMongoose);
-  redisClient.on('error', (error) => console.error(`Error : ${error}`));
-  await redisClient.connect();
   console.log(`App listen at https://localhost:${PORT}`);
 });
 

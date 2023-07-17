@@ -13,7 +13,6 @@ const DetailModal = (props) => {
   let listTabs = [];
   if (open) {
     const productSelected = _.find(products, { _id: productId });
-    console.log(productSelected);
     const {
       color,
       createdAt,

@@ -53,23 +53,7 @@ const getAllAPI = createAsyncThunk('/category/get-all', async (thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
-const getAllAfterHandle = createAsyncThunk(
-  '/category/get-all-handle',
-  async (thunkAPI) => {
-    try {
-      const response = await axiosClient.get('/category/get-all-handle');
-      return response.data;
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
+
 const deleteCategoryAPI = createAsyncThunk(
   '/category/delete',
   async (listID, thunkAPI) => {
@@ -96,6 +80,5 @@ const categoryThunk = {
   getAllAPI,
   deleteCategoryAPI,
   uploadAPI,
-  getAllAfterHandle,
 };
 export default categoryThunk;

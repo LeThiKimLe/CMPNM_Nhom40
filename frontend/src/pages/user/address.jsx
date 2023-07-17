@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Divider, Stack, CircularProgress } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
 import MDButton from '../../components/MDButton';
@@ -12,23 +12,30 @@ import AddressItem from './address-item';
 const AddressPage = () => {
   const dispatch = useDispatch();
   const addressUser = useSelector((state) => state.addressUser);
-
+  const [loading, setLoading] = useState(true);
   // * state modal
   const [open, setOpen] = useState(false);
-  const [listAddress, setListAddress] = useState([]);
+
+  const [listAddress, setListAddress] = useState(addressUser);
   const onCancel = () => setOpen(false);
   // * state modal
-  useEffect(() => {
+  const getAddressList = useCallback(() => {
     dispatch(addressThunk.getAllAPI())
       .unwrap()
       .then((data) => {
-        if (data.length === 0) {
+        console.log(data);
+        if (data.list.length === 0) {
           setListAddress([]);
         } else {
-          setListAddress(data.addresses);
+          setListAddress(data.list);
         }
+        setLoading(false);
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    getAddressList();
+  }, [getAddressList]);
 
   return (
     <UserPage>
@@ -36,7 +43,7 @@ const AddressPage = () => {
         open={open}
         setOpen={setOpen}
         onCancel={onCancel}
-        setListAddress={setListAddress}
+        getAddressList={getAddressList}
       />
       <Stack
         direction="row"
@@ -84,32 +91,31 @@ const AddressPage = () => {
       </Stack>
 
       <Divider sx={{ width: '100%' }} />
-      {!addressUser.getLoading ? (
-        listAddress && listAddress.length > 0 ? (
-          listAddress.map((item, index) => {
-            return (
-              <div key={index} style={{ paddingRight: '0px' }}>
-                <AddressItem item={item} setListAddress={setListAddress} />
-                <Divider sx={{ width: '100%' }} />
-              </div>
-            );
-          })
-        ) : (
-          <Stack
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-          >
-            <MDTypography variant="h4" color="primary">
-              {`Bạn chưa có địa chỉ nào!`}
-            </MDTypography>
-          </Stack>
-        )
-      ) : (
+
+      {loading ? (
         <MDBox display="flex" justifyContent="center" alignItems="center" p={2}>
           <CircularProgress />
         </MDBox>
+      ) : listAddress && listAddress.length > 0 ? (
+        listAddress.map((item, index) => {
+          return (
+            <div key={index} style={{ paddingRight: '0px' }}>
+              <AddressItem item={item} getAddressList={getAddressList} />
+              <Divider sx={{ width: '100%' }} />
+            </div>
+          );
+        })
+      ) : (
+        <Stack
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+        >
+          <MDTypography variant="h4" color="primary">
+            {`Bạn chưa có địa chỉ nào!`}
+          </MDTypography>
+        </Stack>
       )}
     </UserPage>
   );

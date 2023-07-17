@@ -20,8 +20,8 @@ import React, {
   useRef,
 } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useLocation, useParams } from 'react-router-dom';
 import _ from 'lodash';
-import { useLocation } from 'react-router-dom';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import { Stack } from '@mui/system';
@@ -29,7 +29,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import userThunk from '../../features/user/user.service';
 import optionFilter from './options';
 import ProductCard from './product-card.jsx';
-import numeral from 'numeral';
 function Item(props) {
   const { sx, ...other } = props;
   return (
@@ -61,12 +60,13 @@ const { typePhone, rams, storages, sortOptions } = optionFilter;
 const AllProductPage = () => {
   const data = useSelector((state) => state.data);
   const { categories } = data;
-
+  const location = useLocation();
   const dispatch = useDispatch();
+
   const filterData = useMemo(() => {
     const obj = {};
 
-    const queryParams = new URLSearchParams(window.location.search);
+    const queryParams = new URLSearchParams(location.search);
 
     const keys = queryParams.keys();
     for (const key of keys) {
@@ -74,25 +74,23 @@ const AllProductPage = () => {
       obj[key] = value;
     }
     return obj;
-  }, []);
-  const categoryOneList = useMemo(() => {
-    let categoryList = [];
-    const categoriesLocal =
-      localStorage.getItem('categories') == null
-        ? null
-        : JSON.parse(localStorage.getItem('categories'));
-    if (!categoriesLocal) {
-      categoryList = categories;
+  }, [location.search]);
+  const categoryCustomList = useMemo(() => {
+    let list = [];
+    if (filterData.level) {
+      const categoryLevel = categories.find(
+        (item) => item.slug === filterData.category
+      );
+      list = categories.filter((item) => item.parentId === categoryLevel._id);
     } else {
-      categoryList = categoriesLocal;
+      list = categories.filter((item) => item.level === 1);
     }
-    return categoryList.filter((item) => item.level === 1);
-  }, [categories]);
+    return list;
+  }, [categories, filterData]);
 
   const [listProduct, setListProduct] = useState([]);
   const [productPage, setProductPage] = useState([]);
   const [osOption, setOsOption] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 10000000]); // giá trị mặc định cho giá min và giá max
   const [sortOption, setSortOption] = useState('Nổi bật');
   const [ramOption, setRamOption] = useState([]);
   const [storageOption, setStorageOption] = useState([]);
@@ -104,22 +102,43 @@ const AllProductPage = () => {
     parseInt(filterData.page) || 1
   );
   const [totalCount, setTotalCount] = useState(0);
-  const filterDataRef = useRef(filterData);
   const handleOptionChange = (option, optionList, setOptionList) => (e) => {
+    // url ban đầu
+    const urlParams = new URLSearchParams(window.location.search);
+    const level = urlParams.get('level');
+
     setDataLoading(true);
     let list = [];
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.delete(option);
-
     const index = optionList.indexOf(e.target.value);
     if (index === -1) {
       list = [...optionList, e.target.value];
     } else {
       list = optionList.filter((opt) => opt !== e.target.value);
     }
+
     setOptionList(list);
-    const optionSlugs = Object.keys(list).length > 0 ? list.join('-') : 'all';
-    urlParams.set(option, optionSlugs);
+    if (option === 'category') {
+      if (list.length === 0 && level === '3') {
+        const slug = categoryCustomList.map((category) => category.slug);
+        const optionSlugs =
+          Object.keys(slug).length > 0 ? slug.join('+') : 'all';
+        urlParams.set('level', '3');
+        urlParams.set(option, optionSlugs);
+      } else if (option === 'category' && level === '2') {
+        urlParams.set('level', '3');
+        const optionSlugs =
+          Object.keys(list).length > 0 ? list.join('+') : 'all';
+        urlParams.set(option, optionSlugs);
+      } else {
+        const optionSlugs =
+          Object.keys(list).length > 0 ? list.join('+') : 'all';
+        urlParams.set(option, optionSlugs);
+      }
+    } else {
+      const optionSlugs = Object.keys(list).length > 0 ? list.join('+') : 'all';
+      urlParams.set(option, optionSlugs);
+    }
+
     const obj = {};
 
     const keys = urlParams.keys();
@@ -130,6 +149,7 @@ const AllProductPage = () => {
 
     const newUrl = `${window.location.pathname}?${urlParams}`;
     window.history.replaceState({}, '', newUrl);
+
     dispatch(userThunk.getProductsOptionAPI(obj))
       .unwrap()
       .then((value) => {
@@ -152,6 +172,8 @@ const AllProductPage = () => {
         window.history.replaceState({}, '', newUrl);
         setDataLoading(false);
       });
+    //   */
+    // setDataLoading(false);
   };
   const handleCategoryChange = handleOptionChange(
     'category',
@@ -160,7 +182,7 @@ const AllProductPage = () => {
   );
   const handleChangePage = useCallback(
     (event, newPage) => {
-      filterDataRef.current.page = newPage;
+      filterData.page = newPage;
       const data = listProduct[newPage - 1] || [];
       setProductPage(data);
       setCurrentPage(newPage);
@@ -169,15 +191,8 @@ const AllProductPage = () => {
       const newUrl = `${window.location.pathname}?${urlParams}`;
       window.history.replaceState({}, '', newUrl);
     },
-    [listProduct]
+    [listProduct, filterData]
   );
-  const handlePriceRangeChange = (event, newValue) => {
-    setPriceRange(newValue);
-  };
-
-  const formatPrice = (price) => {
-    return numeral(price).format('0,0 VNĐ');
-  };
 
   const handleStorageChange = handleOptionChange(
     'storage',
@@ -186,10 +201,11 @@ const AllProductPage = () => {
   );
   const handleRamChange = handleOptionChange('ram', ramOption, setRamOption);
   const handleChangeType = handleOptionChange('type', osOption, setOsOption);
+
   const getAllProductInit = useCallback(() => {
     setDataLoading(true);
     // dispatch api getall product
-    dispatch(userThunk.getProductsOptionAPI(filterDataRef.current))
+    dispatch(userThunk.getProductsOptionAPI(filterData))
       .unwrap()
       .then((value) => {
         const { products } = value;
@@ -207,7 +223,7 @@ const AllProductPage = () => {
         setListProduct(chunks);
         setDataLoading(false);
       });
-  }, [dispatch, pageSize]);
+  }, [dispatch, pageSize, filterData]);
 
   useEffect(() => {
     getAllProductInit();
@@ -254,7 +270,7 @@ const AllProductPage = () => {
               sx={{ padding: '18px 27px', marginBottom: '10px' }}
             >
               {' '}
-              <Stack sx={{ marginBottom: '15px' }}>
+              <Stack sx={{ marginBottom: '15px', minWidth: '210px' }}>
                 <MDTypography
                   sx={{
                     fontSize: '14px',
@@ -265,12 +281,22 @@ const AllProductPage = () => {
                 >
                   Thương hiệu
                 </MDTypography>
-                {categoryOneList && categoryOneList.length !== 0
-                  ? categoryOneList.map((item, index) => {
+                {categoryCustomList && categoryCustomList.length !== 0
+                  ? categoryCustomList.map((item, index) => {
                       return (
                         <FormControlLabel
                           key={index}
-                          label={item.name}
+                          label={
+                            <MDTypography
+                              sx={{
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                color: '#2b3445',
+                              }}
+                            >
+                              {item.name}
+                            </MDTypography>
+                          }
                           control={
                             <Checkbox
                               value={item.slug}
@@ -281,34 +307,6 @@ const AllProductPage = () => {
                       );
                     })
                   : null}
-              </Stack>
-              <Divider />
-              <Stack spacing={1} sx={{ marginBottom: '15px' }}>
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Mức giá
-                </MDTypography>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  spacing={1}
-                >
-                  <Slider
-                    value={priceRange}
-                    onChange={handlePriceRangeChange}
-                    valueLabelDisplay="auto"
-                    getAriaValueText={formatPrice}
-                    min={0}
-                    max={10000000}
-                  />{' '}
-                </Stack>
               </Stack>
               <Divider />
               <Stack direction="column" sx={{ marginBottom: '15px' }}>
@@ -326,7 +324,17 @@ const AllProductPage = () => {
                   return (
                     <FormControlLabel
                       key={index}
-                      label={item.name}
+                      label={
+                        <MDTypography
+                          sx={{
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#2b3445',
+                          }}
+                        >
+                          {item.name}
+                        </MDTypography>
+                      }
                       control={
                         <Checkbox
                           value={item.name}
@@ -353,7 +361,17 @@ const AllProductPage = () => {
                   return (
                     <FormControlLabel
                       key={index}
-                      label={item.value}
+                      label={
+                        <MDTypography
+                          sx={{
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#2b3445',
+                          }}
+                        >
+                          {item.value}
+                        </MDTypography>
+                      }
                       control={
                         <Checkbox
                           value={item.value}
@@ -380,7 +398,17 @@ const AllProductPage = () => {
                   return (
                     <FormControlLabel
                       key={index}
-                      label={item.value}
+                      label={
+                        <MDTypography
+                          sx={{
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#2b3445',
+                          }}
+                        >
+                          {item.value}
+                        </MDTypography>
+                      }
                       control={
                         <Checkbox
                           value={item.value}
@@ -465,7 +493,7 @@ const AllProductPage = () => {
               >
                 <CircularProgress color="dark" />
               </MDBox>
-            ) : Array.isArray(productPage) ? (
+            ) : Object.keys(productPage).length > 0 ? (
               <MDBox
                 variant="contained"
                 borderRadius="lg"
@@ -496,7 +524,7 @@ const AllProductPage = () => {
                 </MDTypography>
               </MDBox>
             )}
-            {dataLoading ? null : (
+            {dataLoading || Object.keys(productPage).length === 0 ? null : (
               <Stack sx={{ marginBottom: '5px' }} justifyContent="center">
                 <Pagination
                   count={totalPages}

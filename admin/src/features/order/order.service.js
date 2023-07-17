@@ -13,11 +13,11 @@ const getAllOrder = createAsyncThunk('get-all-order', async (thunkAPI) => {
     return thunkAPI.rejectWithValue(message);
   }
 });
-const getAllOrderAfter = createAsyncThunk(
-  'get-all-order-after',
+const getMonthlyRevenueAPI = createAsyncThunk(
+  'get-revenue',
   async (thunkAPI) => {
     try {
-      const response = await axiosClient.get('/admin/get-all-order-handle');
+      const response = await axiosClient.get('/admin/get-revenue');
       return response.data;
     } catch (error) {
       const message =
@@ -30,6 +30,7 @@ const getAllOrderAfter = createAsyncThunk(
     }
   }
 );
+
 const getOrder = createAsyncThunk('get-order', async (orderId, thunkAPI) => {
   try {
     //
@@ -68,6 +69,7 @@ const orderThunk = {
   getAllOrder,
   getOrder,
   updateOrderStatus,
-  getAllOrderAfter,
+
+  getMonthlyRevenueAPI,
 };
 export default orderThunk;

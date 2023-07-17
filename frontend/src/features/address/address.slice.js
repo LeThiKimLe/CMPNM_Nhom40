@@ -3,6 +3,7 @@ import addressThunk from './address.service';
 
 const initialState = {
   addresses: [],
+
   updatingAddress: false,
   error: null,
   getLoading: false,
@@ -25,7 +26,7 @@ const addressSlice = createSlice({
         state.getLoading = true;
       })
       .addCase(addressThunk.getAllAPI.fulfilled, (state, action) => {
-        state.addresses = action.payload.addresses;
+        state.addresses = action.payload.list;
         state.getLoading = false;
       })
       .addCase(addressThunk.getAllAPI.rejected, (state, action) => {

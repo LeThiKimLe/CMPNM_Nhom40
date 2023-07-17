@@ -8,13 +8,25 @@ import MDButton from '../../components/MDButton';
 import MDBox from '../../components/MDBox';
 import MDAvatar from '../../components/MDAvatar';
 import { formatThousand } from '../../utils/custom-price';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 const OrderDetailItem = (props) => {
-  const data = useSelector((state) => state.data);
   const { item } = props;
   const { productId, purchasedQty } = item;
   const { salePrice, productPictures, name, detailsProduct } = productId;
   const { ram, storage } = detailsProduct;
-  const colorName = getColorProduct(productId, data.colors);
+  const colorName = getColorProduct(productId, colorList);
 
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">

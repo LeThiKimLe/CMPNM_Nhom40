@@ -1,16 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import dataThunk from './data.service';
-import _ from 'lodash';
-import {
-  getListCategory,
-  getAllGroupProducts,
-} from '../../utils/custom-products';
 //
 
 const initialState = {
   categories: [],
   products: [],
-  colors: [],
+
   banners: [],
   message: '',
   error: false,
@@ -31,18 +26,14 @@ const dataSlice = createSlice({
         state.loading = true;
       })
       .addCase(dataThunk.getAllAPI.fulfilled, (state, action) => {
-        state.categories = action.payload.list[0];
-        localStorage.setItem(
-          'categories',
-          JSON.stringify(action.payload.list[0])
-        );
+        const value = action.payload;
+        state.categories = value.list[0];
+        localStorage.setItem('categories', JSON.stringify(value.list[0]));
         state.products = action.payload.list[1];
-        state.colors = action.payload.list[2];
-        state.banners = action.payload.list[3];
+        state.banners = action.payload.list[2];
         state.loading = false;
       })
       .addCase(dataThunk.getAllAPI.rejected, (state, action) => {
-        console.log(action.payload);
         state.error = true;
         state.loading = false;
         state.message = action.payload;

@@ -1,53 +1,17 @@
 /* eslint-disable array-callback-return */
-import React, { useEffect, useState, useMemo } from 'react';
+import React from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import CircularProgress from '@mui/material/CircularProgress';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../../components/MDTypography';
-import { Button, Chip, Stack } from '@mui/material';
+import { Chip } from '@mui/material';
 import { formatThousand } from '../../utils/custom-price';
 import { Link } from 'react-router-dom';
 import { renderScreen } from '../../utils/custom-products';
 
-function getOptions(products) {
-  let option = products.reduce((acc, curr) => {
-    const option = `${curr.ram}-${curr.storage}`;
-    if (!acc.includes(option)) {
-      acc.push(option);
-    }
-    return acc;
-  }, []);
-
-  const uniqueRam = products.reduce((acc, curr) => {
-    if (!acc.includes(curr.ram)) {
-      acc.push(curr.ram);
-    }
-    return acc;
-  }, []);
-
-  const option2 = products.map((product) => product.storage);
-
-  if (uniqueRam.length === 1) {
-    option = option2.filter((item, index) => option2.indexOf(item) === index);
-  }
-
-  option = option.filter((item, index) => option.indexOf(item) === index);
-
-  return option;
-}
-function ProductCard({ category, groups }) {
-  const [optionSelected, setOptionSelected] = useState(0);
-  const options = groups.map((item) => {
-    return { ramt: item.ram, storage: item.storage };
-  });
-  const optionsCustom = getOptions(options);
-  const product = useMemo(() => {
-    return groups[optionSelected].products[0];
-  }, [optionSelected, groups]);
+function ProductCard({ product }) {
   const {
     name,
     productPictures,
@@ -56,10 +20,12 @@ function ProductCard({ category, groups }) {
     sale,
     detailsProduct,
   } = product;
+  const { ram, storage } = detailsProduct;
   const screenCustom = renderScreen(detailsProduct.screen);
+
   return (
     <Card
-      key={category._id}
+      key={product._id}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -69,9 +35,7 @@ function ProductCard({ category, groups }) {
       }}
     >
       <>
-        <Link
-          to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
-        >
+        <Link>
           <MDBox
             position="relative"
             width="100%"
@@ -99,19 +63,17 @@ function ProductCard({ category, groups }) {
 
         <MDBox mb={0.5} mx={0.5}>
           <MDBox mb={0.5}>
-            <Link
-              to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
-            >
+            <Link>
               <MDTypography
                 sx={{
-                  fontSize: '1rem',
+                  fontSize: '14px',
                   fontWeight: 'bold',
                   height: '50px',
                 }}
                 textTransform="capitalize"
                 color="dark"
               >
-                {name}
+                {name} {ram} {storage}
               </MDTypography>
             </Link>
           </MDBox>
@@ -132,9 +94,9 @@ function ProductCard({ category, groups }) {
                 return (
                   <Chip
                     key={index}
-                    size="medium"
+                    size="small"
                     sx={{
-                      fontSize: '0.65rem',
+                      fontSize: '10px',
                       fontWeight: '500',
                       borderRadius: '0.3rem',
                       marginRight: '3px',
@@ -146,48 +108,10 @@ function ProductCard({ category, groups }) {
               })}
             </Grid>
           </MDBox>
-          <MDBox
-            mb={1}
-            display="flex"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-          >
-            <Grid
-              container
-              justifyContent="flex-start"
-              alignItems="flex-start"
-              xs={12}
-            >
-              {optionsCustom.map((item, index) => {
-                return (
-                  <Button
-                    key={index}
-                    size="small"
-                    sx={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      padding: '2px 3px',
-                      border: optionSelected === index ? '1px solid #111' : '',
-                      borderRadius: '0.3rem',
-                      marginRight: '3px',
-                      marginBottom: '3px',
-                      width: '30px',
-                      color: '#111',
-                      backgroundColor: '#d0e0e3',
-                    }}
-                    onClick={() => setOptionSelected(index)}
-                  >
-                    {item}
-                  </Button>
-                );
-              })}
-            </Grid>
-            {/* // danh sách ram */}
-          </MDBox>
           <MDBox display="flex" justifyContent="flex-start" alignItems="center">
             <MDTypography
               sx={{
-                fontSize: '0.875rem',
+                fontSize: '14px',
                 fontWeight: '500',
                 color: '#696969',
                 textDecoration: 'line-through',
@@ -199,7 +123,7 @@ function ProductCard({ category, groups }) {
             <span
               style={{
                 marginLeft: '3px',
-                fontSize: '0.875rem',
+                fontSize: '14px',
                 fontWeight: '500',
                 color: '#B00E18',
               }}
@@ -214,7 +138,7 @@ function ProductCard({ category, groups }) {
           >
             <MDTypography
               sx={{
-                fontSize: '1rem',
+                fontSize: '14px',
                 fontWeight: 'bold',
               }}
               textTransform="capitalize"
@@ -222,9 +146,6 @@ function ProductCard({ category, groups }) {
             >
               {formatThousand(salePrice)}đ
             </MDTypography>
-            <MDBox display="flex">
-              <FavoriteIcon fontSize="medium" color="primary" />
-            </MDBox>
           </MDBox>
         </MDBox>
       </>

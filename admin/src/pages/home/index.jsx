@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Col, Row, Typography, Card, Button, Spin, Table, Tag } from 'antd';
 import {
   faSackDollar,
@@ -7,13 +7,16 @@ import {
   faTruckFast,
   faBoxesStacked,
 } from '@fortawesome/free-solid-svg-icons';
+
+import numeral from 'numeral';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatThousand, getListProductSold } from '../../utils';
 import orderThunk from '../../features/order/order.service';
 import { useNavigate } from 'react-router-dom';
 import productThunk from '../../features/product/product.service';
-
+import ReactApexChart from 'react-apexcharts';
+// import eChart from '../../components/chart/configs/eChart';
 const { Title, Text } = Typography;
 
 const StockProductColumns = [
@@ -121,7 +124,145 @@ const orderStatusList = [
     color: '#b4a7d6',
   },
 ];
+const eChartConfig = {
+  series: [
+    {
+      name: 'Sales',
+      data: [450, 200, 100, 220, 500, 100, 400, 230, 500, 200, 400, 300],
+      color: '#fff',
+    },
+  ],
 
+  options: {
+    chart: {
+      type: 'bar',
+      width: '100%',
+      height: 'auto',
+
+      toolbar: {
+        show: false,
+      },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',
+        borderRadius: 5,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      show: true,
+      width: 1,
+      colors: ['transparent'],
+    },
+    grid: {
+      show: true,
+      borderColor: '#ccc',
+      strokeDashArray: 2,
+    },
+    xaxis: {
+      categories: [
+        'Tháng 1',
+        'Tháng 2',
+        'Tháng 3',
+        'Tháng 4',
+        'Tháng 5',
+        'Tháng 6',
+        'Tháng 7',
+        'Tháng 8',
+        'Tháng 9',
+        'Tháng 10',
+        'Tháng 11',
+        'Tháng 12',
+      ],
+      labels: {
+        show: true,
+        align: 'right',
+        minWidth: 0,
+        maxWidth: 160,
+        style: {
+          colors: [
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+          ],
+        },
+      },
+    },
+    yaxis: {
+      labels: {
+        show: true,
+        align: 'right',
+        minWidth: 0,
+        maxWidth: 160,
+        style: {
+          colors: [
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+            '#fff',
+          ],
+        },
+      },
+    },
+
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return '$ ' + val + ' thousands';
+        },
+      },
+    },
+  },
+};
+const monthNamesEn = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const monthNamesVi = [
+  'Tháng 1',
+  'Tháng 2',
+  'Tháng 3',
+  'Tháng 4',
+  'Tháng 5',
+  'Tháng 6',
+  'Tháng 7',
+  'Tháng 8',
+  'Tháng 9',
+  'Tháng 10',
+  'Tháng 11',
+  'Tháng 12',
+];
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -131,6 +272,7 @@ function Home() {
 
   const [listOrder, setListOrder] = useState(orderList);
   const [listProduct, setListProduct] = useState(product.products);
+  const [eChart, setEChart] = useState(eChartConfig);
   const [totalAmount, setTotalAmount] = useState(0);
   const [allItems, setAllItems] = useState(0);
   const [totalShipAmount, setTotalShipAmount] = useState(0);
@@ -196,30 +338,140 @@ function Home() {
     },
   ];
 
-  useEffect(() => {
-    dispatch(productThunk.getAllAPI())
-      .unwrap()
-      .then((data) => {
-        setListProduct(data.list);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+  const getRevenue = useCallback(async () => {
+    try {
+      const dataRevenue = await dispatch(
+        orderThunk.getMonthlyRevenueAPI()
+      ).unwrap();
+
+      const data = [];
+      const categories = [];
+
+      dataRevenue.forEach((item) => {
+        const monthIndex = monthNamesEn.indexOf(item.month);
+        const monthName =
+          monthIndex !== -1 ? monthNamesVi[monthIndex] : item.month;
+
+        const categoryIndex = categories.indexOf(monthName);
+
+        if (categoryIndex === -1) {
+          categories.push(monthName);
+          data.push(item.totalRevenue);
+        } else {
+          data[categoryIndex] += item.totalRevenue;
+        }
       });
+      const eChart = {
+        series: [
+          {
+            name: 'Doanh thu',
+            data,
+            color: '#fff',
+          },
+        ],
+
+        options: {
+          chart: {
+            width: '100%',
+            height: 'auto',
+
+            toolbar: {
+              show: false,
+            },
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%',
+              borderRadius: 5,
+            },
+          },
+          dataLabels: {
+            enabled: false,
+          },
+          stroke: {
+            show: true,
+            width: 1,
+            colors: ['transparent'],
+          },
+          grid: {
+            show: true,
+            borderColor: '#ccc',
+            strokeDashArray: 2,
+          },
+          xaxis: {
+            categories,
+            labels: {
+              show: true,
+              align: 'right',
+              minWidth: 0,
+              maxWidth: 160,
+              style: {
+                colors: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff'],
+              },
+            },
+          },
+          yaxis: {
+            labels: {
+              show: true,
+              align: 'right',
+              minWidth: 0,
+              maxWidth: 160,
+              style: {
+                colors: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff'],
+              },
+              formatter: function (value) {
+                return numeral(value).format('0,0') + ' VNĐ';
+              },
+            },
+          },
+
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return numeral(val).format('0,0') + ' VNĐ';
+              },
+            },
+          },
+        },
+      };
+
+      console.log('eChart', eChart);
+      setEChart(eChart);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const fetchProducts = useCallback(async () => {
+    if (product.products.length > 0) {
+      return;
+    }
+    try {
+      const data = await dispatch(productThunk.getAllAPI()).unwrap();
+      setListProduct(data.list);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch]);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      const value = await dispatch(orderThunk.getAllOrder()).unwrap();
+      setListOrder(value.list[1]);
+      setTotalAmount(getTotalAmount(value.list[1]));
+      setAllItems(getTotalItems(value.list[1]));
+      setTotalShipAmount(getAllTotalShip(value.list[1]));
+    } catch (error) {
+      console.log(error);
+    }
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(orderThunk.getAllOrder())
-      .unwrap()
-      .then((value) => {
-        setListOrder(value.list[1]);
-        setTotalAmount(getTotalAmount(value.list[1]));
-        setAllItems(getTotalItems(value.list[1]));
-        setTotalShipAmount(getAllTotalShip(value.list[1]));
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
-      });
-  }, [dispatch]);
+    Promise.all([fetchProducts(), getRevenue(), fetchOrders()])
+      .then(() => setLoading(false))
+      .catch((error) => console.log(error));
+  }, [fetchProducts, fetchOrders]);
+
   useEffect(() => {
     if (Object.keys(listOrder).length > 0) {
       setOrderData(
@@ -353,44 +605,172 @@ function Home() {
             >
               Chào buổi sáng, Tiệp!
             </Title>
-            <Row className="rowgap-vbox" gutter={[24, 0]}>
-              {count.map((c, index) => (
-                <Col
-                  key={index}
-                  xs={24}
-                  sm={24}
-                  md={12}
-                  lg={6}
-                  xl={6}
-                  className="mb-24"
-                >
-                  <Card bordered={false} className="criclebox ">
-                    <div className="number">
-                      <Row align="middle" gutter={[24, 0]}>
-                        <Col xs={18}>
-                          <span>{c.today}</span>
-                          <Title
-                            style={{ fontSize: '20px', fontWeight: '700' }}
-                          >
-                            {c.title}{' '}
-                            <small className={c.bnb}>{c.persent}</small>
-                          </Title>
-                        </Col>
-                        <Col xs={6}>
-                          <div
-                            className="icon-box"
-                            style={{
-                              backgroundColor: '#3d85c6',
-                            }}
-                          >
-                            {c.icon}
-                          </div>
-                        </Col>
-                      </Row>
+
+            <Row gutter={[24, 0]}>
+              <Col xs={24} sm={24} md={12} lg={12} xl={18} className="mb-24">
+                <Card bordered={false} className="criclebox">
+                  {eChart && (
+                    <div id="chart">
+                      <Title level={5}>Doanh thu theo tháng</Title>
+                      <ReactApexChart
+                        className="bar-chart"
+                        options={eChart.options}
+                        series={eChart.series}
+                        type="bar"
+                        height={400}
+                      />
                     </div>
-                  </Card>
-                </Col>
-              ))}
+                  )}
+                </Card>
+              </Col>
+              <Col xs={24} sm={24} md={12} lg={12} xl={6} className="mb-24">
+                <Row className="rowgap-vbox" gutter={[24, 0]}>
+                  <Col
+                    xs={24}
+                    sm={24}
+                    md={24}
+                    lg={24}
+                    xl={24}
+                    className="mb-24"
+                  >
+                    <Card bordered={false} className="criclebox ">
+                      <div className="number">
+                        <Row align="middle" gutter={[24, 0]}>
+                          <Col xs={18}>
+                            <span>{count[0].today}</span>
+                            <Title
+                              style={{ fontSize: '20px', fontWeight: '700' }}
+                            >
+                              {count[0].title}{' '}
+                              <small className={count[0].bnb}>
+                                {count[0].persent}
+                              </small>
+                            </Title>
+                          </Col>
+                          <Col xs={6}>
+                            <div
+                              className="icon-box"
+                              style={{
+                                backgroundColor: '#3d85c6',
+                              }}
+                            >
+                              {count[0].icon}
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Card>
+                  </Col>
+                  <Col
+                    xs={24}
+                    sm={24}
+                    md={24}
+                    lg={24}
+                    xl={24}
+                    className="mb-24"
+                  >
+                    <Card bordered={false} className="criclebox ">
+                      <div className="number">
+                        <Row align="middle" gutter={[24, 0]}>
+                          <Col xs={18}>
+                            <span>{count[1].today}</span>
+                            <Title
+                              style={{ fontSize: '20px', fontWeight: '700' }}
+                            >
+                              {count[1].title}{' '}
+                              <small className={count[1].bnb}>
+                                {count[1].persent}
+                              </small>
+                            </Title>
+                          </Col>
+                          <Col xs={6}>
+                            <div
+                              className="icon-box"
+                              style={{
+                                backgroundColor: '#3d85c6',
+                              }}
+                            >
+                              {count[1].icon}
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Card>
+                  </Col>
+                  <Col
+                    xs={24}
+                    sm={24}
+                    md={24}
+                    lg={24}
+                    xl={24}
+                    className="mb-24"
+                  >
+                    <Card bordered={false} className="criclebox ">
+                      <div className="number">
+                        <Row align="middle" gutter={[24, 0]}>
+                          <Col xs={18}>
+                            <span>{count[2].today}</span>
+                            <Title
+                              style={{ fontSize: '20px', fontWeight: '700' }}
+                            >
+                              {count[2].title}{' '}
+                              <small className={count[2].bnb}>
+                                {count[2].persent}
+                              </small>
+                            </Title>
+                          </Col>
+                          <Col xs={6}>
+                            <div
+                              className="icon-box"
+                              style={{
+                                backgroundColor: '#3d85c6',
+                              }}
+                            >
+                              {count[2].icon}
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Card>
+                  </Col>
+                  <Col
+                    xs={24}
+                    sm={24}
+                    md={24}
+                    lg={24}
+                    xl={24}
+                    className="mb-24"
+                  >
+                    <Card bordered={false} className="criclebox ">
+                      <div className="number">
+                        <Row align="middle" gutter={[24, 0]}>
+                          <Col xs={18}>
+                            <span>{count[3].today}</span>
+                            <Title
+                              style={{ fontSize: '20px', fontWeight: '700' }}
+                            >
+                              {count[3].title}{' '}
+                              <small className={count[3].bnb}>
+                                {count[3].persent}
+                              </small>
+                            </Title>
+                          </Col>
+                          <Col xs={6}>
+                            <div
+                              className="icon-box"
+                              style={{
+                                backgroundColor: '#3d85c6',
+                              }}
+                            >
+                              {count[3].icon}
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Card>
+                  </Col>
+                </Row>
+              </Col>
             </Row>
             <Row gutter={[24, 0]}>
               <Col xs={24} sm={24} md={12} lg={12} xl={14} className="mb-24">

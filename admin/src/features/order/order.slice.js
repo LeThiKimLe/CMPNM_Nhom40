@@ -38,21 +38,7 @@ const orderSlice = createSlice({
         state.error = true;
         state.loading = false;
       })
-      .addCase(orderThunk.getAllOrderAfter.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(orderThunk.getAllOrderAfter.fulfilled, (state, action) => {
-        const newListOrder = customListOrder(
-          action.payload.list[1],
-          action.payload.list[0]
-        );
-        state.orderList = newListOrder;
-        state.loading = false;
-      })
-      .addCase(orderThunk.getAllOrderAfter.rejected, (state, action) => {
-        state.error = true;
-        state.loading = false;
-      })
+
       .addCase(orderThunk.getOrder.pending, (state) => {
         state.loading = true;
       })

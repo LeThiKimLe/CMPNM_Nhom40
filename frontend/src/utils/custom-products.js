@@ -1,6 +1,19 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable array-callback-return */
 import _ from 'lodash';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 export const getGroupProduct = (listProduct, category) => {
   const products = [];
   listProduct.map((item) => {
@@ -172,9 +185,9 @@ export const getDetailCartItem = (products, cartItem) => {
 
 export const getColorProduct = (product, colors) => {
   let colorName = '';
-  const { color, category } = product;
+  const { color } = product;
   colors.map((item) => {
-    if (item.value === color && item.category == category) {
+    if (item.value === color) {
       colorName = item.name;
     }
   });
@@ -193,13 +206,13 @@ export const customListOrderProducts = (products) => {
   return list;
 };
 
-export const customeListOrderProductsPaypal = (products, colors) => {
+export const customeListOrderProductsPaypal = (products) => {
   let list = [];
-  console.log(colors);
+
   products.map((item) => {
     const { ram, storage } = item.detailsProduct;
     const { name, salePrice, quantity } = item;
-    const colorName = getColorProduct(item, colors);
+    const colorName = getColorProduct(item, colorList);
 
     const newItem = {
       name,

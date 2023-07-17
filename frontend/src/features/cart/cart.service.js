@@ -8,7 +8,10 @@ const addToCartAPI = createAsyncThunk(
       //
       const response = await axiosClient.post(
         '/cart/add-item',
-        JSON.stringify({ data: cartData })
+        JSON.stringify({ data: cartData }),
+        {
+          withCredentials: true,
+        }
       );
       console.log(response);
       return response.data;
@@ -23,28 +26,7 @@ const addToCartAPI = createAsyncThunk(
     }
   }
 );
-const addLocalToCartAPI = createAsyncThunk(
-  'add-local-to-cart',
-  async (cartData, thunkAPI) => {
-    try {
-      //
-      const response = await axiosClient.post(
-        '/cart/add-items-local',
-        JSON.stringify({ data: cartData })
-      );
-      console.log(response);
-      return response.data;
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
+
 const updateCartItemAPI = createAsyncThunk(
   'update-cart-item',
   async (cartData, thunkAPI) => {
@@ -52,7 +34,10 @@ const updateCartItemAPI = createAsyncThunk(
       //
       const response = await axiosClient.post(
         '/cart/update-cart-item',
-        JSON.stringify({ data: cartData })
+        JSON.stringify({ data: cartData }),
+        {
+          withCredentials: true,
+        }
       );
       console.log(response);
       return response.data;
@@ -110,7 +95,6 @@ const deleteCartItemAPI = createAsyncThunk(
 const cartThunk = {
   addToCartAPI,
   getAllItemsAPI,
-  addLocalToCartAPI,
   deleteCartItemAPI,
   updateCartItemAPI,
 };

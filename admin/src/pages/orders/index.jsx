@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
 import { formatThousand } from '../../utils';
@@ -13,8 +13,7 @@ import {
   Tag,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+
 import { customListOrder } from '../../utils/custom-order';
 
 import { SearchOutlined, EditOutlined } from '@ant-design/icons';
@@ -124,9 +123,6 @@ function Orders() {
   const order = useSelector((state) => state.order);
   const { orderList } = order;
   const [listOrder, setListOrder] = useState(orderList);
-  const [visibleAdd, setVisibleAdd] = useState(false);
-  const [visibleDelete, setVisibleDelete] = useState(false);
-  const [data, setData] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const onSelectChange = (newSelectedRowKeys) => {
@@ -153,98 +149,106 @@ function Orders() {
       navigate(`/orders/edit/${selectedRowKeys[0]}`);
     }
   };
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      const value = await dispatch(orderThunk.getAllOrder()).unwrap();
+      if (value.list[1].length === 0) {
+        setListOrder([]);
+      } else {
+        const newListOrder = customListOrder(value.list[1], value.list[0]);
+        setListOrder(newListOrder);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch]);
+
   useEffect(() => {
     setLoading(true);
-    dispatch(orderThunk.getAllOrder())
-      .unwrap()
-      .then((value) => {
-        const newListOrder = customListOrder(value.list[1], value.list[0]);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1500);
-        setListOrder(newListOrder);
-      });
-  }, [dispatch]);
-  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const data = useMemo(() => {
     if (listOrder.length > 0) {
-      setData(
-        listOrder.map((item) => {
-          const { paymentStatus, totalAmount, orderStatus, items } = item;
-          const { provinceName, wardName, districtName } = item.addressDetail;
-          return {
-            key: item._id,
-            id: (
-              <>
-                <div className="ant-employed">
-                  <Text>{item._id}</Text>
-                </div>
-              </>
-            ),
-            amount: (
-              <div>
-                <Text>{items.length}</Text>
+      return listOrder.map((item) => {
+        const { paymentStatus, totalAmount, orderStatus, items } = item;
+        const { provinceName, wardName, districtName } = item.addressDetail;
+        return {
+          key: item._id,
+          id: (
+            <>
+              <div className="ant-employed">
+                <Text>{item._id}</Text>
               </div>
-            ),
-            orderDate: (
-              <>
-                <div className="ant-employed">
-                  <Text>
-                    {new Date(orderStatus[0].date).toLocaleDateString()}
-                  </Text>
-                </div>
-              </>
-            ),
-            address: (
-              <>
-                <div className="ant-employed">
-                  <Text>
-                    {wardName}, {districtName}, {provinceName}
-                  </Text>
-                </div>
-              </>
-            ),
-            totalAmount: (
-              <>
-                <div className="ant-employed">
-                  <Text>{formatThousand(totalAmount)}đ</Text>
-                </div>
-              </>
-            ),
-            orderStatus: (
-              <>
-                {orderStatusList.map((statusValue) => {
-                  if (
-                    statusValue.key === orderStatus[orderStatus.length - 1].type
-                  ) {
-                    return (
-                      <Tag key={statusValue.key} color={statusValue.color}>
-                        {' '}
-                        {statusValue.value}
-                      </Tag>
-                    );
-                  }
-                })}
-              </>
-            ),
-            paymentStatus: (
-              <>
-                {paymentStatusList.map((payment) => {
-                  if (payment.value === paymentStatus) {
-                    return (
-                      <Tag key={payment.key} color={payment.color}>
-                        {' '}
-                        {payment.name}
-                      </Tag>
-                    );
-                  }
-                })}
-              </>
-            ),
-          };
-        })
-      );
+            </>
+          ),
+          amount: (
+            <div>
+              <Text>{items.length}</Text>
+            </div>
+          ),
+          orderDate: (
+            <>
+              <div className="ant-employed">
+                <Text>
+                  {new Date(orderStatus[0].date).toLocaleDateString()}
+                </Text>
+              </div>
+            </>
+          ),
+          address: (
+            <>
+              <div className="ant-employed">
+                <Text>
+                  {wardName}, {districtName}, {provinceName}
+                </Text>
+              </div>
+            </>
+          ),
+          totalAmount: (
+            <>
+              <div className="ant-employed">
+                <Text>{formatThousand(totalAmount)}đ</Text>
+              </div>
+            </>
+          ),
+          orderStatus: (
+            <>
+              {orderStatusList.map((statusValue) => {
+                if (
+                  statusValue.key === orderStatus[orderStatus.length - 1].type
+                ) {
+                  return (
+                    <Tag key={statusValue.key} color={statusValue.color}>
+                      {' '}
+                      {statusValue.value}
+                    </Tag>
+                  );
+                }
+              })}
+            </>
+          ),
+          paymentStatus: (
+            <>
+              {paymentStatusList.map((payment) => {
+                if (payment.value === paymentStatus) {
+                  return (
+                    <Tag key={payment.key} color={payment.color}>
+                      {' '}
+                      {payment.name}
+                    </Tag>
+                  );
+                }
+              })}
+            </>
+          ),
+        };
+      });
     } else {
-      setData([]);
+      return [];
     }
   }, [listOrder]);
 

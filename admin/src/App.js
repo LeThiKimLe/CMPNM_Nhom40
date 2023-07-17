@@ -11,7 +11,7 @@ import Categories from './pages/categories';
 import Profile from './pages/profile';
 import SignIn from './pages/sigin_in';
 import Users from './pages/users';
-import { notification } from 'antd';
+
 import { PrivateComponent } from './utils';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,8 +21,6 @@ import VerifyAccount from './pages/verify_email';
 import ReSendEmail from './pages/resend-email';
 import EditOrder from './pages/orders/edit-order';
 import Banner from './pages/banner';
-import dataThunk from './features/data/data.service';
-
 
 function App() {
   const dispatch = useDispatch();
@@ -34,11 +32,6 @@ function App() {
       dispatch(authActions.isUserLoggedIn());
     }
   }, []);
-  useEffect(() => {
-    if (auth.isLoggedIn) {
-      dispatch(dataThunk.getAllDataAPI());
-    }
-  }, [auth.isLoggedIn]);
 
   return (
     <BrowserRouter>

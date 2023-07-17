@@ -1,28 +1,37 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { DeleteOutlined } from '@ant-design/icons';
+
 import { formatThousand } from '../../utils';
-import { Col, Typography, Button, Avatar } from 'antd';
-const getColorProduct = (product, colors) => {
+import { Col, Typography, Avatar } from 'antd';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
+const getColorProduct = (product) => {
   let colorName = '';
-  const { color, category } = product;
-  colors.map((item) => {
-    if (item.value === color && item.category == category) {
+  const { color } = product;
+  colorList.map((item) => {
+    if (item.value === color) {
       colorName = item.name;
     }
   });
   return colorName;
 };
 const OrderDetailItem = (props) => {
-
   const { item } = props;
-  const data = useSelector((state) => state.data);
-  const { colors } = data;
-  console.log(colors);
+
   const { productId, purchasedQty } = item;
   const { salePrice, productPictures, name, detailsProduct } = productId;
   const { ram, storage } = detailsProduct;
-  const colorName = getColorProduct(productId, colors);
+  const colorName = getColorProduct(productId);
   return (
     <>
       <Col span={8} style={{ marginBottom: '8px' }}>

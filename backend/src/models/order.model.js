@@ -56,9 +56,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: 'cod',
     },
-    payerID: {
-      type: String,
-    },
+
     orderStatus: [
       {
         type: {
@@ -82,17 +80,12 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    // ngày giao hàng dự kiến
-    deliveryDate: {
-      type: Date,
-    },
     // thời gian vận chuyển
-    estimatedDeliveryTime: {
-      type: Number,
+    estimatedDeliveryDate: {
+      type: String,
     },
   },
-  { strict: false },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 module.exports = mongoose.model('Orders', orderSchema);

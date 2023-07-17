@@ -18,7 +18,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Autosuggest from 'react-autosuggest';
 import './style.css';
 import logo from '../../assets/images/tmshop.png';
 import userThunk from '../../features/user/user.service';
@@ -34,19 +33,21 @@ const Navbar = () => {
   // const location = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [phrase, setPhrase] = useState('');
+  const [showItems, setShowItems] = useState(true);
 
   const handlePhraseChange = (e) => {
-    console.log(e.target.value);
+    if (e.target.value === '') {
+      setShowItems(false);
+      setPhrase('');
+      return;
+    }
+    setShowItems(true);
     dispatch(userThunk.searchProductAPI(e.target.value))
       .unwrap()
       .then((data) => {
-        const { hits } = data;
-        const list = hits.map((hit) => hit._source);
-        console.log(list);
-        setSuggestions(list);
+        setSuggestions(data);
       })
       .catch(() => setSuggestions([]));
-
     setPhrase(e.target.value);
   };
 
@@ -64,6 +65,11 @@ const Navbar = () => {
   function handleClose() {
     setAnchorEl(null);
   }
+  function handleOnClick(categorySlug, ram, storage) {
+    setShowItems(false);
+    setSuggestions([]);
+    setPhrase('');
+  }
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const handleSignOut = () => {
     // const pathname = location.pathname.replace('/', '');
@@ -78,17 +84,6 @@ const Navbar = () => {
   };
   const [suggestions, setSuggestions] = useState([]);
 
-  const renderSuggestion = (suggestion) => (
-    <Link to="/product-page">
-      <div className="suggestion-item">
-        <img src={suggestion.productPictures[0]} alt={suggestion.name} />
-        <div className="suggestion-item-details">
-          <div className="suggestion-item-name">{suggestion.name}</div>
-          <div className="suggestion-item-price">{suggestion.price}</div>
-        </div>
-      </div>
-    </Link>
-  );
   const suggestionListHeight = suggestions.length * 67.5;
   useEffect(() => {
     if (!isLoggedIn) {
@@ -153,7 +148,7 @@ const Navbar = () => {
               </Paper>
             </Stack>
 
-            {suggestions.length != 0 && (
+            {suggestions.length !== 0 && showItems && (
               <div
                 className="suggestion-list"
                 style={{ height: `${suggestionListHeight}px` }}
@@ -162,7 +157,10 @@ const Navbar = () => {
                   const { ram, storage } = suggestion.detailsProduct;
                   return (
                     <Link
-                      to={`/product-page/${suggestion.category.slug}?ram=${ram}&storage=${storage}`}
+                      onClick={() =>
+                        handleOnClick(suggestion.category, ram, storage)
+                      }
+                      to={`/product-page/${suggestion.category}?ram=${ram}&storage=${storage}`}
                       key={key}
                     >
                       <div className="suggestion-item">

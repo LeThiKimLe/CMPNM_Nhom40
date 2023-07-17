@@ -71,20 +71,13 @@ function SignIn() {
           message: 'Đăng nhập thành công!',
           placement: 'top',
         });
+        navigate(-1);
       })
       .catch((error) => {
         setOpen(true);
       });
     dispatch(userActions.reset());
   };
-  useEffect(() => {
-    if (isLoggedIn || user) {
-      navigate('/');
-    }
-    if (error) {
-      setOpen(true);
-    }
-  }, [user, isLoggedIn, navigate, error]);
 
   return (
     <MDBox

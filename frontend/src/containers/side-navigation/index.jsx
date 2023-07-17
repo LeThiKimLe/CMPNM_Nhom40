@@ -1,39 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import MDBox from '../../components/MDBox';
 import CategoryItem from '../../components/CategoryItem';
 import CategoryIcon from '@mui/icons-material/Category';
+import { useSelector } from 'react-redux';
 // react-router-dom components
+import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Container, Stack, Menu, Button, MenuItem } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useSelector } from 'react-redux';
 
 const SideNavigation = () => {
-  const data = useSelector((state) => state.data);
-  const { categories } = data;
   const [icon, setIcon] = useState(false);
-  const categoriesLocal =
-    localStorage.getItem('categories') == null
-      ? null
-      : JSON.parse(localStorage.getItem('categories'));
+  const data = useSelector((state) => state.data);
+  const navigate = useNavigate();
+  const { loading } = data;
   const [anchorEl, setAnchorEl] = React.useState(null);
-  let categoryList = [];
-  if (!categoriesLocal) {
-    categoryList = categories;
-  } else {
-    categoryList = categoriesLocal;
-  }
-  const categoryOneList = categoryList.filter((item) => item.level === 1);
-
-  const categoryCustom = categoryOneList.map((item) => {
-    return {
-      key: item._id,
-      name: item.name,
-      value: item._id,
-    };
-  });
-
+  const [isFirstMenuItemClicked, setIsFirstMenuItemClicked] = useState(false);
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
       setAnchorEl(event.currentTarget);
@@ -45,6 +28,31 @@ const SideNavigation = () => {
     setAnchorEl(null);
     setIcon(false);
   }
+
+  const handleMenuClick = () => {
+    navigate('/products?category=all');
+    setIsFirstMenuItemClicked(true);
+    handleClose();
+  };
+  const categoryList = useMemo(() => {
+    if (!loading) {
+      return data.categories;
+    }
+  }, [data.categories, loading]);
+
+  const categoryCustom = useMemo(() => {
+    if (categoryList && Object.keys(categoryList).length !== 0) {
+      const categoryOneList = categoryList.filter((item) => item.level === 1);
+      const categoryCustom = categoryOneList.map((item) => {
+        return {
+          key: item._id,
+          name: item.name,
+          value: item._id,
+        };
+      });
+      return categoryCustom;
+    }
+  }, [categoryList]);
   return (
     <MDBox
       color="dark"
@@ -100,14 +108,19 @@ const SideNavigation = () => {
                 onClose={handleClose}
                 MenuListProps={{ onMouseLeave: handleClose }}
               >
-                <MenuItem onClick={handleClose}>Chọn theo hãng</MenuItem>
-                <MenuItem onClick={handleClose}>Chọn theo mức giá</MenuItem>
-                <MenuItem onClick={handleClose}>Loại điện thoại</MenuItem>
-                <MenuItem onClick={handleClose}>Chọn theo nhu cầu</MenuItem>
-                <MenuItem onClick={handleClose}>Điện thoại hot</MenuItem>
+                <MenuItem
+                  onClick={handleMenuClick}
+                  style={
+                    isFirstMenuItemClicked
+                      ? { backgroundColor: '#f5f5f5' }
+                      : { backgroundColor: 'transparent' }
+                  }
+                >
+                  Chọn theo hãng
+                </MenuItem>
               </Menu>
             </>
-          </Stack>
+          </Stack>{' '}
           <Stack
             direction="row"
             display="flex"
@@ -115,16 +128,18 @@ const SideNavigation = () => {
             alignItems="center"
             spacing={3}
           >
-            {categoryCustom.map((cat, index) => {
-              return (
-                <CategoryItem
-                  key={index}
-                  name={cat.name}
-                  value={cat.value}
-                  categories={categories}
-                />
-              );
-            })}
+            {categoryCustom &&
+              Object.keys(categoryCustom).length > 0 &&
+              categoryCustom.map((cat, index) => {
+                return (
+                  <CategoryItem
+                    key={index}
+                    name={cat.name}
+                    value={cat.value}
+                    categories={categoryList}
+                  />
+                );
+              })}
           </Stack>
         </Grid>
       </Container>

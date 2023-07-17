@@ -1,16 +1,5 @@
-import {
-  Modal,
-  Form,
-  Button,
-  Upload,
-  Input,
-  Spin,
-  Row,
-  Col,
-  Radio,
-  Typography,
-} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Row, Col, Radio, Typography } from 'antd';
+
 import React, { useState } from 'react';
 
 const EditUserModel = (props) => {

@@ -4,7 +4,6 @@ import TokenService from '../token/token.service';
 //
 
 const initialState = {
-  token: null,
   user: null,
   isLoggedIn: false,
   logging: false,
@@ -20,33 +19,31 @@ const userSlice = createSlice({
       state.message = '';
       state.error = null;
     },
+    signout: (state) => {
+      localStorage.removeItem('userId');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('compare');
+      localStorage.removeItem('compareLocal');
+      localStorage.removeItem('orderCodMomo');
+      localStorage.removeItem('selectedAddress');
+      state.isLoggedIn = false;
+      state.user = null;
+    },
     isUserLoggedIn: {
       reducer: (state, action) => {
-        const { userData, accessToken } = action.payload;
-        state.logging = false;
-        state.user = action.payload.userData;
-        state.token = action.payload.accessToken;
+        const { accessToken } = action.payload;
 
         state.logging = false;
-        if (!accessToken || !userData) {
+        if (!accessToken) {
           state.isLoggedIn = false;
         } else {
           state.isLoggedIn = true;
         }
       },
       prepare: () => {
-        const token = TokenService.getLocalAccessToken();
-        const user = JSON.parse(localStorage.getItem('user'));
-
-        return { payload: { userData: user, accessToken: token } };
+        const token = localStorage.getItem('accessToken');
+        return { payload: { accessToken: token } };
       },
-    },
-    signout: (state) => {
-      localStorage.removeItem('user');
-      localStorage.removeItem('accesstoken');
-      state.isLoggedIn = false;
-      state.user = null;
-      state.token = null;
     },
   },
   extraReducers: (builder) => {
@@ -56,10 +53,10 @@ const userSlice = createSlice({
       })
       .addCase(userThunk.signinAPI.fulfilled, (state, action) => {
         state.logging = false;
-        state.user = action.payload.userData;
-        state.token = action.payload.accessToken;
+        state.user = action.payload.userId;
         state.isLoggedIn = true;
         state.logging = false;
+        localStorage.setItem('userId', action.payload.userId);
       })
       .addCase(userThunk.signinAPI.rejected, (state, action) => {
         state.error = true;

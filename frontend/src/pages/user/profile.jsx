@@ -1,5 +1,5 @@
 import { Divider, Stack, Chip, Box, CircularProgress } from '@mui/material';
-import React from 'react';
+import React, { useCallback } from 'react';
 import MDTypography from '../../components/MDTypography';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import UserPage from './user-page';
@@ -9,18 +9,19 @@ import userThunk from '../../features/user/user.service';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
+  const getProfile = useCallback(() => {
     dispatch(userThunk.showProfileAPI())
       .unwrap()
       .then((value) => {
         setProfile(value.user);
-        console.log(value.user);
         setLoading(false);
       });
   }, [dispatch]);
+  useEffect(() => {
+    getProfile();
+  }, [getProfile]);
 
   return (
     <UserPage>

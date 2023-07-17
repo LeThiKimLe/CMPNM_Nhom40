@@ -15,7 +15,7 @@ const ModalAddress = (props) => {
     handleChangeAddress,
     addressIndex,
     setAddressIndex,
-    setListAddress,
+    getAddressList,
   } = props;
   const [openModalAdd, setOpenModalAdd] = useState(false);
   useEffect(() => {
@@ -33,7 +33,7 @@ const ModalAddress = (props) => {
         open={openModalAdd}
         setOpen={setOpenModalAdd}
         onCancel={() => setOpenModalAdd(false)}
-        setListAddress={setListAddress}
+        getAddressList={getAddressList}
       />
       <List
         itemLayout="horizontal"

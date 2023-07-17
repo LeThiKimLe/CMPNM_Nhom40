@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import addressThunk from '../../features/address/address.service';
 const AddressItem = (props) => {
-  const { item, setListAddress } = props;
+  const { item, getAddressList } = props;
   const {
     name,
     address,
@@ -36,15 +36,7 @@ const AddressItem = (props) => {
     dispatch(addressThunk.setDefaultAddressAPI(_id))
       .unwrap()
       .then(() => {
-        dispatch(addressThunk.getAllAPI())
-          .unwrap()
-          .then((data) => {
-            if (data.length === 0) {
-              setListAddress([]);
-            } else {
-              setListAddress(data.addresses);
-            }
-          });
+        getAddressList();
       });
   };
   const handleDelete = () => {
@@ -53,15 +45,7 @@ const AddressItem = (props) => {
       .then(() => {
         setOpenDialog(false);
         notification.success({ message: 'Xóa địa chỉ thành công!' });
-        dispatch(addressThunk.getAllAPI())
-          .unwrap()
-          .then((data) => {
-            if (data.length === 0) {
-              setListAddress([]);
-            } else {
-              setListAddress(data.addresses);
-            }
-          });
+        getAddressList();
       });
   };
   return (
@@ -74,7 +58,7 @@ const AddressItem = (props) => {
         setOpen={setOpen}
         onCancel={() => setOpen(false)}
         item={item}
-        setListAddress={setListAddress}
+        getAddressList={getAddressList}
       />
       <Grid2
         container

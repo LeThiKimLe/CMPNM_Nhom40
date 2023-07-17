@@ -9,27 +9,65 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { formatThousand } from '../../utils/custom-price';
-import { useDispatch, useSelector } from 'react-redux';
-import { cartActions } from '../../features/cart/cart.slice';
+import { useDispatch } from 'react-redux';
 import cartThunk from '../../features/cart/cart.service';
 import { getColorProduct } from '../../utils/custom-products';
+import { notification } from 'antd';
+const colorList = [
+  { name: 'Đỏ', value: 'Red' },
+  { name: 'Cam', value: 'Orange' },
+  { name: 'Vàng', value: 'Yellow' },
+  { name: 'Xanh lá cây', value: 'Green' },
+  { name: 'Xanh dương', value: 'Blue' },
+  { name: 'Tím', value: 'Purple' },
+  { name: 'Hồng', value: 'Pink' },
+  { name: 'Nâu', value: 'Brown' },
+  { name: 'Xám', value: 'Gray' },
+  { name: 'Đen', value: 'Black' },
+  { name: 'Trắng', value: 'White' },
+];
 
 const CartItem = (props) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const data = useSelector((state) => state.data);
   const { product, keyIndex, handleDelete } = props;
-
+  console.log(product);
   const { ram, storage } = product.detailsProduct;
   const { productPicture, name, salePrice, regularPrice, quantity } = product;
 
   const [amount, setAmount] = useState(quantity);
 
-  const colorName = getColorProduct(product, data.colors);
-
+  const colorName = getColorProduct(product, colorList);
+  console.log(colorName);
   const handleIncrease = () => {
-    if (user.isLoggedIn) {
-      let newCartItem = { product: product._id, quantity: amount + 1 };
+    let newCartItem = { product: product._id, quantity: amount + 1 };
+    dispatch(
+      cartThunk.updateCartItemAPI({
+        cartItem: newCartItem,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(cartThunk.getAllItemsAPI());
+        setAmount(amount + 1);
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Số lượng sản phẩm vượt quá số lượng trong kho!',
+          placement: 'top',
+        });
+      });
+  };
+  const handleDecrease = () => {
+    if (amount === 1) {
+      // remove item
+      // thông báo lỗi
+      dispatch(cartThunk.deleteCartItemAPI(product._id))
+        .unwrap()
+        .then(() => {
+          dispatch(cartThunk.getAllItemsAPI());
+        });
+    } else {
+      let newCartItem = { product: product._id, quantity: amount - 1 };
       dispatch(
         cartThunk.updateCartItemAPI({
           cartItem: newCartItem,
@@ -39,52 +77,7 @@ const CartItem = (props) => {
         .then(() => {
           dispatch(cartThunk.getAllItemsAPI());
         });
-      setAmount(amount + 1);
-    } else {
-      dispatch(
-        cartActions.addToCartItemLocal({
-          amount: amount + 1,
-          product: product._id,
-        })
-      );
-      setAmount(amount + 1);
-    }
-  };
-  const handleDecrease = () => {
-    if (user.isLoggedIn) {
-      if (amount === 1) {
-        // remove item
-        // thông báo lỗi
-        dispatch(cartThunk.deleteCartItemAPI(product._id))
-          .unwrap()
-          .then(() => {
-            dispatch(cartThunk.getAllItemsAPI());
-          });
-      } else {
-        let newCartItem = { product: product._id, quantity: amount - 1 };
-        dispatch(
-          cartThunk.updateCartItemAPI({
-            cartItem: newCartItem,
-          })
-        )
-          .unwrap()
-          .then(() => {
-            dispatch(cartThunk.getAllItemsAPI());
-          });
-        setAmount(amount - 1);
-      }
-    } else {
-      if (amount === 1) {
-        dispatch(cartActions({ productId: product._id }));
-      } else {
-        dispatch(
-          cartActions.addToCartItemLocal({
-            amount: amount - 1,
-            product: product._id,
-          })
-        );
-        setAmount(amount - 1);
-      }
+      setAmount(amount - 1);
     }
   };
   return (

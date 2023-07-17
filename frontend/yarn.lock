@@ -6544,6 +6544,11 @@ jest@^27.4.3:
     import-local "^3.0.2"
     jest-cli "^27.5.1"
 
+js-cookie@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-3.0.5.tgz#0b7e2fd0c01552c58ba86e0841f94dc2557dcdbc"
+  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
+
 js-sdsl@^4.1.4:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/js-sdsl/-/js-sdsl-4.1.5.tgz#1ff1645e6b4d1b028cd3f862db88c9d887f26e2a"
@@ -8930,6 +8935,11 @@ react-scripts@5.0.1:
     workbox-webpack-plugin "^6.4.1"
   optionalDependencies:
     fsevents "^2.3.2"
+
+react-session@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/react-session/-/react-session-0.0.1.tgz#7e1c093bde6f94e87a1cb6308569d20ee31c2593"
+  integrity sha512-A+sCK0NwhCNe/comjknWfhKCmvlgNsVF27hdOCNVEjh3gkRQIP2TyqvfUPoPk+6ikz6xv/MHc/e3FmA8iUfSSQ==
 
 react-slick@^0.29.0:
   version "0.29.0"

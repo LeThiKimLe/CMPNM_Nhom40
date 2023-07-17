@@ -3,6 +3,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-shadow */
 /* eslint-disable no-underscore-dangle */
+const mongoose = require('mongoose');
 const { UserAddress } = require('../../models');
 const { Response, ServerError } = require('../../utils');
 
@@ -175,19 +176,17 @@ const updateAddress = (req, res) => {
 };
 const getAllAddress = async (req, res) => {
   const { userId } = req.user;
-
-  const address = await UserAddress.find({
-    user: userId,
-    'address.isActive': true,
-  });
-  if (address) {
-    console.log(address);
-    if (!address[0]?.address) {
-      Response(res, { addresses: [] });
-    } else {
-      Response(res, { addresses: address[0]?.address });
-    }
+  const addresses = await UserAddress.aggregate([
+    { $match: { user: mongoose.Types.ObjectId(userId) } }, // chỉ lấy các document có 'user' là 'objectId'
+    { $unwind: '$address' }, // tách mỗi phần tử trong mảng 'address' thành một document riêng
+    { $match: { 'address.isActive': true } }, // lọc các document có 'isActive: true'
+    { $group: { _id: '$_id', address: { $push: '$address' } } }, // nhóm các document lại theo '_id' và đưa các document con vào một mảng 'address'
+  ]);
+  if (Object.keys(addresses).length === 0) {
+    return Response(res, { list: [] });
   }
+
+  return Response(res, { list: addresses[0].address });
 };
 const deleteAddress = (req, res) => {
   const addressId = req.body.data;

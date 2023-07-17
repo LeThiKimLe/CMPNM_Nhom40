@@ -17,7 +17,7 @@ import {
   SearchOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import AddCategoryModal from './components/modal-add';
@@ -191,25 +191,26 @@ function ListCategories() {
         notification.error({ message: error, placement: 'top' });
       });
   };
+  const fetchCategories = useCallback(async () => {
+    try {
+      const value = await dispatch(categoryThunk.getAllAPI()).unwrap();
+      setListCategory(value.list);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     setLoading(true);
     if (Object.keys(listCategory).length === 0) {
-      dispatch(categoryThunk.getAllAPI())
-        .unwrap()
-        .then((value) => {
-          setListCategory(value.list);
-          setTimeout(() => {
-            setLoading(false);
-          }, 1500);
-        });
+      fetchCategories()
+        .then(() => setLoading(false))
+        .catch((error) => console.log(error));
     } else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+      setLoading(false);
     }
-  }, [dispatch, listCategory]);
-  //* watch for changes to the category.categoryies after get all categories
+  }, [listCategory, fetchCategories]);
+
   useEffect(() => {
     if (listCategory.length > 0) {
       const listParent = listCategory.filter(
@@ -218,67 +219,60 @@ function ListCategories() {
 
       setCategoryParentList(listParent);
       setCategoryList(
-        listCategory.map((category) => {
-          return {
-            key: category._id,
-            name: (
-              <>
-                <div className="avatar-info">
-                  <Typography.Title level={5}>{category.name}</Typography.Title>
-                  <p>{category._id}</p>
-                </div>
-              </>
-            ),
-            parentId: (
-              <>
-                {category.parentId ? (
-                  <div className="author-info">
-                    <Tag color="volcano">
-                      {getCategoryById(listCategory, category.parentId)}
-                    </Tag>
-                  </div>
-                ) : null}
-              </>
-            ),
-            categoryImage: (
-              <>
-                {category.categoryImage ? (
-                  <Image width={130} height={60} src={category.categoryImage} />
-                ) : null}
-              </>
-            ),
-            level: (
-              <>
+        listCategory.map((category) => ({
+          key: category._id,
+          name: (
+            <>
+              <div className="avatar-info">
+                <Typography.Title level={5}>{category.name}</Typography.Title>
+                <p>{category._id}</p>
+              </div>
+            </>
+          ),
+          parentId: (
+            <>
+              {category.parentId ? (
                 <div className="author-info">
-                  <Typography.Title level={5}>
-                    {category.level}
-                  </Typography.Title>
+                  <Tag color="volcano">
+                    {getCategoryById(listCategory, category.parentId)}
+                  </Tag>
                 </div>
-              </>
-            ),
-            isActive: (
-              <>
-                {category.isActive ? (
-                  <Switch
-                    defaultChecked
-                    style={{ backgroundColor: '#00CED1' }}
-                  />
-                ) : (
-                  <Switch />
-                )}
-              </>
-            ),
-            created: (
-              <>
-                <div className="ant-employed">
-                  <Typography.Title level={5}>
-                    {new Date(category.createdAt).toLocaleDateString()}
-                  </Typography.Title>
-                </div>
-              </>
-            ),
-          };
-        })
+              ) : null}
+            </>
+          ),
+          categoryImage: (
+            <>
+              {category.categoryImage ? (
+                <Image width={130} height={60} src={category.categoryImage} />
+              ) : null}
+            </>
+          ),
+          level: (
+            <>
+              <div className="author-info">
+                <Typography.Title level={5}>{category.level}</Typography.Title>
+              </div>
+            </>
+          ),
+          isActive: (
+            <>
+              {category.isActive ? (
+                <Switch defaultChecked style={{ backgroundColor: '#00CED1' }} />
+              ) : (
+                <Switch />
+              )}
+            </>
+          ),
+          created: (
+            <>
+              <div className="ant-employed">
+                <Typography.Title level={5}>
+                  {new Date(category.createdAt).toLocaleDateString()}
+                </Typography.Title>
+              </div>
+            </>
+          ),
+        }))
       );
     } else {
       setCategoryList([]);

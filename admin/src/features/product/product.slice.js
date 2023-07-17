@@ -17,6 +17,10 @@ const productSlice = createSlice({
       state.error = null;
       state.success = false;
     },
+
+    setProducts: (state, action) => {
+      state.products = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -39,17 +43,6 @@ const productSlice = createSlice({
         state.products = action.payload.list;
       })
       .addCase(productThunk.getAllAPI.rejected, (state, action) => {
-        state.error = true;
-        state.getLoading = false;
-      })
-      .addCase(productThunk.getAllAfterHandle.pending, (state) => {
-        state.getLoading = true;
-      })
-      .addCase(productThunk.getAllAfterHandle.fulfilled, (state, action) => {
-        state.getLoading = false;
-        state.products = action.payload.list;
-      })
-      .addCase(productThunk.getAllAfterHandle.rejected, (state, action) => {
         state.error = true;
         state.getLoading = false;
       })
