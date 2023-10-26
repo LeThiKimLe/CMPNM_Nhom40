@@ -4,12 +4,12 @@ const reviewSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'users',
       required: true,
     },
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'products',
       required: true,
     },
     rating: {
@@ -26,4 +26,4 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Review', reviewSchema);
+module.exports = mongoose.model('review', reviewSchema);

@@ -9,6 +9,7 @@ const Banner = require('./banner.model');
 const Comment = require('./comment.model');
 const Rating = require('./rating.model');
 const Review = require('./review.model');
+const Attribute = require('./attribute.model');
 
 module.exports = {
   User,
@@ -22,4 +23,5 @@ module.exports = {
   Comment,
   Rating,
   Review,
+  Attribute,
 };

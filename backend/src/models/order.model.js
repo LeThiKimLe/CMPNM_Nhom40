@@ -4,12 +4,12 @@ const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'users',
       required: true,
     },
     addressId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'UserAddress',
+      ref: 'user_addresses',
       required: true,
     },
     subTotal: {
@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema(
       {
         productId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: 'products',
         },
         price: {
           type: String,
@@ -88,4 +88,4 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true, strict: false }
 );
 
-module.exports = mongoose.model('Orders', orderSchema);
+module.exports = mongoose.model('orders', orderSchema);

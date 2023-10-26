@@ -43,21 +43,22 @@ const Main = ({ children }) => {
     return <>{children}</>;
   } else {
     return (
-      <Layout
-        className="layout-dashboard"
-        style={{ backgroundColor: '#f3f6f4' }}
-      >
+      <Layout className="layout-dashboard" style={{ backgroundColor: '#fff' }}>
         {/* sider custom */}
         <Sider
           trigger={null}
-          width={250}
-          theme="light"
+          theme="dark"
           className={`sider-primary ant-layout-sider-primary`}
-          style={{ background: 'transparent' }}
+          style={{
+            backgroundColor: '#05050b',
+            borderRadius: '10px',
+            marginLeft: '20px',
+            margin: '10px',
+          }}
         >
-          <Sidenav color={'#1890ff'} />
+          <Sidenav />
         </Sider>
-        <Layout className="layout-dashboard">
+        <Layout>
           <HeaderAnt name={namePage} subname={namePage} />
           <Content className="content-ant">{children}</Content>
         </Layout>

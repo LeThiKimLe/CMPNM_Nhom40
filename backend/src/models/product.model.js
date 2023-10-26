@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
 
 const productSchema = new mongoose.Schema(
   {
@@ -12,7 +11,6 @@ const productSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-
     regularPrice: {
       type: Number,
       required: true,
@@ -26,6 +24,11 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
+    },
+    attribute: {
+      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'attribute',
     },
     detailsProduct: {
       screen: {
@@ -43,17 +46,7 @@ const productSchema = new mongoose.Schema(
       frontCamera: {
         type: String,
       },
-
       cpu: {
-        type: String,
-        required: true,
-      },
-
-      ram: {
-        type: String,
-        required: true,
-      },
-      storage: {
         type: String,
         required: true,
       },
@@ -66,7 +59,11 @@ const productSchema = new mongoose.Schema(
         required: true,
       },
     },
-    color: { type: String, required: true },
+    color: {
+      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'colors',
+    },
     quantitySold: {
       type: Number,
       default: 0,
@@ -75,18 +72,19 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
     productPictures: [String],
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
-      required: true,
-    },
+    category_path: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'categories',
+      },
+    ],
     active: {
       type: Boolean,
       default: true,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'users',
       required: true,
     },
   },
@@ -94,5 +92,4 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-productSchema.plugin(mongoosePaginate);
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('products', productSchema);

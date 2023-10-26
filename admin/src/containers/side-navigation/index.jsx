@@ -1,5 +1,5 @@
 import { Menu } from 'antd';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,23 +9,28 @@ import {
   faBagShopping,
   faTableColumns,
   faImage,
+  faPalette,
 } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
-  const navigate = useNavigate();
   return (
     <>
-      <div className="brand">
-        <img src={logo} alt="" />
-        <span>Bảng điều khiển Admin</span>
+      <div className="brand" style={{ margin: '10px 15px ' }}>
+        <span style={{ color: '#fff' }}>Admin Dashboard</span>
       </div>
-      <hr />
-      <Menu theme="light" mode="inline">
+      <Menu>
         <Menu.Item key="dashboard">
           <NavLink to="/">
             <span className="icon">
               <FontAwesomeIcon icon={faTableColumns} className="fa-lg" />
             </span>
-            <span className="label">Trang chủ</span>
+            <span
+              style={{
+                fontWeight: '600',
+                fontSize: '13px',
+              }}
+            >
+              Dashboard
+            </span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="users">
@@ -33,7 +38,7 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faPeopleGroup} className="fa-lg" />
             </span>
-            <span className="label">Người dùng</span>
+            <span style={{ fontWeight: '600', fontSize: '13px' }}>Users</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="categories">
@@ -41,7 +46,9 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faLayerGroup} className="fa-lg" />
             </span>
-            <span className="label">Thương hiệu</span>
+            <span style={{ fontWeight: '600', fontSize: '13px' }}>
+              Categories
+            </span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="products">
@@ -49,7 +56,12 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faBoxesStacked} className="fa-lg" />
             </span>
-            <span className="label">Sản phẩm</span>
+            <span
+              className="label"
+              style={{ fontWeight: '600', fontSize: '13px' }}
+            >
+              Products
+            </span>
           </NavLink>
         </Menu.Item>
 
@@ -58,16 +70,51 @@ function Sidenav() {
             <span className="icon">
               <FontAwesomeIcon icon={faBagShopping} className="fa-lg" />
             </span>
-            <span className="label">Đơn hàng</span>
+            <span
+              className="label"
+              style={{ fontWeight: '600', fontSize: '13px' }}
+            >
+              Orders
+            </span>
           </NavLink>
         </Menu.Item>
-
+        <Menu.Item key="colors">
+          <NavLink to="/colors">
+            <span className="icon" style={{ color: '#fff' }}>
+              <FontAwesomeIcon icon={faPalette} className="fa-lg" />
+            </span>
+            <span
+              className="label"
+              style={{ fontWeight: '600', fontSize: '13px' }}
+            >
+              Colors
+            </span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="attributes">
+          <NavLink to="/attributes">
+            <span className="icon" style={{ color: '#fff' }}>
+              <FontAwesomeIcon icon={faPalette} className="fa-lg" />
+            </span>
+            <span
+              className="label"
+              style={{ fontWeight: '600', fontSize: '13px' }}
+            >
+              Attributes
+            </span>
+          </NavLink>
+        </Menu.Item>
         <Menu.Item key="banner">
           <NavLink to="/banner">
             <span className="icon">
               <FontAwesomeIcon icon={faImage} className="fa-lg" />
             </span>
-            <span className="label">Quảng cáo</span>
+            <span
+              className="label"
+              style={{ fontWeight: '600', color: '#fff', fontSize: '0.875rem' }}
+            >
+              Banner
+            </span>
           </NavLink>
         </Menu.Item>
       </Menu>

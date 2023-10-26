@@ -10,9 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "^8.7.0",
     "bcrypt": "^5.1.0",
-    "bluebird": "^3.7.2",
     "cloudinary": "^1.31.0",
     "connect-mongo": "^5.0.0",
     "cookie-parser": "^1.4.6",
@@ -36,12 +34,9 @@
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.22",
     "paypal-rest-sdk": "^1.8.1",
-    "redis": "^4.5.1",
     "shortid": "^2.2.16",
     "slugify": "^1.6.5",
-    "socket.io": "^4.5.4",
-    "uuid": "^8.3.2",
-    "winston": "^3.8.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^8.22.0",

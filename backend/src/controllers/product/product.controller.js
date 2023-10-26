@@ -11,29 +11,11 @@
 /* eslint-disable no-unused-vars */
 const slugify = require('slugify');
 const url = require('url');
-const { Client } = require('@elastic/elasticsearch');
-
-const client = new Client({
-  node: 'http://localhost:9200',
-  auth: {
-    username: 'elastic',
-    password: 'VP3oN4L+treCsA10=F+I',
-  },
-});
 
 const _ = require('lodash');
 const { Product, Category } = require('../../models');
 const { Response, ServerError, Create } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
-
-async function testConnection() {
-  try {
-    const response = await client.ping();
-    console.log('Elasticsearch is up and running:', response);
-  } catch (error) {
-    console.error('Error connecting to Elasticsearch:', error);
-  }
-}
 
 const createProduct = async (req, res) => {
   try {

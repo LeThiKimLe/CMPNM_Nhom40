@@ -87,4 +87,4 @@ userSchema.methods.updatePassword = async function (newPassword) {
     throw new Error(error);
   }
 };
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('users', userSchema);

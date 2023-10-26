@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'users',
     required: true,
   },
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: 'products',
     required: true,
   },
   text: {
@@ -17,6 +17,6 @@ const commentSchema = new mongoose.Schema({
   },
 });
 
-const Comment = mongoose.model('Comment', commentSchema);
+const Comment = mongoose.model('comments', commentSchema);
 
 module.exports = Comment;

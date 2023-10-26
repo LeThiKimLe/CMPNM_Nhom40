@@ -23,9 +23,9 @@ function Header({ name, subname }) {
     <>
       <Row gutter={[24, 0]} style={{ padding: '30px 20px' }}>
         <Col span={24} md={6}>
-          <Breadcrumb style={{ paddingLeft: '0px' }}>
+          <Breadcrumb style={{ paddingLeft: '0px', fontSize: '13px' }}>
             <Breadcrumb.Item>
-              <NavLink to="/">Trang chủ</NavLink>
+              <NavLink to="/">Admin Dashboard</NavLink>
             </Breadcrumb.Item>
             <Breadcrumb.Item style={{ textTransform: 'capitalize' }}>
               {name.replace('/', '')}

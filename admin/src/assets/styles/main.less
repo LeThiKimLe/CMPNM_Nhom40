@@ -14,7 +14,7 @@ body {
   background-color: #fafafa;
   letter-spacing: -0.3px;
   color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.6;
   font-weight: 400;
 }
@@ -34,14 +34,15 @@ body {
   }
 }
 .layout-dashboard .ant-layout-sider.sider-primary {
-  width: 250px;
+  width: 212px;
   position: fixed;
   left: 0;
   z-index: 99;
   height: 100vh;
   overflow: auto;
   margin: 0;
-  padding: 33px 20px;
+  margin-left: 20px;
+  padding: 10px 20px;
 }
 .layout-dashboard .ant-layout-sider.sider-primary .brand img {
   height: 30px;
@@ -148,14 +149,15 @@ body {
   .ant-menu-submenu.ant-menu-item-selected
   .active,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu .active {
-  background-color: #fff;
+  background-color: #5b5b5b;
   box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
   font-weight: 600;
 }
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-item a,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu a {
   padding: 10px 16px;
-  color: #141414;
+  color: #fff;
+  font-size: 0.875rem;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -172,7 +174,8 @@ body {
   .ant-menu-item
   .active
   .icon {
-  background-color: #1890ff;
+  background-color: transparent;
+  color: #fff;
 }
 .layout-dashboard
   .ant-layout-sider.sider-primary
@@ -198,7 +201,8 @@ body {
   display: inline-flex;
   width: 32px;
   height: 32px;
-  background-color: #fff;
+  color: #fff;
+  background-color: transparent;
   box-shadow: 0 4px 6px rgb(0 0 0 / 12%);
   border-radius: 6px;
   justify-content: center;
@@ -235,12 +239,12 @@ body {
 }
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-item svg path,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu svg path {
-  fill: #bfbfbf;
+  fill: #5b5b5b;
 }
 
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-item a:hover,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu a:hover {
-  color: #141414;
+  color: #5b5b5b;
 }
 
 .layout-dashboard
@@ -250,7 +254,7 @@ body {
   padding: 10px 16px !important;
   color: #8c8c8c;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 0.875rem;
   text-transform: uppercase;
   display: block;
 }
@@ -311,7 +315,7 @@ body {
 }
 .layout-dashboard .ant-layout-sider.sider-primary .footer-box h6 {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 0.875rem;
   color: #141414;
   margin-bottom: 0;
 }
@@ -341,7 +345,7 @@ body {
 .ant-btn-sm,
 .ant-radio-group-small .ant-radio-button-wrapper {
   height: 34px;
-  font-size: 12px;
+  font-size: 0.875rem;
   padding: 0 15px;
 }
 .ant-btn-sm {
@@ -351,7 +355,7 @@ body {
 .ant-btn-sm,
 .ant-radio-group-small .ant-radio-button-wrapper {
   height: 34px;
-  font-size: 12px;
+  font-size: 0.875rem;
   padding: 0 15px;
 }
 .ant-btn-sm {
@@ -394,17 +398,17 @@ body {
 }
 
 .layout-dashboard .ant-breadcrumb > span .ant-breadcrumb-link a {
-  color: #8c8c8c;
+  color: #e7eef8;
 }
 .layout-dashboard .ant-breadcrumb > span:last-child .ant-breadcrumb-link {
-  color: #141414;
+  color: #e7eef8;
 }
 .layout-dashboard .ant-page-header-heading {
   margin-top: 0;
 }
 .layout-dashboard .ant-page-header-heading .ant-page-header-heading-title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 20px;
   margin-top: 4px;
 }
@@ -455,7 +459,7 @@ body {
 .ant-dropdown-menu.ant-dropdown-menu-split.header-notifications-dropdownt
   .ant-list-item-meta-description {
   color: #8c8c8c;
-  font-size: 12px;
+  font-size: 0.875rem;
   line-height: 12px;
   font-weight: 600;
 }
@@ -510,7 +514,7 @@ h4 {
 .ant-list-item-meta-title {
   margin-bottom: 4px;
   color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 22px;
 }
 
@@ -573,7 +577,7 @@ h4 {
 }
 
 .settings-drawer .drawer-content > h6 {
-  font-size: 20px;
+  font-size: 1.2rem;
   margin-bottom: 0;
 }
 .layout-dashboard .settings-drawer .drawer-content h6 {
@@ -581,10 +585,10 @@ h4 {
   color: #141414;
 }
 .settings-drawer .drawer-content p {
-  color: #8c8c8c;
+  color: #232328;
 }
 p {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .settings-drawer .drawer-content .sidebar-color h6 {
   margin-bottom: 8px;
@@ -592,7 +596,7 @@ p {
 
 .h6,
 h6 {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .drawer-sidebar .ant-drawer-body {
@@ -642,7 +646,7 @@ header.ant-layout-header.subheader {
   margin-bottom: 15px;
 }
 .logo span {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -672,8 +676,8 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li {
   line-height: normal;
   margin: 0px;
   border: 0px;
-  font-size: 16px;
-  color: #141414;
+  font-size: 1rem;
+  color: #fff;
 }
 
 ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
@@ -688,7 +692,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   li.ant-menu-item-selected {
   box-shadow: 0px 20px 27px #0000000d;
   border-radius: 8px;
-  background: #fff;
+  background: #232328;
   border: 0px;
   font-weight: 600;
 }
@@ -700,6 +704,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   min-width: 0;
   overflow: visible;
   text-overflow: ellipsis;
+  color: #fff;
 }
 
 ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li::after {
@@ -713,19 +718,19 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   height: 32px;
   line-height: 32px;
   background: #fff;
-  box-shadow: 0px 4px 6px #0000001f;
+  box-shadow: 0px 4px 6px 232328;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   li.ant-menu-item-selected
   span.anticon {
-  background: #1890ff;
+  background: #232328;
   color: #fff;
 }
 
-/* ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li:hover {
+ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li:hover {
   box-shadow: 0px 20px 27px #0000000d;
   border-radius: 8px;
   background: #fff;
@@ -738,7 +743,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   span.anticon {
   background: #1890ff;
   color: #fff;
-} */
+}
 
 .divder {
   display: table;
@@ -764,7 +769,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   text-align: center;
   box-shadow: 0px 4px 6px #0000001f;
   border-radius: 6px;
-  font-size: 19px;
+  font-size: 1.2rem;
   background: #1890ff;
   color: #fff;
   direction: ltr;
@@ -816,14 +821,14 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
 }
 .header-top h4 {
   margin: 0px;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
 .header-top .subtitle {
   display: block;
   font-weight: normal;
   color: #8c8c8c;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .header-top {
@@ -950,7 +955,7 @@ button.ant-btn.bell strong {
 .number span {
   font-weight: 600;
   color: #8c8c8c;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .number h3 {
   font-weight: 700;
@@ -960,7 +965,7 @@ button.ant-btn.bell strong {
 
 .number h3 small {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .icon-box {
   width: 48px;
@@ -975,7 +980,7 @@ button.ant-btn.bell strong {
 
 .icon-box span {
   color: #fff;
-  font-size: 24px;
+  font-size: 1.25rem;
 }
 
 .listpage {
@@ -1041,11 +1046,11 @@ button.ant-btn.bell strong {
   margin-bottom: 3px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .project-ant h4 {
   margin: 0px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: bold;
   color: #141414;
 }
@@ -1201,14 +1206,14 @@ span.blue {
 }
 
 .ant-list-box h5 {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .timeline-box h5 {
   margin-bottom: 0px;
   font-weight: 700;
 }
 .timelinelist h5 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -1223,7 +1228,7 @@ span.blue {
 
 .ant-muse h5 {
   margin: 0px 0px 15px !important;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .bg-gradient-primary {
   background-image: linear-gradient(310deg, #2152ff, #21d4fd);
@@ -1267,7 +1272,7 @@ img {
 
 .gradent .ant-typography {
   color: #fff;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
 .gradent .icon-move-right {
@@ -1498,7 +1503,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li:active {
   padding-top: 100px;
 }
 .ant-card-body {
-  padding: 16px;
+  padding: 5px;
 }
 
 ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li svg path {
@@ -1532,7 +1537,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav li svg path {
   padding: 0px;
 }
 .tablespace .ant-card-head-title {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 .ant-radio-button-wrapper:first-child {
@@ -1560,26 +1565,26 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
 
 .avatar-info h5 {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 14px;
   margin-bottom: 3px;
 }
 
 .avatar-info p {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 400;
   color: #8c8c8c;
   margin: 0px;
 }
 
 .ant-table-tbody > tr > td h5 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #141414;
   margin-bottom: 0px;
 }
 .ant-table-tbody > tr > td p {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #8c8c8c;
   margin: 0px;
 }
@@ -1587,7 +1592,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
 .tag-primary {
   border-radius: 6px;
   padding: 2px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   height: auto;
   line-height: 24px;
   font-weight: 600;
@@ -1610,7 +1615,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
 .tag-badge {
   border-radius: 6px;
   padding: 2px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   height: auto;
   line-height: 24px;
   font-weight: 600;
@@ -1757,7 +1762,7 @@ body {
   justify-content: space-between;
 }
 .card-content p {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .ant-layout-footer {
@@ -1815,7 +1820,7 @@ body {
 .header-col.header-brand h5 {
   margin: 0px;
   color: #fff;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -1851,7 +1856,7 @@ body {
   color: #fff;
 }
 .text-lg {
-  font-size: 16px;
+  font-size: 1rem;
 }
 .card-signup .sign-up-gateways .ant-btn {
   margin-right: 10px;
@@ -1872,7 +1877,7 @@ body {
 }
 .card-signup h5 {
   text-align: center;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #141414;
   margin: 0px;
@@ -1940,7 +1945,7 @@ body {
 
 .layout-default .ant-layout-footer {
   color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  font-size: 0.875rem;
   background: transparent;
   text-align: center;
 }
@@ -1949,7 +1954,7 @@ body {
   line-height: 1.5;
   margin: 0 0 30px;
   background-color: transparent;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .layout-default .ant-layout-footer .ant-menu-horizontal {
   text-align: center;
@@ -1976,7 +1981,7 @@ body {
   .ant-layout-footer
   .ant-menu-horizontal
   > .ant-menu-submenu:hover {
-  color: #8c8c8c;
+  color: #232328;
   border: none;
 }
 .layout-default .ant-layout-footer .ant-menu-horizontal > .ant-menu-item-active,
@@ -2022,7 +2027,7 @@ body {
   display: flex;
   position: relative;
   background-color: #fff;
-  color: #141414;
+  color: #232328;
   box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
   flex-direction: row;
   padding: 0 50px;
@@ -2030,12 +2035,12 @@ body {
   line-height: 64px;
 }
 .fill-muted {
-  fill: #8c8c8c;
+  fill: #232328;
 }
 .layout-default .ant-layout-header .header-brand h5 {
   white-space: nowrap;
 
-  color: #141414;
+  color: #232328;
   margin: 0;
 }
 .layout-default .ant-layout-header .header-nav a svg {
@@ -2046,7 +2051,7 @@ body {
   vertical-align: middle;
 }
 .layout-default .ant-layout-header .header-nav a {
-  color: #141414;
+  color: #232328;
   padding: 6px 12px;
   font-weight: 400;
 }
@@ -2120,7 +2125,7 @@ body {
 .signin h5 {
   font-weight: 400;
   color: #8c8c8c;
-  font-size: 20px;
+  font-size: 1.25rem;
   white-space: normal;
 }
 .ant-row.ant-form-item.username {
@@ -2136,7 +2141,7 @@ body {
 .ant-row.ant-form-item.username .ant-col.ant-form-item-label {
   font-size: 13px;
   font-weight: 600;
-  color: #141414;
+  color: #e7eef8;
 }
 .signin .ant-form-item-control-input button.ant-switch {
   margin-right: 5px;
@@ -2162,7 +2167,7 @@ body {
   display: none;
 }
 .layout-default .ant-layout-footer .copyright {
-  font-size: 16px;
+  font-size: 1rem;
   color: #8c8c8c;
 }
 
@@ -2226,7 +2231,7 @@ button.ant-btn.bell strong {
 
 .layout-dashboard .ant-layout-footer {
   background: transparent;
-  margin: 0 20px 20px 20px;
+  margin: 0;
   padding: 0;
 }
 
@@ -2241,7 +2246,7 @@ button.ant-btn.bell strong {
 }
 
 .ant-table-tbody > tr > td h6 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #141414;
 }
@@ -2285,7 +2290,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
   word-spacing: 10px;
   font-weight: 600;
   margin-bottom: 45px;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .ant-card-head-wrapper {
   min-height: 72px;
@@ -2352,7 +2357,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 .widget-2 .ant-statistic-content {
   font-family: open sans, Helvetica, Arial, sans-serif;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 1.25rem;
   padding: 12px 16px;
   border-top: 1px solid #f5f5f5;
   text-align: center;
@@ -2439,7 +2444,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 }
 .invoice-list .ant-list-item-meta-title,
 .transactions-list .ant-list-item-meta-title {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #141414;
 }
@@ -2464,7 +2469,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 }
 .invoice-list .amount,
 .transactions-list .amount {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #8c8c8c;
 }
@@ -2476,7 +2481,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 }
 
 .ant-descriptions .ant-descriptions-title {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #141414;
   margin-bottom: 14px;
@@ -2496,7 +2501,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 .card-billing-info .col-action button {
   height: 34px;
   font-size: 12px;
-  padding: 0 15px;
+  padding: 0 5px;
   box-shadow: none;
 }
 
@@ -2518,7 +2523,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 }
 
 .ant-descriptions .ant-descriptions-title {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #141414;
   margin-bottom: 14px;
@@ -2542,7 +2547,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 }
 
 .transactions-list .amount {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -2570,7 +2575,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
   color: #fadb14;
 }
 .text-warning-b {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #fadb14;
 }
@@ -2653,11 +2658,11 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
 }
 
 .card-profile-head .ant-card-head .avatar-info h4 {
-  font-size: 24px;
+  font-size: 1.25rem;
 }
 
 .card-profile-head .ant-card-head .avatar-info h4 {
-  font-size: 24px;
+  font-size: 1.25rem;
 }
 
 .card-profile-head .ant-radio-group .ant-radio-button-wrapper {
@@ -2768,7 +2773,7 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
 }
 .card-project.ant-card h5 {
   font-weight: 600;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .card-project.ant-card .card-tag,
 .card-project.ant-card p {
@@ -3004,7 +3009,7 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
 
 aside.ant-layout-sider.ant-layout-sider-light.sider-primary.ant-layout-sider-primary.active-route
   a.active {
-  background: transparent;
+  background: '#232328';
   box-shadow: none;
 }
 .uploadfile.pb-15 {
@@ -3045,4 +3050,35 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   svg
   path {
   fill: #8c8c8c;
+}
+.custom-header {
+  background-color: #ffffff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+}
+
+.menu {
+  a {
+    color: #333;
+    margin: 0 20px;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  a:hover {
+    color: #1890ff;
+  }
+}
+
+.actions {
+  .ant-btn-text {
+    font-size: 18px;
+  }
 }

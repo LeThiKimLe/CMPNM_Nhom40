@@ -170,7 +170,7 @@ const Banner = () => {
       />
       <Row gutter={[24, 0]}>
         <Col xs="24" xl={24}>
-          <Title level={3}>Danh sách quảng cáo</Title>
+          <Title level={3}>List banner</Title>
         </Col>
         <Col xs="24" xl={24}>
           <Row

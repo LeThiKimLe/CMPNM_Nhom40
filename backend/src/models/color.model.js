@@ -5,15 +5,20 @@ const colorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  code: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   value: {
     type: String,
     required: true,
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+  status: {
+    type: Boolean,
     required: true,
-  },
-});
+    default: true,
+  }
+}, { timestamps: true });
 
-module.exports = mongoose.model('Color', colorSchema);
+module.exports = mongoose.model('colors', colorSchema);

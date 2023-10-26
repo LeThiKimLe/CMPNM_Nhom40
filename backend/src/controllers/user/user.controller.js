@@ -10,16 +10,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
-const { Client } = require('@elastic/elasticsearch');
 const mongoose = require('mongoose');
-
-const client = new Client({
-  node: 'http://localhost:9200/',
-  auth: {
-    username: 'elastic',
-    password: 'VP3oN4L+treCsA10=F+I',
-  },
-});
 const jwt = require('jsonwebtoken');
 const {
   User,
@@ -46,88 +37,9 @@ const {
   Unauthenticated,
 } = require('../../utils');
 
-// time expire token send email
 const oneDay = 60 * 60 * 24;
-async function testConnection() {
-  try {
-    const response = await client.ping();
-    console.log('Elasticsearch is up and running:', response);
-  } catch (error) {
-    console.error('Error connecting to Elasticsearch:', error);
-  }
-}
-async function indexCategories() {
-  try {
-    const categories = await Category.find({});
-    console.log(categories);
-    const body = categories.flatMap((category) => [
-      { index: { _index: 'categories', _id: category._id.toString() } },
-      {
-        name: category.name,
-        slug: category.slug,
-        parent: category.parent,
-        level: category.level,
-      },
-    ]);
 
-    const { body: bulkResponse } = await client.bulk({ body });
-    if (typeof bulkResponse !== 'undefined' && bulkResponse.errors) {
-      console.log(`Failed to index some categories in Elasticsearch`);
-    } else {
-      console.log(`Indexed ${categories.length} categories in Elasticsearch`);
-    }
 
-    // Or using optional chaining
-    bulkResponse?.errors
-      ? console.log(`Failed to index some categories in Elasticsearch`)
-      : console.log(`Indexed ${categories.length} categories in Elasticsearch`);
-  } catch (error) {
-    console.log(error);
-  }
-}
-async function indexProducts() {
-  try {
-    const products = await Product.find({})
-      .populate('category', '_id name slug')
-      .populate('createdBy', '_id firstName lastName');
-
-    const body = products.flatMap((product) => [
-      { index: { _index: 'products', _id: product._id.toString() } },
-      {
-        name: product.name,
-        slug: product.slug,
-        regularPrice: product.regularPrice,
-        sale: product.sale,
-        salePrice: product.salePrice,
-        description: product.description,
-        detailsProduct: product.detailsProduct,
-        color: product.color,
-        quantitySold: product.quantitySold,
-        stock: product.stock,
-        productPictures: product.productPictures,
-        category: {
-          _id: product.category._id.toString(),
-          name: product.category.name,
-          slug: product.category.slug,
-        },
-        active: product.active,
-      },
-    ]);
-
-    const { body: bulkResponse } = await client.bulk({ body });
-    if (typeof bulkResponse !== 'undefined' && bulkResponse.errors) {
-      console.log(`Failed to index some products in Elasticsearch`);
-    } else {
-      console.log(`Indexed ${products.length} products in Elasticsearch`);
-    }
-    // Or using optional chaining
-    bulkResponse?.errors
-      ? console.log(`Failed to index some products in Elasticsearch`)
-      : console.log(`Indexed ${products.length} products in Elasticsearch`);
-  } catch (error) {
-    console.log(error);
-  }
-}
 const signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);

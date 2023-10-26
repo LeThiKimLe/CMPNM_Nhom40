@@ -1,6 +1,5 @@
 /* eslint-disable prefer-arrow-callback */
 const express = require('express');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const http = require('http');
@@ -36,41 +35,37 @@ const cartRouter = require('./src/routes/cart.routes');
 const addressRouter = require('./src/routes/address.routes');
 const orderRouter = require('./src/routes/order.routes');
 const bannerRouter = require('./src/routes/banner.routes');
+const attributeRouter = require('./src/routes/attribute.routes');
+const colorRouter = require('./src/routes/color.routes');
 
 app.use(cookieParser());
 app.use(helmet());
 
 app.use(cookieParser());
-app.use(
-  session({
-    secret: 'buitiep',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, sameSite: 'none' },
-  })
-);
+
 // built-in middleware for json
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type'
-  );
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader(
+//     'Access-Control-Allow-Methods',
+//     'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+//   );
+//   res.setHeader(
+//     'Access-Control-Allow-Headers',
+//     'X-Requested-With,content-type'
+//   );
+//   res.setHeader('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
 app.use('/api/category', categoryRouter);
+app.use('/api/attribute', attributeRouter);
+app.use('/api/color', colorRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/address', addressRouter);

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import './App.css';
 import 'antd/dist/reset.css';
 import './assets/styles/main.less';
 import './assets/styles/responsive.less';
@@ -11,6 +10,8 @@ import Categories from './pages/categories';
 import Profile from './pages/profile';
 import SignIn from './pages/sigin_in';
 import Users from './pages/users';
+import Colors from './pages/color';
+import Attributes from './pages/attribute';
 
 import { PrivateComponent } from './utils';
 import React, { useEffect } from 'react';
@@ -25,8 +26,6 @@ import Banner from './pages/banner';
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
-
-  // thêm input để khi auth.authenticate thay đổi thì useEffect() chạy
   useEffect(() => {
     if (!auth.isLoggedIn) {
       dispatch(authActions.isUserLoggedIn());
@@ -63,6 +62,14 @@ function App() {
               }
             />
             <Route
+              path="/attributes"
+              element={
+                <PrivateComponent>
+                  <Attributes />
+                </PrivateComponent>
+              }
+            />
+            <Route
               path="/users"
               element={
                 <PrivateComponent>
@@ -84,6 +91,14 @@ function App() {
               element={
                 <PrivateComponent>
                   <Orders />
+                </PrivateComponent>
+              }
+            />
+            <Route
+              path="/colors"
+              element={
+                <PrivateComponent>
+                  <Colors />
                 </PrivateComponent>
               }
             />

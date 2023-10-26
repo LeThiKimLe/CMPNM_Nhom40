@@ -23,7 +23,7 @@ const categorySchema = new mongoose.Schema(
     },
     parent: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
+      ref: 'categories',
       default: null,
     },
     status: {
@@ -34,4 +34,4 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true, strict: false }
 );
 
-module.exports = mongoose.model('Category', categorySchema);
+module.exports = mongoose.model('categories', categorySchema);
