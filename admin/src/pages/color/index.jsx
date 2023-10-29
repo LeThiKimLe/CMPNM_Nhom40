@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Row,
@@ -12,7 +12,6 @@ import {
   Spin,
   notification,
 } from 'antd';
-import face2 from '../../assets/images/face-2.jpg';
 import colorThunk from '../../features/color/color.service';
 const { Title } = Typography;
 
@@ -43,10 +42,11 @@ const options = [
   { label: 'Black', value: 'Đen' },
   { label: 'White', value: 'Trắng' },
 ];
+
 function Colors() {
   const dispatch = useDispatch();
   const color = useSelector((state) => state.color);
-  const { getLoading, loading } = color;
+  const { getLoading } = color;
 
   //* color list
   const [listColor, setListColor] = useState([]);
@@ -54,7 +54,7 @@ function Colors() {
     label: '',
     value: '',
   });
-  const [data, setData] = useState([]);
+
   const handleChange = (e, color) => {
     console.log('Selected: ', color);
     setColorSelected({
@@ -78,7 +78,8 @@ function Colors() {
         }, 1000);
       });
   };
-  useEffect(() => {
+
+  const fetchColors = useCallback(() => {
     dispatch(colorThunk.getAllAPI())
       .unwrap()
       .then((value) => {
@@ -86,50 +87,54 @@ function Colors() {
         setListColor(value.list);
       });
   }, [dispatch]);
+
   useEffect(() => {
+    fetchColors();
+  }, [fetchColors]);
+
+  const data = useMemo(() => {
     if (listColor.length > 0) {
-      setData(
-        listColor.map((item, index) => {
-          const divStyle = {
-            backgroundColor: item.value.toLowerCase(),
-            width: '40px', // Set width as needed
-            height: '40px', // Set height as needed
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '10px',
-            marginRight: '5px',
-          };
-          return {
-            key: item._id,
-            name: (
-              <>
-                <Avatar.Group>
-                  <div style={divStyle}></div>
-                  <div className="avatar-info">
-                    <Title level={5}>{item.value}</Title>
-                  </div>
-                </Avatar.Group>{' '}
-              </>
-            ),
-            created: (
-              <>
-                <div className="ant-employed">
-                  <Typography.Text level={5}>
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </Typography.Text>
-                  <a href="#pablo">Edit</a>
-                  <a href="#pablo">Delete</a>
+      return listColor.map((item, index) => {
+        const divStyle = {
+          backgroundColor: item.value.toLowerCase(),
+          width: '40px', // Set width as needed
+          height: '40px', // Set height as needed
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '10px',
+          marginRight: '5px',
+        };
+        return {
+          key: item._id,
+          name: (
+            <>
+              <Avatar.Group>
+                <div style={divStyle}></div>
+                <div className="avatar-info">
+                  <Title level={5}>{item.value}</Title>
                 </div>
-              </>
-            ),
-          };
-        })
-      );
+              </Avatar.Group>{' '}
+            </>
+          ),
+          created: (
+            <>
+              <div className="ant-employed">
+                <Typography.Text level={5}>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </Typography.Text>
+                <a href="#pablo">Edit</a>
+                <a href="#pablo">Delete</a>
+              </div>
+            </>
+          ),
+        };
+      });
     } else {
-      setData([]);
+      return [];
     }
   }, [listColor]);
+
   return (
     <div className="tabled">
       <Row gutter={[24, 0]}>
@@ -182,6 +187,7 @@ function Colors() {
                 <Select
                   style={{
                     width: '90%',
+                    fontFamily: 'Poppins',
                   }}
                   options={options}
                   onChange={handleChange}

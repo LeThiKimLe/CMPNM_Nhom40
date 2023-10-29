@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Row,
   Col,
@@ -26,7 +26,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getBase64 } from '../../utils';
 import userThunk from '../../features/users/user.service';
 import { userActions } from '../../features/users/user.slice';
-import MenuSearch from './components/menu-search';
 import EditUserModel from './components/modal-edit';
 import ConfirmDeleteUser from './components/modal-delete';
 
@@ -34,13 +33,12 @@ const { Title } = Typography;
 function Users() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const { loading } = user;
+  const { loading, getLoading } = user;
   const [listUser, setListUser] = useState(user.users);
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [getLoading, setGetLoading] = useState(true);
   // form
   const [formAdd] = Form.useForm();
   const [formEdit] = Form.useForm();
@@ -48,29 +46,35 @@ function Users() {
   // table code start
   const columns = [
     {
-      title: 'Người dùng',
+      title: '#',
+      dataIndex: '#',
+      key: 'index',
+      width: '10%',
+    },
+    {
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: '32%',
     },
     {
-      title: 'Số điện thoại',
+      title: 'Phone number',
       key: 'contactNumber',
       dataIndex: 'contactNumber',
     },
     {
-      title: 'Quyền',
+      title: 'Role',
       dataIndex: 'role',
       key: 'role',
     },
 
     {
-      title: 'Trạng thái',
+      title: 'Status',
       key: 'status',
       dataIndex: 'status',
     },
     {
-      title: 'Ngày tạo',
+      title: 'Created',
       key: 'created',
       dataIndex: 'created',
     },
@@ -79,24 +83,25 @@ function Users() {
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
+  const getAllUserCallback = useCallback(() => {
+    dispatch(userThunk.getAllUserAPI())
+      .unwrap()
+      .then((value) => {
+        setListUser(value.list);
+      });
+  }, [dispatch]);
   // *delete button handle
   const handleConfirmDelete = () => {
     dispatch(userThunk.deleteUsersAPI(selectedRowKeys))
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Xóa tài khoản thành công!',
+          message: 'Delete user successfully!',
           placement: 'top',
         });
         setTimeout(() => {
-          setGetLoading(true);
+          getAllUserCallback();
           setVisibleDelete(false);
-          dispatch(userThunk.getAllUserAPI())
-            .unwrap()
-            .then((value) => {
-              setGetLoading(false);
-              setListUser(value.list);
-            });
         }, 1000);
       })
       .catch((error) => {
@@ -106,7 +111,7 @@ function Users() {
   const onClickBtnDelete = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một trường để xóa',
+        message: 'Please select a field to edit',
         placement: 'top',
       });
     } else {
@@ -116,12 +121,12 @@ function Users() {
   const onClickBtnEdit = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
+        message: 'Please select a field to edit',
         placement: 'top',
       });
     } else if (selectedRowKeys.length > 1) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
+        message: 'Please select only one field to edit',
         placement: 'top',
       });
     } else {
@@ -129,6 +134,7 @@ function Users() {
       renderDataInEdit();
     }
   };
+
   const renderDataInEdit = () => {
     let userEdit;
     user.users.map((user) => {
@@ -160,7 +166,7 @@ function Users() {
   };
   const onCancelAddUser = () => {
     setVisibleAdd(false);
-    // formAdd.resetFields();
+    formAdd.resetFields();
   };
   // todo create new User
   const handleAddUser = async (values) => {
@@ -181,19 +187,13 @@ function Users() {
     dispatch(userThunk.createUserAPI(userData))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Tạo tài khoản thành công!' });
+        notification.success({ message: 'Create user successfully!' });
         formAdd.resetFields();
         dispatch(userActions.reset());
 
         setTimeout(() => {
-          setGetLoading(true);
           setVisibleAdd(false);
-          dispatch(userThunk.getAllUserAPI())
-            .unwrap()
-            .then((value) => {
-              setGetLoading(false);
-              setListUser(value.list);
-            });
+          getAllUserCallback();
         }, 1000);
       })
       .catch((error) => {
@@ -207,12 +207,14 @@ function Users() {
             errors: [error],
           },
         ]);
-        // formAdd.resetFields();
         dispatch(userActions.reset());
       });
   };
   //* get all users initial
 
+  useEffect(() => {
+    getAllUserCallback();
+  }, [getAllUserCallback]);
   const data = useMemo(() => {
     if (listUser.length > 0) {
       return listUser.map((user) => ({
@@ -280,20 +282,6 @@ function Users() {
       return [];
     }
   }, [listUser]);
-  useEffect(() => {
-    setGetLoading(true);
-    if (Object.keys(listUser).length === 0) {
-      dispatch(userThunk.getAllUserAPI())
-        .unwrap()
-        .then((value) => {
-          setGetLoading(false);
-          setListUser(value.list);
-        });
-    } else {
-      setGetLoading(false);
-    }
-  }, [listUser, dispatch]);
-
   return (
     <>
       <ConfirmDeleteUser

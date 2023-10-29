@@ -1,15 +1,15 @@
 import { Menu } from 'antd';
 import { NavLink } from 'react-router-dom';
-import logo from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLayerGroup,
   faPeopleGroup,
   faBoxesStacked,
   faBagShopping,
-  faTableColumns,
+  faHome,
   faImage,
   faPalette,
+  faGears,
 } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
   return (
@@ -21,7 +21,7 @@ function Sidenav() {
         <Menu.Item key="dashboard">
           <NavLink to="/">
             <span className="icon">
-              <FontAwesomeIcon icon={faTableColumns} className="fa-lg" />
+              <FontAwesomeIcon icon={faHome} className="fa-lg" />
             </span>
             <span
               style={{
@@ -94,7 +94,7 @@ function Sidenav() {
         <Menu.Item key="attributes">
           <NavLink to="/attributes">
             <span className="icon" style={{ color: '#fff' }}>
-              <FontAwesomeIcon icon={faPalette} className="fa-lg" />
+              <FontAwesomeIcon icon={faGears} className="fa-lg" />
             </span>
             <span
               className="label"

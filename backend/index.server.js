@@ -45,22 +45,19 @@ app.use(cookieParser());
 
 // built-in middleware for json
 app.use(express.json({ limit: '50mb' }));
-// Handle options credentials check - before CORS!
-// and fetch cookies credentials requirement
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'GET, POST, OPTIONS, PUT, PATCH, DELETE'
-//   );
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'X-Requested-With,content-type'
-//   );
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
-// Cross Origin Resource Sharing
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type'
+  );
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 app.use(cors(corsOptions));
 
 app.use('/api/category', categoryRouter);

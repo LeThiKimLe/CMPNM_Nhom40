@@ -8,15 +8,13 @@ import {
   Button,
   notification,
   Form,
-  Spin,
   Tag,
+  Upload,
+  Card,
+  Select,
+  Input,
 } from 'antd';
-import {
-  PlusOutlined,
-  EditOutlined,
-  SearchOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -26,68 +24,71 @@ import { categoryActions } from '../../features/category/category.slice';
 import EditCategoryModal from './components/modal-edit';
 import { getBase64 } from '../../utils';
 import ConfirmDeleteCategories from './components/confirm-delete';
-
+const { Option } = Select;
 const columns = [
   {
-    title: 'Tên',
+    title: '#',
+    dataIndex: 'index',
+    key: 'index',
+    width: '10%',
+  },
+  {
+    title: 'Name',
     dataIndex: 'name',
     key: 'name',
     width: '15%',
   },
   {
-    title: 'Thương hiệu',
+    title: 'Category',
     key: 'parentId',
     dataIndex: 'parentId',
   },
   {
     title: 'Logo',
-    dataIndex: 'categoryImage',
-    key: 'categoryImage',
-  },
-
-  {
-    title: 'Level',
-    key: 'level',
-    dataIndex: 'level',
+    dataIndex: 'image',
+    key: 'image',
   },
   {
-    title: 'Trạng thái',
-    key: 'isActive',
-    dataIndex: 'isActive',
-  },
-  {
-    title: 'Ngày tạo',
+    title: 'Created at',
     key: 'created',
     dataIndex: 'created',
   },
 ];
-const { Title } = Typography;
-// project table start
 
 function ListCategories() {
   // modal visible
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
-  const { categories } = category;
+  const { categories, getLoading } = category;
 
   const [visibleAdd, setVisibleAdd] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
   const [visibleDelete, setVisibleDelete] = useState(false);
-  const [categoryParentList, setCategoryParentList] = useState([]);
-  const [categoryParent, setCategoryParent] = useState('');
+  const [listCategoryParent, setListCategoryParent] = useState([]);
 
   const [categoryList, setCategoryList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [listCategory, setListCategory] = useState(categories);
-  const [formAdd] = Form.useForm();
-  const [formEdit] = Form.useForm();
-  // TODO Handle after
-  const onFinishEditHandle = () => {};
-  const handleCancel = () => {
-    formAdd.resetFields();
-    setVisibleAdd(false);
+
+  const [fileList, setFileList] = useState([]);
+  const [name, setName] = useState('');
+  const [parentId, setParentId] = useState('');
+
+  const handleCategoryParent = (value) => {
+    setParentId(value);
   };
+
+  const handleFileUpload = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
+  const handleClearAddForm = () => {
+    setName('');
+    setFileList([]);
+    setParentId('');
+  };
+
+  // TODO Handle after
   const getCategoryById = (listCategory, id) => {
     let name;
     listCategory.map((cat) => {
@@ -104,64 +105,37 @@ function ListCategories() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const renderDataInEdit = (editKey) => {
-    let categoryEdit;
-
-    category.categories.map((category) => {
-      if (category._id === editKey) {
-        categoryEdit = category;
-      }
-    });
-    const { name, categoryImage, isActive } = categoryEdit;
-    formEdit.setFieldsValue({
-      name,
-      categoryImage,
-      checked: isActive,
-    });
-  };
   // todo create Category
-  const handleAddCategory = async (values) => {
-    const { name } = values;
+  const handleAddCategory = async () => {
     let categoryData = {
       name,
     };
-    if (categoryParent !== '') {
-      categoryData.parentId = categoryParent;
+    if (parentId !== '') {
+      categoryData.parentId = parentId;
     }
-    if (values.image) {
-      const { fileList } = values.image;
+    if (fileList.length > 0) {
       const picture = await getBase64(fileList[0].originFileObj);
       categoryData.picture = picture;
     }
     dispatch(categoryThunk.createAPI(categoryData))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Thêm thương hiệu thành công!' });
-        formAdd.resetFields();
+        notification.success({ message: 'Add category successfully!' });
         dispatch(categoryActions.reset());
-        setTimeout(() => {
-          setVisibleAdd(false);
-          dispatch(categoryThunk.getAllAfterHandle())
-            .unwrap()
-            .then((value) => {
-              setListCategory(value.list);
-            });
-        }, 1000);
+        fetchCategories();
       })
       .catch((error) => {
-        formAdd.setFields([
-          {
-            name: 'name',
-            errors: [error],
-          },
-        ]);
+        notification.success({ message: error });
+      })
+      .finally(() => {
+        handleClearAddForm();
       });
   };
   // todo handle delete event
   const onClickBtnDelete = () => {
     if (selectedRowKeys.length === 0) {
       notification.error({
-        message: 'Vui lòng chỉ chọn một trường để xóa',
+        message: 'Please select a field to delete!',
         placement: 'top',
       });
     } else {
@@ -175,52 +149,40 @@ function ListCategories() {
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Xóa thương hiệu thành công!',
+          message: 'Delete category successfully!',
           placement: 'top',
         });
-        setTimeout(() => {
-          setVisibleDelete(false);
-          dispatch(categoryThunk.getAllAfterHandle())
-            .unwrap()
-            .then((value) => {
-              setListCategory(value.list);
-            });
-        }, 1000);
+        fetchCategories();
       })
       .catch((error) => {
         notification.error({ message: error, placement: 'top' });
       });
   };
   const fetchCategories = useCallback(async () => {
-    try {
-      const value = await dispatch(categoryThunk.getAllAPI()).unwrap();
-      setListCategory(value.list);
-    } catch (error) {
-      console.log(error);
+    const value = await dispatch(categoryThunk.getAllAPI()).unwrap();
+    setListCategory(value.list);
+    if (value.list.length > 0) {
+      const list = value.list.filter(
+        (item) => item.level === 1 || item.level === 2
+      );
+      setListCategoryParent(list);
     }
   }, [dispatch]);
 
   useEffect(() => {
-    setLoading(true);
-    if (Object.keys(listCategory).length === 0) {
-      fetchCategories()
-        .then(() => setLoading(false))
-        .catch((error) => console.log(error));
-    } else {
-      setLoading(false);
-    }
-  }, [listCategory, fetchCategories]);
+    fetchCategories();
+  }, [fetchCategories]);
 
   useEffect(() => {
     if (listCategory.length > 0) {
-      const listParent = listCategory.filter(
-        (cate) => cate.level === 1 || cate.level === 2
-      );
-
-      setCategoryParentList(listParent);
       setCategoryList(
-        listCategory.map((category) => ({
+        listCategory.map((category, index) => ({
           key: category._id,
+          index: (
+            <>
+              <Typography.Title level={5}>{index + 1}</Typography.Title>
+            </>
+          ),
           name: (
             <>
               <div className="avatar-info">
@@ -231,45 +193,24 @@ function ListCategories() {
           ),
           parentId: (
             <>
-              {category.parentId ? (
-                <div className="author-info">
-                  <Tag color="volcano">
-                    {getCategoryById(listCategory, category.parentId)}
-                  </Tag>
-                </div>
+              {category.parent ? (
+                <Tag color="volcano">{category.parent.name}</Tag>
               ) : null}
             </>
           ),
-          categoryImage: (
+          image: (
             <>
-              {category.categoryImage ? (
-                <Image width={130} height={60} src={category.categoryImage} />
+              {category.image ? (
+                <Image width={80} height={50} src={category.image} />
               ) : null}
             </>
           ),
-          level: (
-            <>
-              <div className="author-info">
-                <Typography.Title level={5}>{category.level}</Typography.Title>
-              </div>
-            </>
-          ),
-          isActive: (
-            <>
-              {category.isActive ? (
-                <Switch defaultChecked style={{ backgroundColor: '#00CED1' }} />
-              ) : (
-                <Switch />
-              )}
-            </>
-          ),
+
           created: (
             <>
-              <div className="ant-employed">
-                <Typography.Title level={5}>
-                  {new Date(category.createdAt).toLocaleDateString()}
-                </Typography.Title>
-              </div>
+              <Typography.Title level={5}>
+                {new Date(category.createdAt).toLocaleDateString()}
+              </Typography.Title>
             </>
           ),
         }))
@@ -281,21 +222,16 @@ function ListCategories() {
 
   return (
     <>
-      <AddCategoryModal
-        handleCancel={handleCancel}
-        form={formAdd}
+      {/* <AddCategoryModal
         loading={category.loading}
         onFinish={handleAddCategory}
         visible={visibleAdd}
         setListCategory={setListCategory}
         onCancel={() => setVisibleAdd(false)}
-        setCategoryParent={setCategoryParent}
-        categoriesParent={categoryParentList}
       />
       <EditCategoryModal
-        handleCancel={handleCancel}
         form={formEdit}
-        loading={loading}
+        loading={getLoading}
         onFinish={onFinishEditHandle}
         visible={visibleEdit}
         onCancel={() => setVisibleEdit(false)}
@@ -306,81 +242,51 @@ function ListCategories() {
         loading={category.loading}
         onCancel={() => setVisibleDelete(false)}
         handleDelete={handleConfirmDelete}
-      />
+      /> */}
       <div className="tabled">
         <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
-            <Title level={3}>Danh sách Thương hiệu</Title>
-          </Col>
-          <Col xs="24" xl={24}>
-            <Row
-              gutter={[32, 16]}
-              style={{ marginTop: '10px', marginBottom: '20px' }}
+          <Col span={24} md={24} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24 "
+              style={{ marginBottom: '5px' }}
             >
-              <Col>
-                <Button
-                  style={{
-                    background: '#FFB266',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<SearchOutlined />}
-                >
-                  Tìm kiếm
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  style={{
-                    background: '#00994C',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  onClick={() => setVisibleAdd(true)}
-                  icon={<PlusOutlined />}
-                >
-                  Thêm
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  style={{
-                    background: '#0066CC',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<EditOutlined />}
-                >
-                  Chỉnh sửa
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  style={{
-                    background: '#FF3333',
-                    color: 'white',
-                    borderRadius: '10px',
-                  }}
-                  icon={<DeleteOutlined />}
-                  onClick={onClickBtnDelete}
-                >
-                  Xóa
-                </Button>
-              </Col>
-            </Row>
-            <div className="table-responsive">
-              {loading ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '20px',
-                  }}
-                >
-                  <Spin size="large" />
-                </div>
-              ) : (
+              <Row
+                gutter={[32, 16]}
+                className="button-row"
+                style={{ marginLeft: '5px' }}
+              >
+                <Col>
+                  <Button className="search-button">Search</Button>
+                </Col>
+                <Col>
+                  <Button
+                    className="add-button"
+                    onClick={() => setVisibleAdd(true)}
+                  >
+                    Add
+                  </Button>
+                </Col>
+                <Col>
+                  <Button className="add-button">Edit</Button>
+                </Col>
+                <Col>
+                  <Button className="delete-button" onClick={onClickBtnDelete}>
+                    Delete
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={14} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Categories"
+            >
+              <div className="table-responsive">
                 <Table
                   rowSelection={rowSelection}
                   columns={columns}
@@ -388,8 +294,70 @@ function ListCategories() {
                   pagination={true}
                   className="ant-border-space"
                 />
-              )}
-            </div>
+              </div>
+            </Card>
+          </Col>
+          <Col span={24} md={10} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Create new category"
+              style={{ height: 'fix-content' }}
+            >
+              <Row className="custom-row">
+                <Input
+                  className="input-element"
+                  placeholder="category name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Row>
+              <Row className="custom-row">
+                <Select
+                  placeholder="select a category level one"
+                  showSearch
+                  optionFilterProp="children"
+                  size="middle"
+                  onChange={handleCategoryParent}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().includes(input.toLowerCase())
+                  }
+                  style={{
+                    minWidth: '250px',
+                    margin: '10px 8px',
+                  }}
+                >
+                  {listCategoryParent.length > 0
+                    ? listCategoryParent.map((category) => {
+                        return (
+                          <Option key={category._id} value={category._id}>
+                            {category.name}
+                          </Option>
+                        );
+                      })
+                    : null}
+                </Select>
+              </Row>
+
+              <Row className="custom-row" style={{ margin: '10px 20px' }}>
+                <Upload
+                  beforeUpload={() => {
+                    return false;
+                  }}
+                  fileList={fileList}
+                  accept=".png, .jpeg, .jpg"
+                  onChange={handleFileUpload}
+                >
+                  <Button className="upload-button">Choose File</Button>
+                </Upload>
+              </Row>
+              <Row className="custom-row-button">
+                <Button className="add-button" onClick={handleAddCategory}>
+                  Add
+                </Button>
+                <Button className="search-button">Cancel</Button>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </div>

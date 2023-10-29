@@ -6,23 +6,31 @@ import { useLocation } from 'react-router-dom';
 const namePage = [
   {
     key: 'products',
-    value: 'Sản phẩm',
+    value: 'Products',
   },
   {
     key: 'categories',
-    value: 'Thương hiệu',
+    value: 'Categories',
   },
   {
     key: 'users',
-    value: 'Người dùng',
+    value: 'Userts',
   },
   {
     key: 'orders',
-    value: 'Đơn hàng',
+    value: 'Orders',
   },
   {
     key: 'banner',
-    value: 'Quảng cáo',
+    value: 'Banners',
+  },
+  {
+    key: 'colors',
+    value: 'Colors',
+  },
+  {
+    key: 'attributes',
+    value: 'Attributes',
   },
 ];
 const getPathName = (pathName) => {

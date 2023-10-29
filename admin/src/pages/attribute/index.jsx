@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Row,
@@ -8,11 +8,11 @@ import {
   Select,
   Button,
   Typography,
-  Spin,
   notification,
+  Spin,
 } from 'antd';
 import attributeThunk from '../../features/attribute/attribute.service';
-const { Title } = Typography;
+
 const { Option } = Select;
 const columns = [
   {
@@ -91,37 +91,26 @@ const storage = [
     amount: '1TB',
   },
 ];
+
 function Attributes() {
   const dispatch = useDispatch();
-  const attribute = useSelector((state) => state.attribute);
-  const { getLoading, loading } = attribute;
+  const { attribute } = useSelector((state) => state);
 
-  //* attribute list
   const [listAttribute, setListAttribute] = useState([]);
   const [attributeSelected, setAttributeSelected] = useState({
     ram: '',
     storage: '',
   });
-
   const [data, setData] = useState([]);
+
   const handleAttributeChange = (attributeName, value) => {
-    console.log(attributeSelected);
     setAttributeSelected((prevAttribute) => ({
       ...prevAttribute,
       [attributeName]: value,
     }));
   };
 
-  const handleRamChange = (value) => {
-    handleAttributeChange('ram', value);
-  };
-
-  const handleStorageChange = (value) => {
-    handleAttributeChange('storage', value);
-  };
-
   const handleCreateAttribute = () => {
-    console.log('attribute create', attributeSelected);
     dispatch(attributeThunk.createAPI(attributeSelected))
       .unwrap()
       .then(() => {
@@ -135,45 +124,47 @@ function Attributes() {
         }, 1000);
       });
   };
-  useEffect(() => {
+  const fetchAttributes = useCallback(() => {
     dispatch(attributeThunk.getAllAPI())
       .unwrap()
       .then((value) => {
-        console.log('list attribute', value.list);
         setListAttribute(value.list);
       });
   }, [dispatch]);
   useEffect(() => {
+    fetchAttributes();
+  }, [fetchAttributes]);
+
+  useEffect(() => {
     if (listAttribute.length > 0) {
       setData(
-        listAttribute.map((item, index) => {
-          return {
-            key: item._id,
-            name: (
-              <>
-                <Typography.Title level={5}>
-                  {item.ram} - {item.storage}
-                </Typography.Title>
-              </>
-            ),
-            created: (
-              <>
-                <div className="ant-employed">
-                  <Typography.Text level={5}>
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </Typography.Text>
-                  <a href="#pablo">Edit</a>
-                  <a href="#pablo">Delete</a>
-                </div>
-              </>
-            ),
-          };
-        })
+        listAttribute.map((item) => ({
+          key: item._id,
+          name: (
+            <>
+              <Typography.Title level={5}>
+                {item.ram} - {item.storage}
+              </Typography.Title>
+            </>
+          ),
+          created: (
+            <>
+              <div className="ant-employed">
+                <Typography.Text level={5}>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </Typography.Text>
+                <a href="#pablo">Edit</a>
+                <a href="#pablo">Delete</a>
+              </div>
+            </>
+          ),
+        }))
       );
     } else {
       setData([]);
     }
   }, [listAttribute]);
+
   return (
     <div className="tabled">
       <Row gutter={[24, 0]}>
@@ -184,7 +175,7 @@ function Attributes() {
             title="List attribute"
           >
             <div className="table-responsive">
-              {getLoading ? (
+              {attribute.loading ? (
                 <div
                   style={{
                     display: 'flex',
@@ -225,16 +216,14 @@ function Attributes() {
               >
                 <Select
                   placeholder="select ram"
-                  onChange={handleRamChange}
+                  onChange={(value) => handleAttributeChange('ram', value)}
                   style={{ width: '90%' }}
                 >
-                  {ram.map((ram) => {
-                    return (
-                      <Option key={ram.key} value={ram.value}>
-                        {ram.amount}
-                      </Option>
-                    );
-                  })}
+                  {ram.map((ram) => (
+                    <Option key={ram.key} value={ram.value}>
+                      {ram.amount}
+                    </Option>
+                  ))}
                 </Select>
               </Col>
               <Col
@@ -247,16 +236,18 @@ function Attributes() {
               >
                 <Select
                   placeholder="select storage"
-                  style={{ width: '90%' }}
-                  onChange={handleStorageChange}
+                  style={{ width: '90%', fontFamily: 'Poppins' }}
+                  onChange={(value) => handleAttributeChange('storage', value)}
                 >
-                  {storage.map((storage) => {
-                    return (
-                      <Option key={storage.key} value={storage.value}>
-                        {storage.amount}
-                      </Option>
-                    );
-                  })}
+                  {storage.map((storage) => (
+                    <Option
+                      style={{ fontFamily: 'Poppins' }}
+                      key={storage.key}
+                      value={storage.value}
+                    >
+                      {storage.amount}
+                    </Option>
+                  ))}
                 </Select>
               </Col>
               <Col

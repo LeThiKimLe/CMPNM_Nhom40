@@ -8,6 +8,13 @@ const initialState = {
   message: '',
 };
 
+const handleState = (listCategory, state) => {
+  const listCategoryOne = listCategory.filter((item) => item.level === 1);
+  const listCategoryTwo = listCategory.filter((item) => item.level === 2);
+  state.categoryLevelOne = listCategoryOne;
+  state.categoryLevelTwo = listCategoryTwo;
+}
+
 const categorySlice = createSlice({
   name: 'category',
   initialState,

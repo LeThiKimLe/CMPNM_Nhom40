@@ -14,24 +14,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import categoryThunk from '../../../../features/category/category.service';
 
 const { Option } = Select;
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
-];
 
 const TabInfo = (props) => {
   const { form, fileList, handleChangeUpload } = props;
   const dispatch = useDispatch();
   const category = useSelector((state) => state.category);
+  const color = useSelector((state) => state.color);
   // * color selected
 
   const onSearch = (value) => {
@@ -46,109 +34,63 @@ const TabInfo = (props) => {
   }, [category.categories, dispatch]);
   return (
     <>
-      <Form
-        form={form}
-        labelCol={{
-          span: 6,
-        }}
-        wrapperCol={{
-          span: 18,
-        }}
-      >
+      <Form form={form}>
         <Form.Item
-          style={{ fontWeight: '600' }}
-          className="username"
-          label="Tên sản phẩm"
           name="name"
+          className="input-product"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập tên sản phẩm!',
+              message: 'Please enter the product name!',
             },
           ]}
         >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Tên sản phẩm"
-          />
+          <Input placeholder="product name" />
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Giá gốc (đ)"
-          style={{ fontWeight: '600' }}
           name="regularPrice"
+          className="input-product"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập giá sản phẩm!',
+              message: 'Please enter the regular price!',
             },
           ]}
         >
-          <Input
-            style={{
-              border: '1px solid #C0C0C0',
-              borderRadius: '10px',
-              width: '100%',
-              height: '40px',
-            }}
-            size="large"
-            placeholder="Giá gốc"
-          />
+          <Input placeholder="regular price" />
         </Form.Item>
+
         <Row gutter={[16, 8]}>
           <Col span={24}>
-            {' '}
-            <Form.Item
-              className="username"
-              label="Phần trăm giảm giá (%)"
-              style={{ fontWeight: '600' }}
-              name="sale"
-            >
+            <Form.Item name="sale" className="input-product">
               <Row>
                 <Col span={12}>
-                  <InputNumber
-                    min={0}
-                    max={50}
-                    style={{
-                      borderRadius: '10px',
-                    }}
-                    size="middle"
-                    step={1}
-                  />
+                  <Input type="number" placeholder="sale percent" />
                 </Col>
               </Row>
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item
-          className="username"
-          label="Giá đã giảm (đ)"
-          style={{ fontWeight: '600' }}
-          name="salePrice"
-        >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-          />
+        <Form.Item name="salePrice" className="input-product">
+          <Input placeholder="sale price" />
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Thương hiệu"
-          style={{ fontWeight: '600' }}
           name="category"
+          size="large"
+          className="custom-selector"
           rules={[
             {
               required: true,
-              message: 'Vui lòng chọn thương hiệu!',
+              message: 'Please enter category!',
             },
           ]}
         >
           <Select
             showSearch
-            placeholder="Chọn nhãn hiệu"
+            placeholder="category"
             optionFilterProp="children"
             size="large"
             onSearch={onSearch}
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
             filterOption={(input, option) =>
               option.children.toLowerCase().includes(input.toLowerCase())
             }
@@ -163,49 +105,25 @@ const TabInfo = (props) => {
           </Select>
         </Form.Item>
         {/* color */}
-        <Form.Item
-          className="username"
-          label="Màu sắc"
-          style={{ fontWeight: '600' }}
-          name="color"
-        >
-          <Select
-            placeholder="Chọn màu sắc"
-            size="large"
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-          >
+        <Form.Item name="color" className="custom-selector">
+          <Select placeholder="color" size="large">
             {' '}
-            {colorList.map((item, index) => {
-              return (
-                <Option key={index} value={item.value}>
-                  {item.name}
-                </Option>
-              );
-            })}
           </Select>
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Số lượng trong kho"
-          style={{ fontWeight: '600' }}
           name="stock"
+          className="input-product"
+          size="large"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền số lượng sản phẩm trong kho!',
+              message: 'Please enter stock!',
             },
           ]}
         >
-          <Input
-            type="number"
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Số lượng sản phẩm"
-          />
+          <Input type="number" placeholder="stock" />
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Hình ảnh"
-          style={{ fontWeight: '600' }}
           name="image"
           rules={[
             {

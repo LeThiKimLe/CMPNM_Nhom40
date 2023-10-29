@@ -16,10 +16,9 @@ const categorySchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
     },
-    description: {
-      type: String,
-      trim: true,
-      maxlength: 2000,
+    level: {
+      type: Number,
+      required: true,
     },
     parent: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +29,9 @@ const categorySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    image: {
+      type: String,
+    }
   },
   { timestamps: true, strict: false }
 );

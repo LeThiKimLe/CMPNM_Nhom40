@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import 'antd/dist/reset.css';
 import './assets/styles/main.less';
 import './assets/styles/responsive.less';
 import Main from './containers/layout';

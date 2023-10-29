@@ -20,122 +20,76 @@ const mobileOS = [
     name: 'Android',
   },
 ];
-const ram = [
-  {
-    key: '1',
-    value: '2GB',
-    amount: '2GB',
-  },
-  {
-    key: '2',
-    value: '3GB',
-    amount: '3GB',
-  },
-  {
-    key: '3',
-    value: '4GB',
-    amount: '4GB',
-  },
-  {
-    key: '4',
-    value: '6GB',
-    amount: '6GB',
-  },
-  {
-    key: '5',
-    value: '8GB',
-    amount: '8GB',
-  },
-  {
-    key: '6',
-    value: '12GB',
-    amount: '12GB',
-  },
-];
-const storage = [
-  {
-    key: '1',
-    value: '32GB',
-    amount: '32GB',
-  },
-  {
-    key: '2',
-    value: '64GB',
-    amount: '64GB',
-  },
-  {
-    key: '3',
-    value: '128GB',
-    amount: '128GB',
-  },
-  {
-    key: '4',
-    value: '256GB',
-    amount: '256GB',
-  },
-  {
-    key: '5',
-    value: '512GB',
-    amount: '512GB',
-  },
-  {
-    key: '6',
-    value: '1TB',
-    amount: '1TB',
-  },
-];
 
 const TabDigital = (props) => {
   const { form } = props;
   return (
     <>
-      <Form
-        form={form}
-        className="row-col"
-        autoComplete="off"
-        labelCol={{
-          span: 6,
-        }}
-        wrapperCol={{
-          span: 18,
-        }}
-      >
+      <Form form={form}>
         <Form.Item
-          className="username"
-          label="Màn hình"
-          style={{ fontWeight: '600' }}
+          className="input-product"
           name="screen"
+          size="large"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền thông số màn hình!',
+              message: 'Please enter screen!',
             },
           ]}
         >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số màn hình"
-            size="large"
-          />
+          <Input placeholder="screen" />
         </Form.Item>
+
         <Form.Item
-          className="username"
-          label="Hệ điều hành"
-          style={{ fontWeight: '600' }}
-          name="OS"
+          className="input-product"
+          name="backCamera"
+          size="large"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền hệ điều hành!',
+              message: 'Please enter back camera!',
+            },
+          ]}
+        >
+          <Input placeholder="back camera" size="large" />
+        </Form.Item>
+        <Form.Item className="input-product" name="frontCamera">
+          <Input placeholder="front camera" size="large" />
+        </Form.Item>
+        <Form.Item
+          className="input-product"
+          name="cpu"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter chip!',
+            },
+          ]}
+        >
+          <Input placeholder="chip" size="large" />
+        </Form.Item>
+        <Form.Item
+          name="os"
+          size="large"
+          className="custom-selector"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter os!',
             },
           ]}
         >
           <Select
-            placeholder="Chọn hệ điều hành"
+            showSearch
+            placeholder="os"
+            optionFilterProp="children"
             size="large"
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            onChange={handleChange}
+            className="custom-selection"
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
           >
+            {' '}
             {mobileOS.map((mobileOS) => {
               return (
                 <Option key={mobileOS.key} value={mobileOS.value}>
@@ -146,142 +100,50 @@ const TabDigital = (props) => {
           </Select>
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Camera sau"
-          style={{ fontWeight: '600' }}
-          name="backCamera"
+          name="attribute"
+          size="large"
+          className="custom-selector"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền thông số camera sau!',
-            },
-          ]}
-        >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số camera sau"
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          className="username"
-          label="Camera trước"
-          style={{ fontWeight: '600' }}
-          name="frontCamera"
-        >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số camera trước"
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          className="username"
-          label="Chip"
-          style={{ fontWeight: '600' }}
-          name="cpu"
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng điền thông số chip!',
-            },
-          ]}
-        >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số chip"
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          className="username"
-          label="RAM"
-          style={{ fontWeight: '600' }}
-          name="ram"
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng điền thông số RAM!',
+              message: 'Please enter attribute!',
             },
           ]}
         >
           <Select
-            placeholder="Chọn dung lượng RAM"
+            showSearch
+            placeholder="attribute"
+            optionFilterProp="children"
             size="large"
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            onChange={handleChange}
-          >
-            {ram.map((ram) => {
-              return (
-                <Option key={ram.key} value={ram.value}>
-                  {ram.amount}
-                </Option>
-              );
-            })}
-          </Select>
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
+          ></Select>
         </Form.Item>
+
         <Form.Item
-          className="username"
-          label="Dung lượng lưu trữ"
-          style={{ fontWeight: '600' }}
-          name="storage"
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng điền dung lượng lưu trữ!',
-            },
-          ]}
-        >
-          <Select
-            placeholder="Chọn dung lượng lưu trữ"
-            size="large"
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            onChange={handleChange}
-          >
-            {storage.map((storage) => {
-              return (
-                <Option key={storage.key} value={storage.value}>
-                  {storage.amount}
-                </Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
-        <Form.Item
-          className="username"
-          label="Sim"
-          style={{ fontWeight: '600' }}
+          className="input-product"
           name="sim"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền thông số sim!',
+              message: 'Please enter sim!',
             },
           ]}
         >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số sim"
-            size="large"
-          />
+          <Input placeholder="sim" size="large" />
         </Form.Item>
         <Form.Item
-          className="username"
-          label="Pin & Sạc"
-          style={{ fontWeight: '600' }}
+          className="input-product"
           name="batteryPowerAndCharger"
           rules={[
             {
               required: true,
-              message: 'Vui lòng điền thông số Pin & Sạc!',
+              message: 'Please enter battery power and charger!',
             },
           ]}
         >
-          <Input
-            style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-            placeholder="Thông số Pin & Sạc"
-            size="large"
-          />
+          <Input placeholder="battery power and charger" size="large" />
         </Form.Item>
       </Form>
     </>

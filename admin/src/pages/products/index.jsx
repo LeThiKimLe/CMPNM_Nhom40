@@ -8,30 +8,25 @@ import {
   Row,
   Col,
   Typography,
-  Switch,
   Avatar,
   Table,
-  Spin,
+  Tabs,
   Tag,
-  Input,
-  Space,
   Button,
+  Card,
 } from 'antd';
 import AddProductModal from './components/modal-add';
 import { useDispatch, useSelector } from 'react-redux';
 import productThunk from '../../features/product/product.service';
 import categoryThunk from '../../features/category/category.service';
 
-import MenuSearch from './components/menu-search';
 import { getBase64, formatThousand } from '../../utils';
 import ConfirmDelete from '../categories/components/confirm-delete';
-import ButtonHandle from '../../components/ui/button';
-import { AiFillEye, AiFillEdit, AiFillDelete } from 'react-icons/ai';
-import { HiPlus } from 'react-icons/hi';
-import { BiSearchAlt } from 'react-icons/bi';
 import DetailModal from './components/modal-detail';
 import ModalEdit from './components/modal-edit';
-const { Title } = Typography;
+import TabDescription from './components/component-add/tab-description';
+import TabDigital from './components/component-add/tab-digital';
+import TabInfo from './components/component-add/tab-info';
 
 const colorList = [
   { name: 'Đỏ', value: 'Red' },
@@ -55,6 +50,25 @@ const getColorProduct = (color) => {
   });
   return colorName;
 };
+
+const listTabs = [
+  {
+    key: '1',
+    label: 'Information',
+    children: <TabInfo />,
+  },
+  {
+    key: '2',
+    label: 'Digital',
+    children: <TabDigital />,
+  },
+  {
+    key: '3',
+    label: 'Description',
+    children: <TabDescription />,
+  },
+];
+
 function Products() {
   const [loadingAll, setLoadingAll] = useState(true);
   const [loaded, setLoaded] = useState(false);
@@ -99,40 +113,35 @@ function Products() {
 
   const columns = [
     {
-      title: 'Tên sản phẩm',
+      title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: '32%',
     },
     {
-      title: 'Giá gốc',
+      title: 'Price',
       dataIndex: 'regularPrice',
       key: 'regularPrice',
     },
 
     {
-      title: 'Thương hiệu',
+      title: 'Category',
       dataIndex: 'category',
       key: 'category',
     },
 
     {
-      title: 'Màu sắc',
+      title: 'Color',
       key: 'color',
       dataIndex: 'color',
     },
     {
-      title: 'Số lượng',
+      title: 'Stock',
       key: 'stock',
       dataIndex: 'stock',
     },
     {
-      title: 'Trạng thái',
-      key: 'active',
-      dataIndex: 'active',
-    },
-    {
-      title: 'Ngày tạo',
+      title: 'Created at',
       key: 'created',
       dataIndex: 'created',
     },
@@ -356,14 +365,6 @@ function Products() {
             </div>
           </>
         ),
-        active: (
-          <>
-            <Switch
-              defaultChecked={productItem.active}
-              style={{ backgroundColor: '#00CED1' }}
-            />
-          </>
-        ),
         created: (
           <>
             <div className="ant-employed">
@@ -414,77 +415,66 @@ function Products() {
 
       <div className="tabled">
         <Row gutter={[24, 0]}>
-          <Col xs="24" xl={24}>
-            <Title level={3}>Danh sách sản phẩm</Title>
-          </Col>
-          <Col xs="24" xl={24}>
-            <Row
-              gutter={[32, 16]}
-              style={{
-                marginTop: '10px',
-                marginBottom: '20px',
-                display: 'flex',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}
+          <Col span={24} md={24} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24 "
+              style={{ marginBottom: '5px' }}
             >
-              <Col>
-                <ButtonHandle
-                  bgColor="#93c47d"
-                  icon={<HiPlus />}
-                  title="Thêm"
-                  handle={() => setOpenAdd(true)}
-                />
-              </Col>
-              <Col>
-                <ButtonHandle
-                  bgColor="#f9cb9c"
-                  icon={<AiFillEye />}
-                  title="Chi tiết"
-                  handle={handleDetailProduct}
-                />
-              </Col>
-              <Col>
-                <ButtonHandle
-                  bgColor="#3d85c6"
-                  icon={<AiFillEdit />}
-                  title="Chỉnh sửa"
-                  handle={handleOpenEditModal}
-                />
-              </Col>
-              <Col>
-                <ButtonHandle
-                  bgColor="#e06666"
-                  icon={<AiFillDelete />}
-                  handle={onClickBtnDelete}
-                  title="Xóa"
-                />
-              </Col>
-            </Row>
-            <div className="table-responsive" style={{ borderRadius: '10px' }}>
-              {loadingAll || getLoading ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '20px',
-                  }}
-                >
-                  <Spin size="large" />
-                </div>
-              ) : dataTable && dataTable.length > 0 ? (
+              <Row
+                gutter={[32, 16]}
+                className="button-row"
+                style={{ marginLeft: '5px' }}
+              >
+                <Col>
+                  <Button className="search-button">Search</Button>
+                </Col>
+                <Col>
+                  <Button className="add-button">Add</Button>
+                </Col>
+                <Col>
+                  <Button className="add-button">Edit</Button>
+                </Col>
+                <Col>
+                  <Button className="delete-button">Delete</Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={16} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Products"
+            >
+              <div className="table-responsive">
                 <Table
                   rowSelection={rowSelection}
                   columns={columns}
-                  dataSource={dataTable}
+                  dataSource={[]}
                   pagination={true}
                   className="ant-border-space"
                 />
-              ) : (
-                <div>No data</div>
-              )}
-            </div>
+              </div>
+            </Card>
+          </Col>
+          <Col span={24} md={8} className="mb-24">
+            <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Create new product"
+              style={{ height: 'fix-content' }}
+            >
+              <Row className="custom-row">
+                <Tabs defaultActiveKey="1" size="large" items={listTabs} />
+              </Row>
+              <Row className="custom-row-button" style={{ marginTop: '10px' }}>
+                <Button className="add-button">Add</Button>
+                <Button className="search-button">Cancel</Button>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </div>

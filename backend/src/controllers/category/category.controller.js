@@ -6,6 +6,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 const slugify = require('slugify');
+const { default: mongoose } = require('mongoose');
 
 const { Category } = require('../../models');
 const { Response, ServerError, Create, BadRequest } = require('../../utils');
@@ -15,9 +16,9 @@ const create = async (req, res) => {
   const { name } = req.body.data;
   const categoryExists = await Category.find({ name }).exec();
   if (categoryExists.length > 0) {
-    return BadRequest(res, 'Tên thương hiệu đã tồn tại!');
+    return BadRequest(res, 'Category name already exists!');
   }
-  let categoryImage = '';
+  let image = '';
   if (req.body.data.picture) {
     const uploadResponse = await cloudinary.uploader.upload(
       req.body.data.picture,
@@ -27,27 +28,28 @@ const create = async (req, res) => {
       }
     );
     const { url } = uploadResponse;
-    categoryImage = url;
+    image = url;
   }
 
   const categoryObj = {
     name,
     slug: `${slugify(name)}`,
-    createdBy: req.user.userId,
-    categoryImage,
+    image,
   };
 
   if (req.body.data.parentId) {
     const { parentId } = req.body.data;
     const cateParent = await Category.findOne({ _id: parentId });
-    categoryObj.parentId = parentId;
+    categoryObj.parent = mongoose.Types.ObjectId(parentId);
     categoryObj.level = cateParent.level + 1;
+  } else {
+    categoryObj.level = 1;
   }
   const category = new Category(categoryObj);
   category.save(async (error, cat) => {
     if (error) return ServerError(res, error.message);
     if (cat) {
-      return Create(res, { message: 'Tạo thương hiệu thành công!' });
+      return Create(res, { message: 'Add category successfully!' });
     }
   });
 };
@@ -55,15 +57,16 @@ const getAll = async (req, res) => {
   let listCategory = [];
   try {
     listCategory = await Category.find({})
-      .select('_id name slug categoryImage isActive parentId level createdAt')
+      .select('_id name slug image parent level createdAt')
+      .populate("parent", "name")
       .lean()
       .exec();
+    console.log(listCategory);
     Response(res, { list: listCategory });
   } catch (error) {
     ServerError(res);
   }
 };
-// sửa lại
 const deleteCategory = async (req, res) => {
   const { listIds } = req.body;
   try {
