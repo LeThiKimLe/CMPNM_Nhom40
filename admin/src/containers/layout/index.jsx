@@ -24,14 +24,6 @@ const namePage = [
     key: 'banner',
     value: 'Banners',
   },
-  {
-    key: 'colors',
-    value: 'Colors',
-  },
-  {
-    key: 'attributes',
-    value: 'Attributes',
-  },
 ];
 const getPathName = (pathName) => {
   let name = '';

@@ -8,8 +8,6 @@ import {
   faBagShopping,
   faHome,
   faImage,
-  faPalette,
-  faGears,
 } from '@fortawesome/free-solid-svg-icons';
 function Sidenav() {
   return (
@@ -75,32 +73,6 @@ function Sidenav() {
               style={{ fontWeight: '600', fontSize: '13px' }}
             >
               Orders
-            </span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="colors">
-          <NavLink to="/colors">
-            <span className="icon" style={{ color: '#fff' }}>
-              <FontAwesomeIcon icon={faPalette} className="fa-lg" />
-            </span>
-            <span
-              className="label"
-              style={{ fontWeight: '600', fontSize: '13px' }}
-            >
-              Colors
-            </span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="attributes">
-          <NavLink to="/attributes">
-            <span className="icon" style={{ color: '#fff' }}>
-              <FontAwesomeIcon icon={faGears} className="fa-lg" />
-            </span>
-            <span
-              className="label"
-              style={{ fontWeight: '600', fontSize: '13px' }}
-            >
-              Attributes
             </span>
           </NavLink>
         </Menu.Item>

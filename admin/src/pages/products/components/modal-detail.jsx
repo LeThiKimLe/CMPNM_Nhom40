@@ -22,11 +22,13 @@ const DetailModal = (props) => {
       sale,
       salePrice,
       regularPrice,
+      attribute,
+      category_path,
       stock,
-      category,
       detailsProduct,
       description,
     } = productSelected;
+    console.log('product selected', productSelected);
     const info = {
       color,
       createdAt,
@@ -37,24 +39,29 @@ const DetailModal = (props) => {
       salePrice,
       regularPrice,
       stock,
-      category,
+      category_path,
     };
 
     if (Object.keys(productSelected).length !== 0) {
       listTabs = [
         {
           key: '1',
-          label: 'Thông tin sản phẩm',
+          label: 'Information',
           children: <DetailInfo info={info} />,
         },
         {
           key: '2',
-          label: 'Thông số  kỹ thuật',
-          children: <DigitalInfo detailsProduct={detailsProduct} />,
+          label: 'Digital',
+          children: (
+            <DigitalInfo
+              detailsProduct={detailsProduct}
+              attribute={attribute}
+            />
+          ),
         },
         {
           key: '3',
-          label: 'Mô tả sản phẩm',
+          label: 'Description',
           children: <DescriptionInfo description={description} />,
         },
       ];
@@ -65,7 +72,7 @@ const DetailModal = (props) => {
     <Modal
       open={open}
       footer={null}
-      title="Chi tiết sản phẩm"
+      title="Detail product"
       width={800}
       onCancel={onCancel}
     >

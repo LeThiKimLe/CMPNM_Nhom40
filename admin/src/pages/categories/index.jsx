@@ -17,13 +17,10 @@ import {
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import AddCategoryModal from './components/modal-add';
+import { PlusOutlined } from '@ant-design/icons';
 import categoryThunk from '../../features/category/category.service';
 import { categoryActions } from '../../features/category/category.slice';
-import EditCategoryModal from './components/modal-edit';
 import { getBase64 } from '../../utils';
-import ConfirmDeleteCategories from './components/confirm-delete';
 const { Option } = Select;
 const columns = [
   {
@@ -161,6 +158,7 @@ function ListCategories() {
   const fetchCategories = useCallback(async () => {
     const value = await dispatch(categoryThunk.getAllAPI()).unwrap();
     setListCategory(value.list);
+    console.log(value.list);
     if (value.list.length > 0) {
       const list = value.list.filter(
         (item) => item.level === 1 || item.level === 2
@@ -222,27 +220,6 @@ function ListCategories() {
 
   return (
     <>
-      {/* <AddCategoryModal
-        loading={category.loading}
-        onFinish={handleAddCategory}
-        visible={visibleAdd}
-        setListCategory={setListCategory}
-        onCancel={() => setVisibleAdd(false)}
-      />
-      <EditCategoryModal
-        form={formEdit}
-        loading={getLoading}
-        onFinish={onFinishEditHandle}
-        visible={visibleEdit}
-        onCancel={() => setVisibleEdit(false)}
-      />
-      <ConfirmDeleteCategories
-        open={visibleDelete}
-        title="Xóa nhãn hiệu"
-        loading={category.loading}
-        onCancel={() => setVisibleDelete(false)}
-        handleDelete={handleConfirmDelete}
-      /> */}
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col span={24} md={24} className="mb-24">
@@ -302,55 +279,83 @@ function ListCategories() {
               bordered={true}
               className="criclebox tablespace mb-24"
               title="Create new category"
-              style={{ height: 'fix-content' }}
             >
-              <Row className="custom-row">
-                <Input
-                  className="input-element"
-                  placeholder="category name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Row>
-              <Row className="custom-row">
-                <Select
-                  placeholder="select a category level one"
-                  showSearch
-                  optionFilterProp="children"
-                  size="middle"
-                  onChange={handleCategoryParent}
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().includes(input.toLowerCase())
-                  }
-                  style={{
-                    minWidth: '250px',
-                    margin: '10px 8px',
-                  }}
+              <Form
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row', // Set the direction to row
+                  alignItems: 'center', // Center elements vertically
+                  margin: '8px',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Form.Item
+                  name="name"
+                  className="input-product"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter the category name!',
+                    },
+                  ]}
                 >
-                  {listCategoryParent.length > 0
-                    ? listCategoryParent.map((category) => {
-                        return (
-                          <Option key={category._id} value={category._id}>
-                            {category.name}
-                          </Option>
-                        );
-                      })
-                    : null}
-                </Select>
-              </Row>
-
-              <Row className="custom-row" style={{ margin: '10px 20px' }}>
-                <Upload
-                  beforeUpload={() => {
-                    return false;
-                  }}
-                  fileList={fileList}
-                  accept=".png, .jpeg, .jpg"
-                  onChange={handleFileUpload}
+                  <Input placeholder="category name" />
+                </Form.Item>
+                <Form.Item
+                  name="category"
+                  className="custom-selector"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter category!',
+                    },
+                  ]}
                 >
-                  <Button className="upload-button">Choose File</Button>
-                </Upload>
-              </Row>
+                  <Select
+                    placeholder="select a category level one"
+                    showSearch
+                    optionFilterProp="children"
+                    onChange={handleCategoryParent}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
+                    {listCategoryParent.length > 0
+                      ? listCategoryParent.map((category) => {
+                          return (
+                            <Option key={category._id} value={category._id}>
+                              {category.name}
+                            </Option>
+                          );
+                        })
+                      : null}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="image"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input image category!',
+                    },
+                  ]}
+                >
+                  <Upload
+                    beforeUpload={() => {
+                      return false;
+                    }}
+                    accept=".png, .jpeg, .jpg"
+                    fileList={fileList}
+                    onChange={handleFileUpload}
+                    multiple={true}
+                    listType="picture-card"
+                  >
+                    <PlusOutlined />
+                  </Upload>
+                </Form.Item>
+              </Form>
               <Row className="custom-row-button">
                 <Button className="add-button" onClick={handleAddCategory}>
                   Add

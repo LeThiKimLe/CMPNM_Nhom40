@@ -1,37 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Form,
-  Input,
-  Row,
-  Col,
-  InputNumber,
-  Upload,
-  Select,
-  notification,
-} from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Form, Input, Row, Col, Upload, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import categoryThunk from '../../../../features/category/category.service';
 
 const { Option } = Select;
+const colors = [
+  'Red',
+  'Orange',
+  'Yellow',
+  'Green',
+  'Blue',
+  'Purple',
+  'Pink',
+  'Brown',
+  'Gray',
+  'Black',
+  'White',
+];
 
 const TabInfo = (props) => {
   const { form, fileList, handleChangeUpload } = props;
   const dispatch = useDispatch();
-  const category = useSelector((state) => state.category);
-  const color = useSelector((state) => state.color);
   // * color selected
+  const [categoryParent, setCategoryParent] = useState([]);
 
   const onSearch = (value) => {
     console.log('search:', value);
   };
+  const fetchCategories = useCallback(async () => {
+    const value = await dispatch(categoryThunk.getAllAPI()).unwrap();
+    if (value.list.length > 0) {
+      const list = value.list.filter((item) => item.level === 3);
+      setCategoryParent(list);
+    }
+  }, [dispatch]);
 
   // *color input
   useEffect(() => {
-    if (category.categories.length === 0) {
-      dispatch(categoryThunk.getAllAPI());
-    }
-  }, [category.categories, dispatch]);
+    fetchCategories();
+  }, [dispatch, fetchCategories]);
   return (
     <>
       <Form form={form}>
@@ -95,19 +103,27 @@ const TabInfo = (props) => {
               option.children.toLowerCase().includes(input.toLowerCase())
             }
           >
-            {category.categories.map((category) => {
-              return (
-                <Option key={category._id} value={category._id}>
-                  {category.name}
-                </Option>
-              );
-            })}
+            {categoryParent &&
+              categoryParent.length > 0 &&
+              categoryParent.map((category) => {
+                return (
+                  <Option key={category._id} value={category._id}>
+                    {category.name}
+                  </Option>
+                );
+              })}
           </Select>
         </Form.Item>
         {/* color */}
         <Form.Item name="color" className="custom-selector">
           <Select placeholder="color" size="large">
-            {' '}
+            {colors.map((color, index) => {
+              return (
+                <Option key={index} value={color}>
+                  {color}
+                </Option>
+              );
+            })}
           </Select>
         </Form.Item>
         <Form.Item

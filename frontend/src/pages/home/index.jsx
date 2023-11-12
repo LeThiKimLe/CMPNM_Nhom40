@@ -435,7 +435,7 @@ const Home = () => {
                     marginBottom: '10px',
                   }}
                 >
-                  Sản phẩm giảm giá
+                  Discounted products
                 </MDTypography>
                 <Stack
                   component={Link}
@@ -455,7 +455,7 @@ const Home = () => {
                       marginBottom: '10px',
                     }}
                   >
-                    Xem thêm
+                    Show more
                   </MDTypography>
                   <ArrowForwardIcon size="small" sx={{ color: '#111' }} />
                 </Stack>
@@ -471,10 +471,11 @@ const Home = () => {
               >
                 {products.length > 0
                   ? products.map((item, index) => {
+                      console.log('product', item);
                       if (index < 15) {
                         return (
                           <Item key={index}>
-                            <ProductCard
+                            {/* <ProductCard
                               compareLocal={compareLocal}
                               setCompareLocal={setCompareLocal}
                               setShowCompare={setShowCompare}
@@ -484,7 +485,7 @@ const Home = () => {
                               setCountCompare={setCountCompare}
                               compareProductLocal={compareProductLocal}
                               setCompareProductLocal={setCompareProductLocal}
-                            />
+                            /> */}
                           </Item>
                         );
                       }

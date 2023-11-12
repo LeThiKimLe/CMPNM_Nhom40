@@ -14,13 +14,13 @@ const url = require('url');
 
 const _ = require('lodash');
 const { Product, Category } = require('../../models');
-const { Response, ServerError, Create } = require('../../utils');
+const { Response, ServerError, Create, getCategoryPath } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 
 const createProduct = async (req, res) => {
   try {
     const { info, digital, description } = req.body.data;
-
+    const categories = await Category.find({}).exec();
     const uploadPromises = info.productPictures.map((picture) =>
       cloudinary.uploader.upload(picture, {
         folder: `Images/Product`,
@@ -29,23 +29,27 @@ const createProduct = async (req, res) => {
     );
     const uploadResults = await Promise.all(uploadPromises);
     const productPictures = uploadResults.map((result) => result.url);
-
     delete info.productPictures;
     info.productPictures = productPictures;
+    const categoryPath = getCategoryPath(categories, info.category);
 
     const product = new Product({
       ...info,
+      category_path: categoryPath,
       stock: Number(info.stock),
       description,
+      attribute: digital.attribute,
       detailsProduct: {
         ...digital,
       },
     });
     product.slug = slugify(
-      `${info.name}${info.color}${digital.ram}${digital.storage}`
+      `${info.name}-${info.color}-${digital.attribute}`,
+      {
+        lower: true,
+        remove: /[*+~.()'"!:@]/g,
+      }
     );
-    product.createdBy = req.user.userId;
-
     await product.save();
 
     Create(res);
@@ -54,21 +58,17 @@ const createProduct = async (req, res) => {
   }
 };
 
-const testELK = async (req, res) => {
-  await testConnection();
-  return res.status(200).json('oke');
-};
 const getAll = async (req, res) => {
   let listProducts = [];
-
   try {
-    listProducts = await Product.find({})
-      .select(
-        '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
-      )
-      .lean()
+    listProducts = await Product.find({ active: true })
+      .populate('color', 'value')
+      .populate('attribute', 'code')
+      .populate({
+        path: 'category_path',
+        select: 'name',
+      })
       .exec();
-
     Response(res, { list: listProducts });
   } catch (error) {
     ServerError(res);
@@ -77,7 +77,7 @@ const getAll = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
-    const { listID } = req.body;
+    const listID = req.body.data;
     const result = await Product.updateMany(
       { _id: { $in: listID } },
       { active: false }
@@ -85,9 +85,9 @@ const deleteProduct = async (req, res) => {
     if (result.nModified === 0) {
       return res.status(400).json({ error: 'Products not found' });
     }
-    res.status(200).json({ message: 'Products deleted successfully' });
+    Response(res);
   } catch (error) {
-    res.status(400).json({ error });
+    ServerError(res);
   }
 };
 
@@ -111,13 +111,10 @@ const getProductsOption = async (req, res) => {
       parent: categoryLevel._id,
     });
   } else if (filterData.level && filterData.level === '3') {
-    console.log('slug ', filterData.category);
     const categorySlugs = filterData.category.split('+');
-    console.log('level 3 slug', categorySlugs);
     categoryId = await Category.aggregate([
       { $match: { slug: { $in: categorySlugs } } },
     ]);
-    console.log('l3 id', categoryId);
   } else if (filterData.category === 'all') {
     categoryId = await Category.find({}).select('_id name slug').lean();
   } else {
@@ -240,5 +237,4 @@ module.exports = {
   deleteProduct,
   getProductsOption,
   getProductById,
-  testELK,
 };

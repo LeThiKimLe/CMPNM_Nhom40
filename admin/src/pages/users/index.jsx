@@ -47,7 +47,7 @@ function Users() {
   const columns = [
     {
       title: '#',
-      dataIndex: '#',
+      dataIndex: 'index',
       key: 'index',
       width: '10%',
     },
@@ -217,8 +217,15 @@ function Users() {
   }, [getAllUserCallback]);
   const data = useMemo(() => {
     if (listUser.length > 0) {
-      return listUser.map((user) => ({
+      return listUser.map((user, index) => ({
         key: user._id,
+        index: (
+          <>
+            <div className="ant-employed">
+              <Typography.Title level={5}>{index + 1}</Typography.Title>
+            </div>
+          </>
+        ),
         name: (
           <>
             <Avatar.Group>

@@ -9,8 +9,6 @@ import Categories from './pages/categories';
 import Profile from './pages/profile';
 import SignIn from './pages/sigin_in';
 import Users from './pages/users';
-import Colors from './pages/color';
-import Attributes from './pages/attribute';
 
 import { PrivateComponent } from './utils';
 import React, { useEffect } from 'react';
@@ -61,14 +59,6 @@ function App() {
               }
             />
             <Route
-              path="/attributes"
-              element={
-                <PrivateComponent>
-                  <Attributes />
-                </PrivateComponent>
-              }
-            />
-            <Route
               path="/users"
               element={
                 <PrivateComponent>
@@ -90,14 +80,6 @@ function App() {
               element={
                 <PrivateComponent>
                   <Orders />
-                </PrivateComponent>
-              }
-            />
-            <Route
-              path="/colors"
-              element={
-                <PrivateComponent>
-                  <Colors />
                 </PrivateComponent>
               }
             />

@@ -25,17 +25,20 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    attribute: {
+    ram: {
       required: true,
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'attribute',
+      type: String,
+    },
+    storage: {
+      required: true,
+      type: String,
     },
     detailsProduct: {
       screen: {
         type: String,
         required: true,
       },
-      OS: {
+      os: {
         type: String,
         required: true,
       },
@@ -61,8 +64,7 @@ const productSchema = new mongoose.Schema(
     },
     color: {
       required: true,
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'colors',
+      type: String,
     },
     quantitySold: {
       type: Number,
@@ -70,6 +72,7 @@ const productSchema = new mongoose.Schema(
     },
     stock: {
       type: Number,
+      required: true,
     },
     productPictures: [String],
     category_path: [
@@ -81,11 +84,6 @@ const productSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'users',
-      required: true,
     },
   },
   {

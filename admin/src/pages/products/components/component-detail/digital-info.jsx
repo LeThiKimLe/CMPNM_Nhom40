@@ -1,15 +1,13 @@
 import React from 'react';
 
 const DigitalInfo = (props) => {
-  const { detailsProduct } = props;
+  const { detailsProduct, attribute } = props;
   const {
     screen,
-    OS,
+    os,
     backCamera,
     cpu,
     frontCamera,
-    ram,
-    storage,
     sim,
     batteryPowerAndCharger,
   } = detailsProduct;
@@ -20,7 +18,7 @@ const DigitalInfo = (props) => {
     },
     {
       name: 'Hệ điều hàng',
-      value: OS && OS,
+      value: os && os,
     },
     {
       name: 'Camera sau',
@@ -35,12 +33,8 @@ const DigitalInfo = (props) => {
       value: cpu && cpu,
     },
     {
-      name: 'Dung lượng Ram',
-      value: ram && ram,
-    },
-    {
-      name: 'Dung lượng lưu trữ',
-      value: storage && storage,
+      name: 'Ram and storage',
+      value: attribute.code && attribute.code,
     },
     {
       name: 'Thông số sim',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 
 import { Select } from 'antd';
@@ -20,7 +20,70 @@ const mobileOS = [
     name: 'Android',
   },
 ];
-
+const rams = [
+  {
+    key: '1',
+    value: '2GB',
+    amount: '2GB',
+  },
+  {
+    key: '2',
+    value: '3GB',
+    amount: '3GB',
+  },
+  {
+    key: '3',
+    value: '4GB',
+    amount: '4GB',
+  },
+  {
+    key: '4',
+    value: '6GB',
+    amount: '6GB',
+  },
+  {
+    key: '5',
+    value: '8GB',
+    amount: '8GB',
+  },
+  {
+    key: '6',
+    value: '12GB',
+    amount: '12GB',
+  },
+];
+const storages = [
+  {
+    key: '1',
+    value: '32GB',
+    amount: '32GB',
+  },
+  {
+    key: '2',
+    value: '64GB',
+    amount: '64GB',
+  },
+  {
+    key: '3',
+    value: '128GB',
+    amount: '128GB',
+  },
+  {
+    key: '4',
+    value: '256GB',
+    amount: '256GB',
+  },
+  {
+    key: '5',
+    value: '512GB',
+    amount: '512GB',
+  },
+  {
+    key: '6',
+    value: '1TB',
+    amount: '1TB',
+  },
+];
 const TabDigital = (props) => {
   const { form } = props;
   return (
@@ -100,27 +163,63 @@ const TabDigital = (props) => {
           </Select>
         </Form.Item>
         <Form.Item
-          name="attribute"
+          name="ram"
           size="large"
           className="custom-selector"
           rules={[
             {
               required: true,
-              message: 'Please enter attribute!',
+              message: 'Please enter ram!',
             },
           ]}
         >
           <Select
             showSearch
-            placeholder="attribute"
+            placeholder="ram"
             optionFilterProp="children"
             size="large"
             filterOption={(input, option) =>
               option.children.toLowerCase().includes(input.toLowerCase())
             }
-          ></Select>
+          >
+            {rams.map((ram) => {
+              return (
+                <Option key={ram.key} value={ram.value}>
+                  {ram.amount}
+                </Option>
+              );
+            })}
+          </Select>
         </Form.Item>
-
+        <Form.Item
+          name="storage"
+          size="large"
+          className="custom-selector"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter storage!',
+            },
+          ]}
+        >
+          <Select
+            showSearch
+            placeholder="storage"
+            optionFilterProp="children"
+            size="large"
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {storages.map((storage) => {
+              return (
+                <Option key={storage.key} value={storage.value}>
+                  {storage.amount}
+                </Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
         <Form.Item
           className="input-product"
           name="sim"

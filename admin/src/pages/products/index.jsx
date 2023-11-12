@@ -13,9 +13,9 @@ import {
   Tabs,
   Tag,
   Button,
+  Drawer,
   Card,
 } from 'antd';
-import AddProductModal from './components/modal-add';
 import { useDispatch, useSelector } from 'react-redux';
 import productThunk from '../../features/product/product.service';
 import categoryThunk from '../../features/category/category.service';
@@ -23,84 +23,114 @@ import categoryThunk from '../../features/category/category.service';
 import { getBase64, formatThousand } from '../../utils';
 import ConfirmDelete from '../categories/components/confirm-delete';
 import DetailModal from './components/modal-detail';
-import ModalEdit from './components/modal-edit';
 import TabDescription from './components/component-add/tab-description';
 import TabDigital from './components/component-add/tab-digital';
 import TabInfo from './components/component-add/tab-info';
 
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    width: '32%',
+  },
+  {
+    title: 'Regular price',
+    dataIndex: 'regularPrice',
+    key: 'regularPrice',
+  },
+  {
+    title: 'Sale price',
+    dataIndex: 'salePrice',
+    key: 'salePrice',
+  },
+  {
+    title: 'Category',
+    dataIndex: 'category',
+    key: 'category',
+    width: '10%',
+  },
+  {
+    title: 'Attribute',
+    key: 'attribute',
+    dataIndex: 'attribute',
+    width: '5%',
+  },
+  {
+    title: 'Color',
+    key: 'color',
+    dataIndex: 'color',
+    width: '5%',
+  },
+  {
+    title: 'Stock',
+    key: 'stock',
+    dataIndex: 'stock',
+    width: '5%',
+  },
+  {
+    title: 'Created at',
+    key: 'created',
+    dataIndex: 'created',
+    width: '7%',
+  },
 ];
-const getColorProduct = (color) => {
-  let colorName = '';
-  colorList.map((item) => {
-    if (item.value === color) {
-      colorName = item.name;
-    }
-  });
-  return colorName;
-};
-
-const listTabs = [
-  {
-    key: '1',
-    label: 'Information',
-    children: <TabInfo />,
-  },
-  {
-    key: '2',
-    label: 'Digital',
-    children: <TabDigital />,
-  },
-  {
-    key: '3',
-    label: 'Description',
-    children: <TabDescription />,
-  },
-];
-
 function Products() {
-  const [loadingAll, setLoadingAll] = useState(true);
+  const dispatch = useDispatch();
   const [loaded, setLoaded] = useState(false);
 
-  const { products, getLoading } = useSelector((state) => state.product);
+  const { products } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.category);
-
-  const dispatch = useDispatch();
-
-  // * useDispatch
-
-  const [editLoading, setEditLoading] = useState(false);
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openDetail, setOpenDetail] = useState(false);
-
-  const [visibleDelete, setVisibleDelete] = useState(false);
-  // *tab mô tả modal add
-  const [openEdit, setOpenEdit] = useState(false);
-  const [description, setDescription] = useState('');
-  const [fileListEdit, setFileListEdit] = useState([]);
-  // *tab modal edit
-  const [descriptionEdit, setDescriptionEdit] = useState('');
-  // *tab info
-
-  const [fileList, setFileList] = useState([]);
-  const [formTabInfo] = Form.useForm();
-  const [formTabDigital] = Form.useForm();
-  const [formEditTabInfo] = Form.useForm();
-  const [formEditTabDigital] = Form.useForm();
-
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [visibleDelete, setVisibleDelete] = useState(false);
+  const [visibleAdd, setVisibleAdd] = useState(false);
+  const [visibleDetail, setVisibleDetail] = useState(false);
 
+  const showAdd = () => {
+    setVisibleAdd(true);
+  };
+
+  // * handle delete product
+  const handleConfirmDelete = () => {
+    dispatch(productThunk.deleteProductAPI(selectedRowKeys))
+      .unwrap()
+      .then(() => {
+        notification.success({
+          message: 'Delete product successfully!',
+          placement: 'top',
+        });
+        setVisibleDelete(false);
+        fetchProducts();
+      })
+      .catch((error) => {
+        notification.error({ message: error, placement: 'top' });
+      });
+  };
+  // * on click button delete
+  const onClickBtnDelete = () => {
+    if (selectedRowKeys.length === 0) {
+      notification.error({
+        message: 'Please select only one product to delete',
+        placement: 'top',
+      });
+    } else {
+      setVisibleDelete(true);
+    }
+  };
+
+  // * handle detail product
+  const handleDetailProduct = () => {
+    if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1) {
+      notification.warning({
+        message: 'Please select only one product to see',
+        placement: 'top',
+      });
+    } else {
+      setVisibleDetail(true);
+    }
+  };
+
+  // * handle row change
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -109,63 +139,22 @@ function Products() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  // * search ten
-
-  const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: '32%',
-    },
-    {
-      title: 'Price',
-      dataIndex: 'regularPrice',
-      key: 'regularPrice',
-    },
-
-    {
-      title: 'Category',
-      dataIndex: 'category',
-      key: 'category',
-    },
-
-    {
-      title: 'Color',
-      key: 'color',
-      dataIndex: 'color',
-    },
-    {
-      title: 'Stock',
-      key: 'stock',
-      dataIndex: 'stock',
-    },
-    {
-      title: 'Created at',
-      key: 'created',
-      dataIndex: 'created',
-    },
-  ];
-  const [initialFileList, setInitialFileList] = useState([]);
-  const handleChangeUpload = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
-  const handleChangeUploadEdit = ({ fileList: newFileList }) => {
-    setFileListEdit(newFileList);
-  };
+  const [description, setDescription] = useState('');
+  // * form add
+  const [fileList, setFileList] = useState([]);
+  const [formTabInfo] = Form.useForm();
+  const [formTabDigital] = Form.useForm();
   const handleOnCancelAdd = () => {
-    setOpenAdd(false);
     formTabInfo.resetFields();
     formTabDigital.resetFields();
+    setVisibleAdd(false);
   };
-  const handleOnCancelEdit = () => {
-    setOpenEdit(false);
-    formEditTabDigital.resetFields();
-    formEditTabInfo.resetFields();
-  };
+  const handleChangeUpload = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
   const handleAddProduct = async () => {
     if (fileList.length === 0) {
       notification.error({
-        message: 'Vui lòng chọn ảnh',
+        message: 'Please select image',
         placement: 'top',
       });
       return;
@@ -211,7 +200,7 @@ function Products() {
       });
       formTabInfo.resetFields();
       formTabDigital.resetFields();
-      setOpenAdd(false);
+      setVisibleAdd(false);
       await dispatch(productThunk.getAllAPI());
     } catch (error) {
       notification.error({
@@ -220,61 +209,36 @@ function Products() {
       });
     }
   };
-
-  const handleEditProduct = () => {
-    console.log('edit product');
-  };
-  const handleOpenEditModal = () => {
-    if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1) {
-      notification.error({
-        message: 'Vui lòng chỉ chọn một sản phẩm để chỉnh sửa',
-        placement: 'top',
-      });
-    } else {
-      setOpenEdit(true);
-    }
-  };
-  const onClickBtnDelete = () => {
-    if (selectedRowKeys.length === 0) {
-      notification.error({
-        message: 'Vui lòng chỉ chọn một sản phẩm để xóa',
-        placement: 'top',
-      });
-    } else {
-      setVisibleDelete(true);
-    }
-  };
-  // *delete button handle
-  const handleConfirmDelete = () => {
-    console.log(selectedRowKeys);
-    dispatch(productThunk.deleteProductAPI(selectedRowKeys))
-      .unwrap()
-      .then(() => {
-        notification.success({
-          message: 'Xóa tài sản phẩm công!',
-          placement: 'top',
-        });
-      })
-      .catch((error) => {
-        notification.error({ message: error, placement: 'top' });
-      });
-  };
-  const handleDetailProduct = () => {
-    if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1) {
-      notification.error({
-        message: 'Vui lòng chỉ chọn một sản phẩm để xem',
-        placement: 'top',
-      });
-    } else {
-      setOpenDetail(true);
-    }
-  };
-
+  // *
+  const listTabs = [
+    {
+      key: '1',
+      label: 'Information',
+      children: (
+        <TabInfo
+          form={formTabInfo}
+          handleChangeUpload={handleChangeUpload}
+          fileList={fileList}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: 'Digital',
+      children: <TabDigital form={formTabDigital} />,
+    },
+    {
+      key: '3',
+      label: 'Description',
+      children: (
+        <TabDescription
+          setDescription={setDescription}
+          description={description}
+        />
+      ),
+    },
+  ];
   const fetchCategories = useCallback(async () => {
-    if (categories.length > 0) {
-      return;
-    }
-
     try {
       await dispatch(categoryThunk.getAllAPI());
     } catch (error) {
@@ -283,9 +247,6 @@ function Products() {
   }, [categories, dispatch]);
 
   const fetchProducts = useCallback(async () => {
-    if (products.length > 0) {
-      return;
-    }
     try {
       await dispatch(productThunk.getAllAPI());
     } catch (error) {
@@ -295,20 +256,13 @@ function Products() {
 
   useEffect(() => {
     if (!loaded) {
-      setLoadingAll(true);
       Promise.all([fetchCategories(), fetchProducts()]).then(() => {
-        setLoadingAll(false);
         setLoaded(true);
       });
     }
   }, [loaded, fetchCategories, fetchProducts]);
 
   const dataTable = useMemo(() => {
-    const getCategoryById = (id) => {
-      const categoryItem = categories.find((cat) => cat._id === id);
-      return categoryItem ? categoryItem.name : '';
-    };
-
     return products.map((productItem) => {
       return {
         key: productItem._id,
@@ -339,23 +293,39 @@ function Products() {
             </div>
           </>
         ),
-        category: (
+        salePrice: (
           <>
-            <div className="author-info">
-              <Tag color="cyan">{getCategoryById(productItem.category)}</Tag>
+            <div className="ant-employed">
+              <Typography.Title level={5}>
+                {formatThousand(productItem.salePrice)}đ
+              </Typography.Title>
             </div>
           </>
         ),
-
+        category: (
+          <>
+            <div className="author-info">
+              <Tag color="cyan">{productItem.category_path[2].name}</Tag>
+            </div>
+          </>
+        ),
+        attribute: (
+          <>
+            <div className="author-info">
+              <Tag color="cyan">{productItem.attribute.code}</Tag>
+            </div>
+          </>
+        ),
         color: (
           <Tag
             color={productItem.color}
             style={{
-              backgroundColor: productItem.color,
-              color: productItem.color === 'White' ? '#111111' : '#ffffff',
+              backgroundColor: productItem.color.value,
+              color:
+                productItem.color.value === 'White' ? '#111111' : '#ffffff',
             }}
           >
-            {getColorProduct(productItem.color)}
+            {productItem.color.value}
           </Tag>
         ),
         stock: (
@@ -380,39 +350,36 @@ function Products() {
 
   return (
     <>
-      <AddProductModal
-        open={openAdd}
-        onCancel={handleOnCancelAdd}
-        handleCancel={handleOnCancelAdd}
-        handleChangeUpload={handleChangeUpload}
-        handleAddProduct={handleAddProduct}
-        formTabInfo={formTabInfo}
-        formTabDigital={formTabDigital}
-        fileList={fileList}
-        description={description}
-        setDescription={setDescription}
-      />
-      <ModalEdit
-        open={openEdit}
-        loading={editLoading}
-        onCancel={handleOnCancelEdit}
-        productId={selectedRowKeys.length > 0 ? selectedRowKeys[0] : null}
-        formInfo={formEditTabInfo}
-        formDigital={formEditTabDigital}
-        handleEditProduct={handleEditProduct}
-      />
       <ConfirmDelete
         open={visibleDelete}
         onCancel={() => setVisibleDelete(false)}
         handleDelete={handleConfirmDelete}
-        title={'Xóa sản phẩm'}
+        title={'Delete product'}
       />
       <DetailModal
-        open={openDetail}
-        onCancel={() => setOpenDetail(false)}
+        open={visibleDetail}
+        onCancel={() => setVisibleDetail(false)}
         productId={selectedRowKeys.length > 0 ? selectedRowKeys[0] : null}
       />
-
+      <Drawer
+        width={400}
+        title="Add new product"
+        placement="right"
+        onClose={handleOnCancelAdd}
+        open={visibleAdd}
+      >
+        <Row className="custom-row">
+          <Tabs defaultActiveKey="1" size="large" items={listTabs} />
+        </Row>
+        <Row className="custom-row-button" style={{ marginTop: '10px' }}>
+          <Button className="add-button" onClick={handleAddProduct}>
+            Add
+          </Button>
+          <Button className="search-button" onClick={handleOnCancelAdd}>
+            Cancel
+          </Button>
+        </Row>
+      </Drawer>
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col span={24} md={24} className="mb-24">
@@ -430,20 +397,32 @@ function Products() {
                   <Button className="search-button">Search</Button>
                 </Col>
                 <Col>
-                  <Button className="add-button">Add</Button>
+                  <Button
+                    className="search-button"
+                    onClick={handleDetailProduct}
+                  >
+                    Detail
+                  </Button>
+                </Col>
+                <Col>
+                  <Button className="add-button" onClick={showAdd}>
+                    Add
+                  </Button>
                 </Col>
                 <Col>
                   <Button className="add-button">Edit</Button>
                 </Col>
                 <Col>
-                  <Button className="delete-button">Delete</Button>
+                  <Button className="delete-button" onClick={onClickBtnDelete}>
+                    Delete
+                  </Button>
                 </Col>
               </Row>
             </Card>
           </Col>
         </Row>
         <Row gutter={[24, 0]}>
-          <Col span={24} md={16} className="mb-24">
+          <Col span={24} md={24} className="mb-24">
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
@@ -453,27 +432,11 @@ function Products() {
                 <Table
                   rowSelection={rowSelection}
                   columns={columns}
-                  dataSource={[]}
+                  dataSource={dataTable}
                   pagination={true}
                   className="ant-border-space"
                 />
               </div>
-            </Card>
-          </Col>
-          <Col span={24} md={8} className="mb-24">
-            <Card
-              bordered={true}
-              className="criclebox tablespace mb-24"
-              title="Create new product"
-              style={{ height: 'fix-content' }}
-            >
-              <Row className="custom-row">
-                <Tabs defaultActiveKey="1" size="large" items={listTabs} />
-              </Row>
-              <Row className="custom-row-button" style={{ marginTop: '10px' }}>
-                <Button className="add-button">Add</Button>
-                <Button className="search-button">Cancel</Button>
-              </Row>
             </Card>
           </Col>
         </Row>

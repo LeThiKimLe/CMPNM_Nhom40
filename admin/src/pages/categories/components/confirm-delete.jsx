@@ -1,8 +1,8 @@
-import { Modal, Result, Button, Spin } from 'antd';
+import { Modal, Result, Button, Row } from 'antd';
 import React from 'react';
 
 const ConfirmDeleteCategories = (props) => {
-  const { open, handleDelete, loading, onCancel, title } = props;
+  const { open, handleDelete, onCancel, title } = props;
   return (
     <div
       style={{
@@ -18,34 +18,19 @@ const ConfirmDeleteCategories = (props) => {
         onCancel={onCancel}
         width={500}
       >
-        <Result status="warning" title="Bạn có chắc chăn muốn xóa không!" />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingBottom: '20px',
-          }}
-        >
-          {loading ? <Spin /> : null}
-        </div>
-        <Button
-          onClick={handleDelete}
-          style={{
-            background: '#40E0D0',
-            color: 'white',
-            width: '30%',
-            marginRight: '10px',
-          }}
-        >
-          Xóa
-        </Button>
-        <Button
-          onClick={onCancel}
-          style={{ background: '#FF6347', color: 'white', width: '30%' }}
-        >
-          Hủy
-        </Button>
+        <Result
+          status="warning"
+          title="Are you sure you want to delete it!"
+          style={{ fontWeight: '600' }}
+        />
+        <Row className="custom-row-button" style={{ marginTop: '10px' }}>
+          <Button className="delete-button" onClick={handleDelete}>
+            Delete
+          </Button>
+          <Button className="search-button" onClick={onCancel}>
+            Cancel
+          </Button>
+        </Row>
       </Modal>
     </div>
   );

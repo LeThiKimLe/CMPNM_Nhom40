@@ -360,52 +360,81 @@ const getAllData = async (req, res) => {
   try {
     const listCategory = await Category.find({}).lean().exec();
     const listBanner = await Banner.find({}).lean().exec();
-
-    let listProduct = await Promise.all(
-      listCategory.map(async (category) => {
-        const { _id, slug, name } = category;
-
-        const products = await Product.aggregate([
-          {
-            $match: {
-              category: _id,
+    const products = await Product.aggregate([
+      {
+        $project: {
+          category_path: { $slice: ["$category_path", -1] },
+          name: 1,
+          attribute: 1,
+          slug: 1,
+          regularPrice: 1,
+          sale: 1,
+          salePrice: 1,
+          "detailsProduct.screen": 1,
+          "productPictures": 1,
+        },
+      },
+      {
+        $unwind: "$category_path",
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category_path",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $group: {
+          _id: "$category._id",
+          products: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          category: "$_id",
+          product: "$products",
+        },
+      },
+      {
+        $group: {
+          _id: "$category",
+          products: { $push: "$product" },
+          attributes: { $addToSet: "$product.attribute" },
+        },
+      },
+      {
+        $lookup: {
+          from: "attributes",
+          localField: "attributes",
+          foreignField: "_id",
+          as: "resolvedAttributes",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          products: 1,
+          attributes: {
+            $map: {
+              input: "$resolvedAttributes",
+              as: "attribute",
+              in: "$$attribute.code",
             },
           },
-          {
-            $group: {
-              _id: {
-                ram: '$detailsProduct.ram',
-                storage: '$detailsProduct.storage',
-              },
-              colors: {
-                $push: '$color',
-              },
-              products: {
-                $push: {
-                  _id: '$_id',
-                  name: '$name',
-                  slug: '$slug',
-                  regularPrice: '$regularPrice',
-                  salePrice: '$salePrice',
-                  productPictures: '$productPictures',
-                  category: '$category',
-                  detailsProduct: '$detailsProduct',
-                  sale: '$sale',
-                },
-              },
-            },
-          },
-        ]);
+          // Include other fields here
+        },
+      },
+    ]);
 
-        if (products.length > 0) {
-          return { category: { _id, name, slug }, products };
-        }
-        return null;
-      })
-    );
-    const products = listProduct.filter(Boolean);
-
-    Response(res, {
+    return Response(res, {
       list: [listCategory, products, listBanner],
     });
   } catch (error) {

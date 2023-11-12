@@ -1,24 +1,9 @@
-import { Col, List, Row, Typography } from 'antd';
+import { Col, Row } from 'antd';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
 import { formatThousand } from '../../../../utils';
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
-];
+
 const DetailInfo = (props) => {
   const { info } = props;
-  const { categories } = useSelector((state) => state.category);
   const {
     color,
     createdAt,
@@ -29,23 +14,9 @@ const DetailInfo = (props) => {
     salePrice,
     regularPrice,
     stock,
-    category,
+    category_path,
   } = info;
 
-  const searchColorByName = (colorValue) => {
-    const color = colorList.find((item) => item.value === colorValue);
-
-    return color ? color.name : null;
-  };
-  const getCategoryById = (id) => {
-    let name;
-    categories.map((cat) => {
-      if (cat._id === id) {
-        name = cat.name;
-      }
-    });
-    return name;
-  };
   const listData = [
     {
       name: 'Tên',
@@ -53,11 +24,11 @@ const DetailInfo = (props) => {
     },
     {
       name: 'Thương hiệu',
-      value: category && getCategoryById(category),
+      value: category_path[2].name,
     },
     {
       name: 'Màu sắc',
-      value: color && searchColorByName(color),
+      value: color.value,
     },
     {
       name: 'Giá gốc',

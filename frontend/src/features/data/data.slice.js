@@ -30,6 +30,7 @@ const dataSlice = createSlice({
         state.categories = value.list[0];
         localStorage.setItem('categories', JSON.stringify(value.list[0]));
         state.products = action.payload.list[1];
+        console.log("products", action.payload.list[1]);
         state.banners = action.payload.list[2];
         state.loading = false;
       })
