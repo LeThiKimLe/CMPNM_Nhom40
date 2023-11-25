@@ -7,6 +7,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import OrderListContent from './order-tab-custom.jsx';
+import MDBox from '../../components/MDBox/index.js';
 const theme = createTheme({
   palette: {
     background: {
@@ -27,7 +28,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ paddingTop: '10px' }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -68,23 +69,78 @@ export default function SimpleTabs(props) {
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.root} style={{ paddingTop: '0px' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <MDBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={indexSelected}
             onChange={handleChange}
             aria-label="basic tabs example"
             variant="fullWidth"
-            sx={{ fontSize: '16px', fontWeight: 'bold' }}
           >
-            <Tab label="Tất cả" {...a11yProps(0)} />
-            <Tab label="Chờ xác nhận" {...a11yProps(1)} />
-            <Tab label="Đã đóng gói" {...a11yProps(2)} />
-            <Tab label="Đang giao" {...a11yProps(3)} />
-            <Tab label="Hoàn thành" {...a11yProps(4)} />
-            <Tab label="Đã hủy" {...a11yProps(5)} />
-            <Tab label="Hoàn tiền" {...a11yProps(6)} />
+            <Tab
+              label="All"
+              {...a11yProps(0)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Pending"
+              {...a11yProps(1)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Packed"
+              {...a11yProps(2)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Delivery"
+              {...a11yProps(3)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Completed"
+              {...a11yProps(4)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Cancelled"
+              {...a11yProps(5)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
+            <Tab
+              label="Refund"
+              {...a11yProps(6)}
+              sx={{
+                textTransform: 'initial !important',
+                fontSize: '16px',
+                fontWeight: '600',
+              }}
+            />
           </Tabs>
-        </Box>
+        </MDBox>
         <TabPanel value={indexSelected} index={0} sx={{ paddingTop: '0px' }}>
           <OrderListContent orderList={orderList} type="all" />
         </TabPanel>

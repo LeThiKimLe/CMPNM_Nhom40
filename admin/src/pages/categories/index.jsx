@@ -70,6 +70,7 @@ function ListCategories() {
   const [fileList, setFileList] = useState([]);
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState('');
+  const [formAdd] = Form.useForm();
 
   const handleCategoryParent = (value) => {
     setParentId(value);
@@ -103,7 +104,8 @@ function ListCategories() {
     onChange: onSelectChange,
   };
   // todo create Category
-  const handleAddCategory = async () => {
+  const handleAddCategory = async (values) => {
+    const { name, parentId } = values;
     let categoryData = {
       name,
     };
@@ -280,15 +282,7 @@ function ListCategories() {
               className="criclebox tablespace mb-24"
               title="Create new category"
             >
-              <Form
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row', // Set the direction to row
-                  alignItems: 'center', // Center elements vertically
-                  margin: '8px',
-                  justifyContent: 'flex-start',
-                }}
-              >
+              <Form form={formAdd} onFinish={handleAddCategory}>
                 <Form.Item
                   name="name"
                   className="input-product"
@@ -302,7 +296,7 @@ function ListCategories() {
                   <Input placeholder="category name" />
                 </Form.Item>
                 <Form.Item
-                  name="category"
+                  name="parentId"
                   className="custom-selector"
                   rules={[
                     {
@@ -333,15 +327,7 @@ function ListCategories() {
                       : null}
                   </Select>
                 </Form.Item>
-                <Form.Item
-                  name="image"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input image category!',
-                    },
-                  ]}
-                >
+                <Form.Item name="image">
                   <Upload
                     beforeUpload={() => {
                       return false;
@@ -355,13 +341,15 @@ function ListCategories() {
                     <PlusOutlined />
                   </Upload>
                 </Form.Item>
+                <Form.Item>
+                  <Row className="custom-row-button">
+                    <Button className="add-button" htmlType="submit">
+                      Add
+                    </Button>
+                    <Button className="search-button">Cancel</Button>
+                  </Row>
+                </Form.Item>
               </Form>
-              <Row className="custom-row-button">
-                <Button className="add-button" onClick={handleAddCategory}>
-                  Add
-                </Button>
-                <Button className="search-button">Cancel</Button>
-              </Row>
             </Card>
           </Col>
         </Row>

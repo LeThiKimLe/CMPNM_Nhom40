@@ -52,13 +52,13 @@ function Breadcrumbs({ title, url, light }) {
               alignItems: 'center',
               paddingLeft: '0px',
               paddingRight: '10px',
-              color: '#5b5b5b',
-              fontWeight: '500',
-              fontSize: '0.875rem',
+              color: '#323232',
+              fontWeight: '700',
+              fontSize: '16.25px',
               textTransform: 'initial !important',
             }}
           >
-            Điện thoại
+            Phone
           </MDButton>
         </Link>
         <Link to={`/products/${url}`}>
@@ -71,11 +71,11 @@ function Breadcrumbs({ title, url, light }) {
               display: 'flex',
               justifyContent: 'flex-start',
               alignItems: 'center',
-              paddingLeft: '10px',
+              paddingLeft: '0px',
               paddingRight: '10px',
-              color: '#111111',
-              fontWeight: '500',
-              fontSize: '0.875rem',
+              color: '#323232',
+              fontWeight: '700',
+              fontSize: '16.25px',
               textTransform: 'initial !important',
             }}
           >

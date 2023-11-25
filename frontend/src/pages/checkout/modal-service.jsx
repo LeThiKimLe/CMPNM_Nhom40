@@ -60,7 +60,7 @@ const ServiceModal = ({
       const freeShipPrice = ~~((percent * shipFee) / 100);
       setFreeShip(freeShipPrice);
       setTotalAmount(shipFee + totalPrice - freeShipPrice);
-      setEstimatedDeliveryDate(`Nhận hàng vào ${fromTime} - ${toTime}`);
+      setEstimatedDeliveryDate(`Delivery on ${fromTime} - ${toTime}`);
       setOpen(false);
     }
   };
@@ -78,7 +78,7 @@ const ServiceModal = ({
       maxWidth="md"
       sx={{ '& .MuiDialog-paper': { width: '100%', maxHeight: 'none' } }}
     >
-      <DialogTitle>Chọn phương thức vận chuyển</DialogTitle>
+      <DialogTitle>Select shipping method</DialogTitle>
       <DialogContent>
         {loading ? (
           <MDBox
@@ -144,7 +144,7 @@ const ServiceModal = ({
                                 }}
                                 variant="h4"
                               >
-                                {item.short_name}
+                                E-COMMERCE DELIVERY
                               </MDTypography>
                               <MDTypography
                                 color="dark"
@@ -157,7 +157,7 @@ const ServiceModal = ({
                               color="dark"
                               sx={{ fontSize: '12px', fontWeight: '400' }}
                             >
-                              {`Nhận hàng vào ${item.fromTime} - ${item.toTime}`}
+                              {`Delivery on ${item.fromTime} - ${item.toTime}`}
                             </MDTypography>
                           </Stack>
                           {serviceIdSelected === item.service_id ? (
@@ -189,7 +189,7 @@ const ServiceModal = ({
                 onClick={handleClose}
                 style={{ marginRight: '8px', padding: '10px' }}
               >
-                Quay lại
+                Back
               </MDButton>
               <MDButton
                 size="medium"
@@ -202,7 +202,7 @@ const ServiceModal = ({
                 variant="contained"
                 onClick={handleSetService}
               >
-                Hoàn thành
+                Finish
               </MDButton>
             </div>
           </>

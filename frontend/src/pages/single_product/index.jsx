@@ -67,15 +67,15 @@ function Item(props) {
   );
 }
 const listTitle = [
-  'Màn hình',
-  'Hệ điều hành',
-  'Camera sau',
-  'Camera trước',
-  'Chip',
+  'Screen',
+  'Operating system',
+  'Rear camera',
+  'Front camera',
+  'Chips',
   'RAM',
-  'Dung lượng lưu trữ',
+  'Storage capacity',
   'SIM',
-  'Pin, Sạc',
+  'Rechargeable batteries',
 ];
 const SingleProduct = () => {
   const location = useLocation();
@@ -97,7 +97,7 @@ const SingleProduct = () => {
   const productGroup = location.state?.productGroup;
 
   const category = location.pathname.split('/')[2];
-  const [loading, setLoading] = useState(false);
+  console.log('category', category);
   // init state
   const [ramSelected, setRamSelected] = useState(ram);
   const [storageSelected, setStorageSelected] = useState(storage);
@@ -118,9 +118,6 @@ const SingleProduct = () => {
   const handleToggle = () => {
     setOpenDescription(!openDescription);
   };
-
-  //
-
   const handleClickImage = (id, e) => {
     e.preventDefault();
     setProductPictureIndex(id);
@@ -137,7 +134,7 @@ const SingleProduct = () => {
         .unwrap()
         .then(() => {
           notification.success({
-            message: 'Đã thêm sản phẩm vào giỏ hàng!',
+            message: 'Product added to cart!',
             placement: 'top',
           });
           dispatch(cartThunk.getAllItemsAPI());
@@ -148,13 +145,6 @@ const SingleProduct = () => {
       );
     }
   };
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }, []);
-
   //* useEffect handle init page
 
   useEffect(() => {
@@ -228,7 +218,7 @@ const SingleProduct = () => {
       width="100%"
     >
       <Container>
-        {!loading && productSelected ? (
+        {productSelected ? (
           <>
             <Grid container justifyContent="flex-start" alignItems="flex-start">
               <Breadcrumbs title={`Điện thoại ${name}`} url={id} />
@@ -296,7 +286,7 @@ const SingleProduct = () => {
                       color: '#111',
                     }}
                   >
-                    Thông tin sản phẩm
+                    Product information
                   </MDTypography>
                   <MDBox variant="contained">
                     {productSelected ? (
@@ -320,7 +310,7 @@ const SingleProduct = () => {
                         onClick={handleClose}
                       >
                         <DialogTitle fullScreen={true} fullWidth={true}>
-                          Thông tin sản phẩm
+                          Product information
                         </DialogTitle>
                         {productSelected ? (
                           <div

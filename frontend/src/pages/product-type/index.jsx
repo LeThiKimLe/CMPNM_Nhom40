@@ -5,11 +5,15 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Container,
   Stack,
-  Divider,
+  Button,
   CircularProgress,
   Dialog,
   DialogTitle,
   TextField,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import { notification } from 'antd';
 import _ from 'lodash';
@@ -31,56 +35,30 @@ import cartThunk from '../../features/cart/cart.service';
 import DetailProductItem from './detai-item';
 import ReviewComponent from './review.jsx';
 import Slider from 'react-slick';
-import ProductCard from '../../components/ProductItem';
-function Item(props) {
-  const { sx, ...other } = props;
-  return (
-    <MDBox
-      shadow="lg"
-      sx={{
-        bgcolor: (theme) =>
-          theme.palette.mode === 'dark' ? '#101010' : '#fff',
-        color: (theme) =>
-          theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
-        p: 1,
-        marginRight: '8px',
-        fontSize: '0.875rem',
-        fontWeight: '700',
-        maxWidth: '250px',
-        minWidth: '240px',
-        marginBottom: '8px',
-        minHeight: '495px',
-        borderRadius: '16px',
-        paddingTop: '16px',
-        ...sx,
-      }}
-      {...other}
-    />
-  );
-}
+
 const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
+  { name: 'Red', value: 'Red' },
+  { name: 'Orange', value: 'Orange' },
+  { name: 'Yellow', value: 'Yellow' },
+  { name: 'Green', value: 'Green' },
+  { name: 'Blue', value: 'Blue' },
+  { name: 'Purple', value: 'Purple' },
+  { name: 'Pink', value: 'Pink' },
+  { name: 'Brown', value: 'Brown' },
+  { name: 'Gray', value: 'Gray' },
+  { name: 'Black', value: 'Black' },
+  { name: 'White', value: 'White' },
 ];
 const listTitle = [
-  'Màn hình',
-  'Hệ điều hành',
-  'Camera sau',
-  'Camera trước',
-  'Chip',
+  'Screen',
+  'Operating system',
+  'Rear camera',
+  'Front camera',
+  'Chips',
   'RAM',
-  'Dung lượng lưu trữ',
+  'Storage capacity',
   'SIM',
-  'Pin, Sạc',
+  'Rechargeable batteries',
 ];
 function getOptions(products) {
   let option = products.reduce((acc, curr) => {
@@ -122,7 +100,7 @@ const ProductPage = () => {
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const data = useSelector((state) => state.data);
 
-  const { products } = data;
+  // const { products } = data;
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const { categorySlug } = useParams();
@@ -136,7 +114,6 @@ const ProductPage = () => {
   const [storageSelected, setStorageSelected] = useState(storage);
   const [options, setOptions] = useState([]);
   const [optionIndex, setOptionIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [colorSelected, setColorSelected] = useState('');
   const [colorIndex, setColorIndex] = useState(-1);
   const [colorListProduct, setColorListProduct] = useState([]);
@@ -162,7 +139,7 @@ const ProductPage = () => {
   const onChangeInput = (event) => {
     const inputValue = event.target.value;
     if (inputValue === '' || inputValue <= 0) {
-      setAmount(1); // hoặc setAmount(Math.max(1, inputValue)) nếu bạn muốn giữ lại giá trị nhập vào nếu nó lớn hơn 1
+      setAmount(1);
     } else {
       setAmount(inputValue);
     }
@@ -178,14 +155,14 @@ const ProductPage = () => {
         .unwrap()
         .then(() => {
           notification.success({
-            message: 'Đã thêm sản phẩm vào giỏ hàng!',
+            message: 'Product added to cart!',
             placement: 'top',
           });
           dispatch(cartThunk.getAllItemsAPI());
         })
         .catch(() => {
           notification.error({
-            message: 'Sản phẩm vượt quá số lượng trong kho!',
+            message: 'Product exceeds quantity in stock!',
             placement: 'top',
           });
         });
@@ -201,8 +178,8 @@ const ProductPage = () => {
       const filteredProducts = _.find(productList, (product) => {
         return (
           product.color === item &&
-          product.detailsProduct.ram === ramSelected &&
-          product.detailsProduct.storage === storageSelected
+          product.ram === ramSelected &&
+          product.storage === storageSelected
         );
       });
       setProductSelected(filteredProducts);
@@ -227,11 +204,12 @@ const ProductPage = () => {
       const { ram, storage } = dataOption[index];
       setRamSelected(ram);
       setStorageSelected(storage);
-
+      console.log(index, ram, storage);
+      console.log('data product', dataProducts);
       dataProducts.map((item, index) => {
         if (item._id.ram === ram && item._id.storage === storage) {
           setColorListProduct(item.colors);
-          setProductList(item.products);
+          setProductList(item.items);
           let indexColor = -1;
           const colorIndexExits = item.colors.indexOf(colorSelected);
           if (colorIndexExits === -1) {
@@ -241,8 +219,8 @@ const ProductPage = () => {
           }
 
           setColorSelected(item.colors[indexColor]);
-          setProductSelected(item.products[indexColor]);
-          const productImage = item.products[indexColor].productPictures.filter(
+          setProductSelected(item.items[indexColor]);
+          const productImage = item.items[indexColor].productPictures.filter(
             (item, index) => index !== 0
           );
           setProductImages(productImage);
@@ -259,22 +237,22 @@ const ProductPage = () => {
       .then((value) => {
         console.log(value);
         const { products } = value;
-
         setDataProducts(products);
         const options = products.map((item) => item._id);
-        console.log(options);
         setDataOption(options);
         const optionsCustom = getOptions(options);
         console.log(optionsCustom);
         setOptions(optionsCustom);
         let result = -1;
+
         products.map((item, index) => {
           if (item._id.ram === ram && item._id.storage === storage) {
+            console.log(item);
             setColorListProduct(item.colors);
-            setProductList(item.products);
-            setProductSelected(item.products[0]);
+            setProductList(item.items);
+            setProductSelected(item.items[0]);
 
-            const productImage = item.products[0].productPictures.filter(
+            const productImage = item.items[0].productPictures.filter(
               (item, index) => index !== 0
             );
             setProductImages(productImage);
@@ -284,14 +262,13 @@ const ProductPage = () => {
           }
         });
         setOptionIndex(result);
-        setLoading(false);
       });
   }, [dispatch, categorySlug, ram, storage]);
 
   return (
     <MDBox
       color="#000000"
-      bgColor="Light"
+      bgColor="#fff"
       variant="contained"
       borderRadius="none"
       opacity={1}
@@ -302,394 +279,473 @@ const ProductPage = () => {
       width="100%"
     >
       <Container>
-        {!loading && productSelected ? (
+        {productSelected ? (
           <>
-            <Grid container justifyContent="flex-start" alignItems="flex-start">
-              <Breadcrumbs
-                title={`Điện thoại ${categoryOneName.toUpperCase()}`}
-              />
-            </Grid>
-            <Grid>
-              <MDTypography sx={{ color: '#111111' }}>
-                {`${productSelected.name} ${ramSelected}`}
-              </MDTypography>
-            </Grid>
-            <Divider flexItem />
-            <Grid
-              container
-              spacing={2}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              item
-              xs={12}
+            <Paper
+              elevation={3}
+              sx={{
+                margin: '10px 0px',
+                padding: '0px 9.75px',
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                color: '#808191',
+              }}
             >
-              {/* Hình ảnh sản phẩm và mô tả */}
               <Grid
-                item
                 container
-                xs={7}
-                display="flex"
+                xs={12}
+                item
                 justifyContent="flex-start"
                 alignItems="flex-start"
-                spacing={2}
+                sx={{ paddingLeft: '10px' }}
               >
-                <Stack
-                  direction="column"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                  spacing={2}
-                >
-                  <MDBox variant="contained" sx={{ marginRight: '10px' }}>
-                    <div className="product__detail-content">
-                      <div className="product__detail-wrap-img">
-                        <img
-                          src={productImages[productPictureIndex]}
-                          alt={productSelected.name}
-                          className="detail__img-big"
-                        />
-                      </div>
-                      <div className="product__detail-list-img">
-                        {productImages.map((item, index) => (
-                          <div className="detail__list-img-small" key={index}>
-                            <a href="" className="link__detail-img-small">
-                              <img
-                                onClick={(e) => handleClickImage(index, e)}
-                                src={item}
-                                className="detail__img-small"
-                                alt="tiep"
-                              />
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </MDBox>
+                {' '}
+                <Breadcrumbs title={`Phone`} />
+              </Grid>
+            </Paper>
+            <MDBox variant="contained">
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: '16px',
+                  marginBottom: '10px',
+                  borderRadius: '8px',
+                  boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                  color: '#808191',
+                }}
+              >
+                <Grid>
                   <MDTypography
                     sx={{
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                      color: '#111',
+                      paddingRight: '10px',
+                      color: '#323232',
+                      fontWeight: '700',
+                      fontSize: '16.25px',
+                      marginBottom: '20px',
                     }}
                   >
-                    Thông tin sản phẩm
+                    {`${productSelected.name} ${ramSelected}`}
                   </MDTypography>
-                  <MDBox variant="contained">
-                    {productSelected ? (
-                      <div
-                        className="content maxHeight gradient"
-                        dangerouslySetInnerHTML={{
-                          __html: productSelected.description.slice(0, 1000),
-                        }}
-                      />
-                    ) : null}
+                </Grid>
+                <Grid
+                  container
+                  spacing={2}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  sx={{ padding: '10px' }}
+                >
+                  {/* Hình ảnh sản phẩm và mô tả */}
+                  <Grid
+                    item
+                    container
+                    xs={7}
+                    display="flex"
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                    spacing={2}
+                  >
                     <Stack
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ marginBottom: '20px' }}
+                      direction="column"
+                      justifyContent="flex-start"
+                      alignItems="flex-start"
+                      spacing={2}
                     >
-                      <MDBox display="flex" justifyContent="center">
-                        <MDButton
-                          size="medium"
-                          color="dark"
-                          variant="outlined"
-                          sx={{
-                            textTransform: 'initial !important',
-                            fontWeight: '500',
-                            width: '300px',
-                            textAlign: 'center',
-                          }}
-                          onClick={handleToggle}
-                        >
-                          Xem thêm
-                        </MDButton>
+                      <MDBox variant="contained" sx={{ marginRight: '10px' }}>
+                        <div className="product__detail-content">
+                          <div className="product__detail-wrap-img">
+                            <img
+                              src={productImages[productPictureIndex]}
+                              alt={productSelected.name}
+                              className="detail__img-big"
+                            />
+                          </div>
+                          <div className="product__detail-list-img">
+                            {productImages.map((item, index) => (
+                              <div
+                                className="detail__list-img-small"
+                                key={index}
+                              >
+                                <a href="" className="link__detail-img-small">
+                                  <img
+                                    onClick={(e) => handleClickImage(index, e)}
+                                    src={item}
+                                    className="detail__img-small"
+                                    alt="tiep"
+                                  />
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </MDBox>
-
-                      <Dialog
-                        maxWidth="xl"
-                        open={openDescription}
-                        onClick={handleClose}
+                      <MDTypography
+                        sx={{
+                          fontSize: 20,
+                          fontWeight: 'bold',
+                          color: '#111',
+                        }}
                       >
-                        <DialogTitle fullWidth={true}>
-                          Thông tin sản phẩm
-                        </DialogTitle>
+                        Product information
+                      </MDTypography>
+                      <MDBox variant="contained">
                         {productSelected ? (
                           <div
-                            style={{ padding: '24px' }}
+                            className="content maxHeight gradient"
                             dangerouslySetInnerHTML={{
-                              __html: productSelected.description,
+                              __html: productSelected.description.slice(
+                                0,
+                                1000
+                              ),
                             }}
                           />
                         ) : null}
-                      </Dialog>
-                    </Stack>
-                  </MDBox>
-                  <ReviewComponent product={productSelected} />
-                </Stack>
-              </Grid>
-              {/* thông tin sản phẩm */}
-              <Grid
-                item
-                xs={5}
-                justifyContent="flex-start"
-                alignItems="flex-start"
-              >
-                <Stack
-                  direction="column"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                  spacing={2}
-                >
-                  <MDBox variant="contained">
-                    {options
-                      ? options.map((item, index) => {
-                          return (
+                        <Stack
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          sx={{ marginBottom: '20px' }}
+                        >
+                          <MDBox display="flex" justifyContent="center">
                             <MDButton
-                              key={index}
-                              variant="contained"
-                              size="small"
+                              size="medium"
+                              color="dark"
+                              variant="outlined"
                               sx={{
-                                fontSize: '0.75rem',
+                                textTransform: 'initial !important',
                                 fontWeight: '500',
-                                padding: '2px 10px',
-                                border:
-                                  optionIndex === index
-                                    ? '2px solid #2F4F4F'
-                                    : '',
-                                borderRadius: '0.3rem',
-                                marginRight: '5px',
+                                width: '300px',
+                                textAlign: 'center',
                               }}
-                              onClick={() => handleOptionClick(index)}
+                              onClick={handleToggle}
                             >
-                              {item}
+                              Show more
                             </MDButton>
-                          );
-                        })
-                      : null}
-                  </MDBox>
-                  <MDBox variant="contained">
-                    {colorListProduct
-                      ? colorListProduct.map((item, index) => {
-                          for (let color of colorList) {
-                            if (color.value === item) {
+                          </MDBox>
+
+                          <Dialog
+                            maxWidth="xl"
+                            open={openDescription}
+                            onClick={handleClose}
+                          >
+                            <DialogTitle fullWidth={true}>
+                              Product information
+                            </DialogTitle>
+                            {productSelected ? (
+                              <div
+                                style={{
+                                  padding: '24px',
+                                  fontSize: '14px',
+                                  fontWeight: '500',
+                                }}
+                                dangerouslySetInnerHTML={{
+                                  __html: productSelected.description,
+                                }}
+                              />
+                            ) : null}
+                          </Dialog>
+                        </Stack>
+                      </MDBox>
+                      <ReviewComponent product={productSelected} />
+                    </Stack>
+                  </Grid>
+                  {/* thông tin sản phẩm */}
+                  <Grid
+                    sx={{ paddingLeft: '30px' }}
+                    item
+                    xs={5}
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <Stack
+                      direction="column"
+                      justifyContent="flex-start"
+                      alignItems="flex-start"
+                      spacing={2}
+                    >
+                      <MDBox variant="contained">
+                        {options
+                          ? options.map((item, index) => {
                               return (
                                 <MDButton
                                   key={index}
                                   variant="contained"
                                   size="small"
-                                  shadow="lg"
                                   sx={{
-                                    fontSize: '0.75rem',
-                                    fontWeight: '500',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    padding: '2px 3px',
                                     border:
-                                      colorSelected === item
-                                        ? '2px solid #2F4F4F'
+                                      optionIndex === index
+                                        ? '1px solid #a6b3f6'
                                         : '',
-                                    borderRadius: '0.3rem',
-                                    marginRight: '5px',
-                                    marginBottom: '10px',
+                                    borderRadius: '8px',
+                                    marginRight: '3px',
+                                    marginBottom: '3px',
+                                    width: '30px',
+                                    color: '#4d69fa',
+                                    backgroundColor: '#edf0ff',
+                                    textTransform: 'initial !important',
+                                    boxShadow: '#dbd9d9 5px 5px 5px 5px',
                                   }}
-                                  onClick={() => handleColorClick(item)}
+                                  color="light"
+                                  onClick={() => handleOptionClick(index)}
                                 >
-                                  {color.name}
+                                  {item}
                                 </MDButton>
                               );
+                            })
+                          : null}
+                      </MDBox>
+                      <MDBox variant="contained">
+                        {colorListProduct
+                          ? colorListProduct.map((item, index) => {
+                              for (let color of colorList) {
+                                if (color.value === item) {
+                                  return (
+                                    <MDButton
+                                      key={index}
+                                      variant="contained"
+                                      size="small"
+                                      sx={{
+                                        fontSize: '13px',
+                                        fontWeight: '600',
+                                        padding: '2px 3px',
+                                        border:
+                                          colorIndex === index
+                                            ? '1px solid #9fe2d8'
+                                            : '',
+                                        marginRight: '3px',
+                                        marginBottom: '3px',
+                                        width: '30px',
+                                        color: '#46bcaa',
+                                        backgroundColor: '#edf8f7',
+                                        textTransform: 'initial !important',
+                                        borderRadius: '8px',
+                                        boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                                      }}
+                                      color="light"
+                                      onClick={() => handleColorClick(item)}
+                                    >
+                                      {color.name}
+                                    </MDButton>
+                                  );
+                                }
+                              }
+                            })
+                          : null}
+                      </MDBox>
+                      <MDBox
+                        display="flex"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                      >
+                        <MDTypography
+                          sx={{
+                            fontSize: '18px',
+                            fontWeight: '700',
+                            color: '#323232',
+                          }}
+                        >
+                          {productSelected.salePrice
+                            ? `${formatThousand(
+                                Number(productSelected?.salePrice) * amount
+                              )}đ *`
+                            : null}
+                        </MDTypography>
+                        <span
+                          style={{
+                            marginLeft: '3px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#696969',
+                            textDecoration: 'line-through',
+                          }}
+                        >
+                          {productSelected.regularPrice
+                            ? `${formatThousand(
+                                Number(productSelected?.regularPrice) * amount
+                              )}đ`
+                            : null}
+                        </span>
+                        <span
+                          style={{
+                            marginLeft: '3px',
+                            fontSize: '1rem',
+                            fontWeight: '500',
+                            color: '#B00E18',
+                          }}
+                        >
+                          {productSelected.sale !== '0'
+                            ? `-${productSelected.sale}%`
+                            : null}
+                        </span>
+                      </MDBox>
+                      <MDBox
+                        display="flex"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                      >
+                        <span
+                          style={{
+                            marginLeft: '3px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#323232',
+                          }}
+                        >
+                          {productSelected.stock && productSelected.stock > 0
+                            ? `${productSelected.stock} products`
+                            : 'Out of stock'}
+                        </span>
+                      </MDBox>
+                      <MDBox
+                        display="flex"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                      >
+                        <MDButton
+                          variant="outlined"
+                          color="dark"
+                          sx={{
+                            minWidth: '20px',
+                            minHeight: '20px',
+                            borderRadius: '8px',
+                            border: '1px solid #e7eef8',
+                            marginRight: '5px',
+                            padding: '3px 3px',
+                            color: '#2F4F4F',
+                          }}
+                          onClick={() => {
+                            if (amount > 1) {
+                              setAmount(amount - 1);
+                            } else {
+                              return;
                             }
-                          }
-                        })
-                      : null}
-                  </MDBox>
-                  <MDBox
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
+                          }}
+                        >
+                          <RemoveIcon
+                            sx={{
+                              color: '#111111',
+                            }}
+                          />
+                        </MDButton>
+                        <TextField
+                          type="text"
+                          value={amount}
+                          onChange={onChangeInput}
+                          InputProps={{
+                            inputProps: {
+                              min: 1,
+                            },
+                            sx: {
+                              maxWidth: '50px',
+                              maxHeight: '24px',
+                              minWidth: '35px',
+                              borderRadius: '8px',
+                              padding: '1px 1px',
+                              border: '1px solid #e7eef8',
+                              color: '#2F4F4F',
+                              textAlign: 'center',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                            },
+                          }}
+                        />
+                        <MDButton
+                          variant="outlined"
+                          color="dark"
+                          sx={{
+                            minWidth: '20px',
+                            minHeight: '20px',
+                            borderRadius: '8px',
+                            marginLeft: '5px',
+                            border: '1px solid #e7eef8',
+                            padding: '3px 3px',
+                            color: '#2F4F4F',
+                          }}
+                          onClick={() => setAmount(amount + 1)}
+                        >
+                          <AddIcon
+                            sx={{
+                              color: '#111111',
+                            }}
+                          />
+                        </MDButton>
+                      </MDBox>
+
+                      <MDBox
+                        display="flex"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                      >
+                        <MDButton
+                          size="medium"
+                          color="light"
+                          sx={{
+                            textTransform: 'initial !important',
+                            fontWeight: '600',
+                            color: '#46bcaa',
+                            backgroundColor: '#edf8f7',
+                            borderRadius: '8px',
+                            boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                          }}
+                          onClick={handleAddItemToCart}
+                        >
+                          <ShoppingCartCheckoutIcon
+                            size="large"
+                            sx={{
+                              color: '#46bcaa',
+                            }}
+                          />
+                          &nbsp; Add to cart
+                        </MDButton>
+                      </MDBox>
+                    </Stack>
                     <MDTypography
                       sx={{
-                        fontSize: '20px',
-                        fontWeight: '500',
-                        color: '#B00E18',
-                        marginRight: '5px',
+                        color: '#111111',
+                        marginBottom: '16px',
+                        marginTop: '16px',
+                        fontWeight: '600',
                       }}
-                      textTransform="capitalize"
                     >
-                      {productSelected.salePrice
-                        ? `${formatThousand(
-                            Number(productSelected?.salePrice) * amount
-                          )}đ *`
-                        : null}
+                      Digital {productSelected.name}
                     </MDTypography>
-                    <span
-                      style={{
-                        marginLeft: '3px',
-                        fontSize: '1rem',
-                        fontWeight: '400',
-                        color: '#696969',
-                        textDecoration: 'line-through',
-                      }}
-                    >
-                      {productSelected.regularPrice
-                        ? `${formatThousand(
-                            Number(productSelected?.regularPrice) * amount
-                          )}đ`
-                        : null}
-                    </span>
-                    <span
-                      style={{
-                        marginLeft: '3px',
-                        fontSize: '1rem',
-                        fontWeight: '400',
-                        color: '#B00E18',
-                      }}
-                    >
-                      {productSelected.sale !== '0'
-                        ? `-${productSelected.sale}%`
-                        : null}
-                    </span>
-                  </MDBox>
-                  <MDBox
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <span
-                      style={{
-                        marginLeft: '3px',
-                        fontSize: '1rem',
-                        fontWeight: '400',
-                      }}
-                    >
-                      {productSelected.stock && productSelected.stock > 0
-                        ? `Còn ${productSelected.stock} sản phẩm`
-                        : 'Hết hàng'}
-                    </span>
-                  </MDBox>
-                  <MDBox
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <MDButton
-                      variant="outlined"
-                      color="dark"
-                      sx={{
-                        minWidth: '20px',
-                        minHeight: '20px',
-                        borderRadius: '0.3rem',
-                        border: '1px solid #2F4F4F',
-                        marginRight: '5px',
-                        padding: '3px 3px',
-                        color: '#2F4F4F',
-                      }}
-                      onClick={() => {
-                        if (amount > 1) {
-                          setAmount(amount - 1);
-                        } else {
-                          return;
-                        }
-                      }}
-                    >
-                      <RemoveIcon
+                    <MDBox maxWidth="460px" variant="contained">
+                      <Paper
+                        elevation={1}
                         sx={{
-                          color: '#111111',
+                          borderRadius: '8px',
+                          border: '1px solid #e0e0e0',
+                          boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                          padding: '10px',
                         }}
-                      />
-                    </MDButton>
-                    <TextField
-                      type="text"
-                      value={amount}
-                      onChange={onChangeInput}
-                      InputProps={{
-                        inputProps: {
-                          min: 1,
-                        },
-                        sx: {
-                          maxWidth: '50px',
-                          maxHeight: '24px',
-                          minWidth: '35px',
-                          borderRadius: '0.3rem',
-                          padding: '1px 1px',
-                          color: '#2F4F4F',
-                          textAlign: 'center',
-                          fontSize: '14px',
-                          fontWeight: '400',
-                        },
-                      }}
-                    />
-                    <MDButton
-                      variant="outlined"
-                      color="dark"
-                      sx={{
-                        minWidth: '20px',
-                        minHeight: '20px',
-                        borderRadius: '0.3rem',
-                        marginLeft: '5px',
-                        padding: '3px 3px',
-                        color: '#2F4F4F',
-                      }}
-                      onClick={() => setAmount(amount + 1)}
-                    >
-                      <AddIcon
-                        sx={{
-                          color: '#111111',
-                        }}
-                      />
-                    </MDButton>
-                  </MDBox>
-
-                  <MDBox
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <MDButton
-                      variant="contained"
-                      color="info"
-                      sx={{
-                        fontSize: '0.75rem',
-                        fontWeight: '400',
-                        padding: '2px 10px',
-                        marginRight: '5px',
-                      }}
-                      onClick={handleAddItemToCart}
-                    >
-                      <ShoppingCartCheckoutIcon size="large" color="white" />
-                      &nbsp; Thêm vào giỏ hàng
-                    </MDButton>
-                  </MDBox>
-                </Stack>
-                <MDTypography
-                  sx={{
-                    color: '#111111',
-                    marginBottom: '16px',
-                    marginTop: '16px',
-                  }}
-                >
-                  Cấu hình {productSelected.name}
-                </MDTypography>
-                <MDBox
-                  variant="contained"
-                  maxWidth="460px"
-                  sx={{ border: '8px' }}
-                >
-                  {productSelected
-                    ? Object.entries(productSelected.detailsProduct).map(
-                        (item, index) => {
-                          return (
-                            <DetailProductItem
-                              key={index}
-                              value={item[1]}
-                              title={listTitle[index]}
-                              color={index % 2 === 0 ? '#f5f5f5' : '#ffffff'}
-                            />
-                          );
-                        }
-                      )
-                    : null}
-                </MDBox>
-              </Grid>
-            </Grid>
+                      >
+                        {productSelected
+                          ? Object.entries(productSelected.detailsProduct).map(
+                              (item, index) => {
+                                return (
+                                  <DetailProductItem
+                                    key={index}
+                                    value={item[1]}
+                                    title={listTitle[index]}
+                                    color={
+                                      index % 2 === 0 ? '#f5f5f5' : '#ffffff'
+                                    }
+                                  />
+                                );
+                              }
+                            )
+                          : null}
+                      </Paper>
+                    </MDBox>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </MDBox>
 
             <MDBox sx={{ marginTop: '10px', marginBottom: '10px' }}>
               <MDTypography
@@ -700,10 +756,10 @@ const ProductPage = () => {
                   margin: '15px 0px',
                 }}
               >
-                Xem thêm điện thoại khác
+                See more phones
               </MDTypography>
               <Slider {...settings}>
-                {products.length > 0
+                {/* {products.length > 0
                   ? products.map((item, index) => {
                       if (index < 6) {
                         return (
@@ -716,7 +772,7 @@ const ProductPage = () => {
                         );
                       }
                     })
-                  : null}
+                  : null} */}
               </Slider>
             </MDBox>
           </>

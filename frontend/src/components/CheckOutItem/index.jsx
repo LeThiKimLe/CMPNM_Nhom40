@@ -7,25 +7,20 @@ import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import { formatThousand } from '../../utils/custom-price';
 import { getColorProduct } from '../../utils/custom-products';
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
-];
+
 const CheckOutItem = (props) => {
   const { product, keyIndex } = props;
-  const { ram, storage } = product.detailsProduct;
-  const { productPicture, name, salePrice, regularPrice, quantity } = product;
+  const {
+    productPicture,
+    name,
+    salePrice,
+    regularPrice,
+    quantity,
+    ram,
+    storage,
+    color,
+  } = product;
 
-  const colorName = getColorProduct(product, colorList);
   return (
     <Grid
       key={keyIndex}
@@ -49,8 +44,8 @@ const CheckOutItem = (props) => {
               display="block"
               sx={{
                 fontSize: '14px',
-                color: '#344767',
-                fontWeight: '500',
+                color: '#323232',
+                fontWeight: '600',
               }}
             >
               {name}
@@ -63,12 +58,12 @@ const CheckOutItem = (props) => {
         <Stack direction="row" spacing={1}>
           <MDTypography
             sx={{
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              color: '#344767',
+              fontSize: '13px',
+              color: '#323232',
+              fontWeight: '600',
             }}
           >
-            {ram} - {storage} - {colorName}
+            {ram} - {storage} - {color}
           </MDTypography>
         </Stack>
       </Grid>
@@ -76,16 +71,20 @@ const CheckOutItem = (props) => {
       <Grid xs={2}>
         <Stack direction="row" spacing={1}>
           <MDTypography
-            sx={{ fontSize: '0.875rem', fontWeight: '500', color: '#344767' }}
+            sx={{
+              color: '#323232',
+              fontWeight: '600',
+              fontSize: '14px',
+            }}
           >
             {formatThousand(Number(salePrice))}đ
           </MDTypography>
           <MDTypography
             sx={{
-              fontSize: '0.875rem',
-              fontWeight: '400',
+              color: '#323232',
+              fontWeight: '500',
               textDecoration: 'line-through',
-              color: '#344767',
+              fontSize: '13px',
             }}
           >
             {formatThousand(Number(regularPrice))}đ
@@ -97,9 +96,9 @@ const CheckOutItem = (props) => {
         {' '}
         <MDTypography
           sx={{
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            color: '#344767',
+            color: '#323232',
+            fontWeight: '600',
+            fontSize: '13px',
           }}
         >
           {quantity}
@@ -109,9 +108,9 @@ const CheckOutItem = (props) => {
         <Stack direction="row" spacing={1}>
           <MDTypography
             sx={{
-              color: '#344767',
-              fontSize: '0.875rem',
-              fontWeight: '500',
+              color: '#323232',
+              fontWeight: '600',
+              fontSize: '14px',
             }}
           >
             {formatThousand(Number(salePrice) * quantity)}đ

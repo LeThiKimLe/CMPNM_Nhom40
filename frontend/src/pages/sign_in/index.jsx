@@ -12,6 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import { InputBase } from '@mui/material';
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -39,12 +40,12 @@ import SideNavigation from '../../containers/side-navigation';
 function SignIn() {
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()
-      .required('Vui lòng nhập địa chỉ email!')
-      .email('Địa chỉ email không đúng!'),
+      .required('Please enter email address!')
+      .email('Incorrect email address!'),
     password: Yup.string()
-      .required('Vui lòng nhập mật khẩu!')
-      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
-      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+      .required('Please enter password!')
+      .min(6, 'Password must be at least 6 characters!')
+      .max(40, 'Password cannot be more than 40 characters!'),
   });
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -68,7 +69,7 @@ function SignIn() {
       .unwrap()
       .then((value) => {
         notification.success({
-          message: 'Đăng nhập thành công!',
+          message: 'Login successfully!',
           placement: 'top',
         });
         navigate(-1);
@@ -84,7 +85,7 @@ function SignIn() {
       width="100vw"
       height="100%"
       minHeight="100vh"
-      sx={{ overflowX: 'hidden' }}
+      sx={{ overflowX: 'hidden', backgroundColor: '#fff' }}
     >
       <MDBox position="absolute" width="100%" minHeight="100vh" />
       <Snackbar
@@ -109,13 +110,19 @@ function SignIn() {
           height="80%"
         >
           <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
-            <Card>
+            <Card
+              sx={{
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 10px 10px',
+              }}
+            >
               <MDBox
-                variant="gradient"
+                variant="contained"
                 sx={{
-                  backgroundColor: '#0F3460',
+                  backgroundColor: '#edf8f7',
+                  borderRadius: '8px',
+                  boxShadow: '#dbd9d9 5px 5px 10px 10px',
                 }}
-                borderRadius="lg"
                 mx={2}
                 mt={-3}
                 p={2}
@@ -123,12 +130,22 @@ function SignIn() {
                 textAlign="center"
               >
                 <MDTypography
-                  variant="h4"
-                  fontWeight="medium"
-                  color="white"
-                  mt={1}
+                  sx={{
+                    color: '#46bcaa',
+                    fontSize: '32px',
+                    fontWeight: '700',
+                  }}
                 >
-                  Đăng nhập
+                  Welcome,
+                </MDTypography>
+                <MDTypography
+                  sx={{
+                    color: '#46bcaa',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                  }}
+                >
+                  Sign in to continue!
                 </MDTypography>
                 <Grid
                   container
@@ -140,8 +157,9 @@ function SignIn() {
                     <MDTypography
                       component={MuiLink}
                       href="#"
-                      variant="body1"
-                      color="white"
+                      sx={{
+                        color: '#46bcaa',
+                      }}
                     >
                       <FacebookIcon color="inherit" />
                     </MDTypography>
@@ -150,8 +168,9 @@ function SignIn() {
                     <MDTypography
                       component={MuiLink}
                       href="#"
-                      variant="body1"
-                      color="white"
+                      sx={{
+                        color: '#46bcaa',
+                      }}
                     >
                       <GitHubIcon color="inherit" />
                     </MDTypography>
@@ -160,8 +179,9 @@ function SignIn() {
                     <MDTypography
                       component={MuiLink}
                       href="#"
-                      variant="body1"
-                      color="white"
+                      sx={{
+                        color: '#46bcaa',
+                      }}
                     >
                       <GoogleIcon color="inherit" />
                     </MDTypography>
@@ -171,7 +191,23 @@ function SignIn() {
               <MDBox pt={4} pb={3} px={3}>
                 <MDBox component="form" role="form">
                   <MDBox mb={2}>
-                    <MDInput
+                    <InputBase
+                      sx={{
+                        alignItems: 'center',
+                        backgroundColor: '#ffffff',
+                        borderRadius: '8px',
+                        boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                        color: '#808191',
+                        display: 'flex',
+                        fontFamily: 'Poppins',
+                        fontSize: '13px',
+                        fontWeight: 'medium',
+                        gridArea: 'auto',
+                        lineHeight: '19.5px',
+                        padding: '0px 9.75px',
+                        height: '45px',
+                      }}
+                      placeholder="Email"
                       required
                       id="email"
                       name="email"
@@ -183,14 +219,30 @@ function SignIn() {
                     />
                   </MDBox>
                   <MDBox mb={2}>
-                    <MDInput
+                    <InputBase
+                      sx={{
+                        alignItems: 'center',
+                        backgroundColor: '#ffffff',
+                        borderRadius: '8px',
+                        boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                        color: '#808191',
+                        display: 'flex',
+                        fontFamily: 'Poppins',
+                        fontSize: '13px',
+                        fontWeight: 'medium',
+                        gridArea: 'auto',
+                        lineHeight: '19.5px',
+                        padding: '0px 9.75px',
+                        height: '45px',
+                      }}
+                      placeholder="Password"
                       required
                       id="password"
                       name="password"
                       {...register('password')}
                       error={errors.password ? true : false}
                       type="password"
-                      label="Mật khẩu"
+                      label="Password"
                       fullWidth
                     />
                   </MDBox>
@@ -208,25 +260,28 @@ function SignIn() {
                   <MDBox mt={4} mb={1}>
                     <MDButton
                       variant="contained"
-                      color="dark"
                       fullWidth
+                      color="warning"
+                      sx={{
+                        color: '#1f2128',
+                        backgroundColor: '#ffcf52',
+                      }}
                       onClick={handleSubmit(onSubmit)}
                     >
-                      Đăng nhập
+                      Login
                     </MDButton>
                   </MDBox>
                   <MDBox mt={3} mb={1} textAlign="center">
-                    <MDTypography variant="button" color="text">
-                      Chưa có tài khoản?
+                    <MDTypography variant="button" sx={{ color: '#1f2128' }}>
+                      No account?
                       <MDTypography
                         component={Link}
                         to="/sign-up"
                         variant="button"
                         fontWeight="medium"
-                        color="dark"
-                        textGradient
+                        sx={{ color: '#1f2128' }}
                       >
-                        Đăng ký
+                        register
                       </MDTypography>
                     </MDTypography>
                   </MDBox>

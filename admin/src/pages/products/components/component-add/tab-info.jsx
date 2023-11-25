@@ -115,7 +115,16 @@ const TabInfo = (props) => {
           </Select>
         </Form.Item>
         {/* color */}
-        <Form.Item name="color" className="custom-selector">
+        <Form.Item
+          name="color"
+          className="custom-selector"
+          rules={[
+            {
+              required: true,
+              message: 'Please select color product!',
+            },
+          ]}
+        >
           <Select placeholder="color" size="large">
             {colors.map((color, index) => {
               return (
@@ -144,7 +153,7 @@ const TabInfo = (props) => {
           rules={[
             {
               required: true,
-              message: 'Please input image category!',
+              message: 'Please input image product!',
             },
           ]}
         >

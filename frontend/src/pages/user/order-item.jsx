@@ -10,32 +10,32 @@ import { Link } from 'react-router-dom';
 const statusValue = [
   {
     key: 'pending',
-    value: 'Chờ xác nhận',
+    value: 'Waiting for confirmation',
     color: 'light',
   },
   {
     key: 'packed',
-    value: 'Đã đóng gói',
+    value: 'Packaged',
     color: 'secondary',
   },
   {
     key: 'shipping',
-    value: 'Đang giao hàng',
+    value: 'Delivery',
     color: 'info',
   },
   {
     key: 'delivered',
-    value: 'Đã giao hàng',
+    value: 'Delivered',
     color: 'success',
   },
   {
     key: 'cancelled',
-    value: 'Đã hủy',
+    value: 'Canceled',
     color: 'primary',
   },
   {
     key: 'refund',
-    value: 'Trả hàng',
+    value: 'Return',
     color: 'dark',
   },
 ];
@@ -61,7 +61,6 @@ const OrderItem = (props) => {
         spacing={2}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ paddingLeft: '20px' }}
       >
         <Grid xs={3.5}>
           <MDTypography

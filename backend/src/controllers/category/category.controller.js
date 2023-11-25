@@ -61,7 +61,6 @@ const getAll = async (req, res) => {
       .populate("parent", "name")
       .lean()
       .exec();
-    console.log(listCategory);
     Response(res, { list: listCategory });
   } catch (error) {
     ServerError(res);

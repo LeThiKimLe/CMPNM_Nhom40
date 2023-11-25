@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-// Material Dashboard 2 React components
 import MDBox from '../MDBox';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDTypography from '../MDTypography';
@@ -56,7 +54,7 @@ function ProductCard({
   const options = products.map((item) => item._id);
   const optionsCustom = getOptions(options);
   const product = useMemo(() => {
-    return products[optionSelected].products[0];
+    return products[optionSelected].items[0];
   }, [optionSelected, products]);
   const exitIndex = useCallback(() => {
     if (Object.keys(compareLocal).length > 0) {
@@ -77,6 +75,8 @@ function ProductCard({
     salePrice,
     sale,
     detailsProduct,
+    ram,
+    storage,
   } = product;
   const screenCustom = renderScreen(detailsProduct.screen);
   const handleAddCompare = () => {
@@ -142,13 +142,11 @@ function ProductCard({
         aria-describedby="alert-dialog-description"
       >
         <DialogContent>
-          <p>Vui lòng xóa bớt sản phẩm để tiếp tục so sánh </p>
+          <p>Please remove products to continue comparing</p>
         </DialogContent>
       </Dialog>
       <>
-        <Link
-          to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
-        >
+        <Link to={`/product-page/${category}?ram=${ram}&storage=${storage}`}>
           <MDBox
             position="relative"
             width="100%"
@@ -177,16 +175,16 @@ function ProductCard({
         <MDBox mb={0.5} mx={0.5}>
           <MDBox mb={0.5}>
             <Link
-              to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
+              to={`/product-page/${category}?ram=${ram}&storage=${storage}`}
             >
               <MDTypography
                 sx={{
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
+                  fontSize: '16.25px',
+                  fontWeight: '700',
                   height: '50px',
+                  color: '#323232',
                 }}
                 textTransform="capitalize"
-                color="dark"
               >
                 {name}
               </MDTypography>
@@ -212,10 +210,11 @@ function ProductCard({
                     size="medium"
                     sx={{
                       fontSize: '0.65rem',
-                      fontWeight: '500',
+                      fontWeight: '600',
                       borderRadius: '0.3rem',
                       marginRight: '3px',
                       marginBottom: '3px',
+                      backgroundColor: '#edf8f7',
                     }}
                     label={item}
                   />
@@ -240,17 +239,19 @@ function ProductCard({
                   <Button
                     key={index}
                     size="small"
+                    color="dark"
                     sx={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
+                      fontSize: '0.7rem',
+                      fontWeight: '600',
                       padding: '2px 3px',
-                      border: optionSelected === index ? '1px solid #111' : '',
+                      border:
+                        optionSelected === index ? '1px solid #3d85c6' : '',
                       borderRadius: '0.3rem',
                       marginRight: '3px',
                       marginBottom: '3px',
                       width: '30px',
                       color: '#111',
-                      backgroundColor: '#d0e0e3',
+                      backgroundColor: '#edf0ff',
                     }}
                     onClick={() => setOptionSelected(index)}
                   >
@@ -266,7 +267,7 @@ function ProductCard({
               sx={{
                 fontSize: '0.875rem',
                 fontWeight: '500',
-                color: '#696969',
+                color: '#5b5b5b',
                 textDecoration: 'line-through',
               }}
               textTransform="capitalize"
@@ -293,9 +294,9 @@ function ProductCard({
               sx={{
                 fontSize: '1rem',
                 fontWeight: 'bold',
+                color: '#1f2128',
               }}
               textTransform="capitalize"
-              color="dark"
             >
               {formatThousand(salePrice)}đ
             </MDTypography>
@@ -309,30 +310,36 @@ function ProductCard({
           >
             {checkCompare === true ? (
               <>
-                <CheckCircleOutlineRoundedIcon fontSize="small" />
+                <CheckCircleOutlineRoundedIcon
+                  fontSize="small"
+                  sx={{ color: '#6c5dd3' }}
+                />
                 <MDTypography
-                  color="dark"
                   sx={{
                     fontSize: '14px',
                     marginLeft: '4px',
                     fontWeight: '500',
+                    color: '#6c5dd3',
                   }}
                 >
-                  Đã thêm so sánh
+                  Added comparison
                 </MDTypography>
               </>
             ) : (
               <>
-                <AddCircleOutlineRoundedIcon fontSize="small" />
+                <AddCircleOutlineRoundedIcon
+                  fontSize="small"
+                  sx={{ color: '#6c5dd3' }}
+                />
                 <MDTypography
-                  color="dark"
                   sx={{
                     fontSize: '14px',
                     marginLeft: '4px',
                     fontWeight: '500',
+                    color: '#6c5dd3',
                   }}
                 >
-                  So sánh
+                  Compare
                 </MDTypography>
               </>
             )}

@@ -36,7 +36,7 @@ router.post('/verify-email', verifyEmail);
 router.post('/resend-verify-email', reSendVerifyEmail);
 router.post('/get-products', getProductsOption);
 router.get('/search-product', searchProduct);
-router.get('/get-product/:categorySlug', getProduct);
+router.get('/get-product/:categoryId', getProduct);
 router.get('/get-review/:productid', getReview);
 router.use(authenticateUser, userCheckRole);
 

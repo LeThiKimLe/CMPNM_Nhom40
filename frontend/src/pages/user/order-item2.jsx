@@ -29,7 +29,6 @@ const OrderItem2 = (props) => {
         spacing={2}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ paddingLeft: '20px' }}
       >
         <Grid xs={4}>
           <MDTypography

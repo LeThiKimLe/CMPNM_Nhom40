@@ -8,10 +8,8 @@ import {
   faCircleUser,
   faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons';
-import { authActions } from '../../../features/auth/auth.slice';
 const { Header } = Layout;
 const HeaderSignIn = () => {
-  const dispatch = useDispatch();
   return (
     <Header>
       <div className="header-col header-nav">
@@ -19,19 +17,19 @@ const HeaderSignIn = () => {
           <Menu.Item key="dashboard">
             <Link to="/">
               <FontAwesomeIcon icon={faToolbox} />
-              <span>Trang chủ</span>
+              <span>Dashboard</span>
             </Link>
           </Menu.Item>
           <Menu.Item key="profile">
             <Link to="/profile">
               <FontAwesomeIcon icon={faCircleUser} />
-              <span>Hồ sơ</span>
+              <span>Profile</span>
             </Link>
           </Menu.Item>
           <Menu.Item key="signin">
             <Link to="/sign-in">
               <FontAwesomeIcon icon={faRightToBracket} />
-              <span>Đăng nhập</span>
+              <span>Login</span>
             </Link>
           </Menu.Item>
         </Menu>

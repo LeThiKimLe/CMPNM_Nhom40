@@ -69,24 +69,30 @@ const AddressPage = () => {
               sx={{ marginTop: '3px' }}
             />
             <MDTypography
-              sx={{ color: '#444444', fontSize: '20px' }}
+              sx={{ color: '#323232', fontSize: '20px' }}
               fontWeight="medium"
             >
-              Địa chỉ của tôi
+              My addresses
             </MDTypography>
           </Stack>
         </Stack>
         <MDButton
-          size="medium"
           color="dark"
           sx={{
+            fontSize: '13px',
+            fontWeight: '600',
+            padding: '2px',
+            borderRadius: '9px',
+            marginRight: '3px',
+            marginBottom: '3px',
+            width: '30px',
+            color: '#fff',
             textTransform: 'initial !important',
-            fontWeight: '500',
-            padding: '2px 10px',
+            backgroundColor: '#0b5394',
           }}
           onClick={() => setOpen(true)}
         >
-          Thêm Địa chỉ
+          Add
         </MDButton>
       </Stack>
 
@@ -113,7 +119,7 @@ const AddressPage = () => {
           spacing={2}
         >
           <MDTypography variant="h4" color="primary">
-            {`Bạn chưa có địa chỉ nào!`}
+            {`You don't have any address yet!`}
           </MDTypography>
         </Stack>
       )}

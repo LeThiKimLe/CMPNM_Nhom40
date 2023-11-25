@@ -32,15 +32,18 @@ const UserPage = ({ children }) => {
   return (
     <MDBox
       color="#000000"
-      bgColor="Light"
-      variant="contained"
-      borderRadius="none"
-      opacity={1}
-      p={1}
+      bgColor="#fff"
       display="flex"
+      p={1}
       justifyContent="flex-start"
       width="100%"
       minHeight="75vh"
+      sx={{
+        backgroundColor: '#ffffff',
+        color: '#808191',
+        fontFamily: 'Poppins',
+        padding: '5px',
+      }}
     >
       <Container disableGutters maxWidth={false}>
         <Grid sx={{ padding: '10px 0px' }} container item xs={12} spacing={2}>
@@ -48,8 +51,11 @@ const UserPage = ({ children }) => {
             <MDBox
               borderRadius="lg"
               sx={{
-                backgroundColor: '#ffffff',
-                padding: '15px 15px',
+                padding: '16px',
+                marginBottom: '10px',
+                borderRadius: '13px',
+                boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                color: '#808191',
               }}
             >
               <Stack spacing={2}>
@@ -74,27 +80,6 @@ const UserPage = ({ children }) => {
                           ? `${profile.lastName} ${profile.firstName}`
                           : null}
                       </MDTypography>
-                      <Stack
-                        direction="row"
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        spacing={0.5}
-                      >
-                        <IconButton
-                          size="small"
-                          sx={{
-                            paddingLeft: '2px',
-                            paddingRight: '2px',
-                          }}
-                        >
-                          <EditIcon fontSize="inherit" color="primary" />
-                        </IconButton>
-                        <MDTypography
-                          sx={{ color: '#111111', fontSize: '12px' }}
-                        >
-                          Sửa hồ sơ
-                        </MDTypography>
-                      </Stack>
                     </MDBox>
                   </Stack>{' '}
                 </>
@@ -113,13 +98,17 @@ const UserPage = ({ children }) => {
                       paddingRight: '2px',
                     }}
                   >
-                    <PersonIcon fontSize="inherit" color="info" />
+                    <PersonIcon fontSize="inherit" sx={{ color: '#f35421' }} />
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '14px' }}
+                    sx={{
+                      color: '#111111',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}
                   >
-                    Hồ sơ của tôi
+                    My profile
                   </MDTypography>
                 </Stack>
                 <Stack
@@ -136,13 +125,20 @@ const UserPage = ({ children }) => {
                       paddingRight: '2px',
                     }}
                   >
-                    <HomeWorkIcon fontSize="inherit" color="success" />
+                    <HomeWorkIcon
+                      fontSize="inherit"
+                      sx={{ color: '#46bcaa' }}
+                    />
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '14px' }}
+                    sx={{
+                      color: '#111111',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}
                   >
-                    Địa chỉ
+                    My Addresses
                   </MDTypography>
                 </Stack>
                 <Stack
@@ -159,13 +155,17 @@ const UserPage = ({ children }) => {
                       paddingRight: '2px',
                     }}
                   >
-                    <LockIcon fontSize="inherit" color="warning" />
+                    <LockIcon fontSize="inherit" sx={{ color: '#ffcf52' }} />
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '14px' }}
+                    sx={{
+                      color: '#111111',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}
                   >
-                    Đổi mật khẩu
+                    My password
                   </MDTypography>
                 </Stack>
                 <Stack
@@ -182,20 +182,36 @@ const UserPage = ({ children }) => {
                       paddingRight: '2px',
                     }}
                   >
-                    <ReceiptIcon fontSize="inherit" color="error" />
+                    <ReceiptIcon fontSize="inherit" sx={{ color: '#0b5394' }} />
                   </IconButton>
                   <MDTypography
                     component={Link}
-                    sx={{ color: '#111111', fontSize: '14px' }}
+                    sx={{
+                      color: '#111111',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                    }}
                   >
-                    Đơn mua
+                    Orders
                   </MDTypography>
                 </Stack>
               </Stack>
             </MDBox>
           </Grid>
           <Grid item xs={10} sx={{ paddingRight: '0px' }}>
-            <MDBox variant="contained">{children}</MDBox>
+            <MDBox
+              variant="contained"
+              sx={{
+                padding: '16px',
+                marginBottom: '10px',
+                borderRadius: '13px',
+                boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                color: '#808191',
+                minHeight: '400px',
+              }}
+            >
+              {children}
+            </MDBox>
           </Grid>
         </Grid>
       </Container>

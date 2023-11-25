@@ -22,7 +22,6 @@ function Item(props) {
   const { sx, ...other } = props;
   return (
     <MDBox
-      shadow="lg"
       sx={{
         bgcolor: (theme) =>
           theme.palette.mode === 'dark' ? '#101010' : '#fff',
@@ -38,6 +37,7 @@ function Item(props) {
         marginBottom: '8px',
         borderRadius: '16px',
         paddingTop: '16px',
+        boxShadow: '#808191 0px 10.8px 10px 0px',
         ...sx,
       }}
       {...other}
@@ -79,6 +79,7 @@ const renderCompare = (
             borderRight: '1px solid',
             borderColor: '#e8e5e5',
             position: 'relative',
+            boxShadow: '#808191 0px 5px 10px',
           }}
         >
           <MDBox
@@ -166,7 +167,7 @@ const renderCompare = (
               display="block"
               sx={{ fontSize: '12px', color: '#111111', fontWeight: '400' }}
             >
-              Thêm sản phẩm
+              Add product
             </MDTypography>
           </Stack>
         </MDBox>
@@ -291,7 +292,7 @@ const Home = () => {
                     color="white"
                     sx={{ fontSize: '14px', fontWeight: '500' }}
                   >
-                    So sánh ngay
+                    Compare now
                   </MDTypography>
                 </MDButton>
                 <MDTypography
@@ -303,7 +304,7 @@ const Home = () => {
                   }}
                   onClick={handleDeleteAll}
                 >
-                  Xóa tất cả sản phẩm
+                  Delete all products
                 </MDTypography>
               </Stack>
             </MDBox>
@@ -323,7 +324,6 @@ const Home = () => {
       ) : null}
 
       <MDBox
-        bgColor="Light"
         variant="contained"
         borderRadius="none"
         opacity={1}
@@ -331,6 +331,9 @@ const Home = () => {
         justifyContent="space-between"
         alignItems="center"
         minHeight="80vh"
+        sx={{
+          backgroundColor: '#fff',
+        }}
       >
         <Container
           sx={{
@@ -381,15 +384,21 @@ const Home = () => {
                     sx={{ fontSize: '14px', fontWeight: '500' }}
                     color="dark"
                   >
-                    So Sánh ({countCompare})
+                    Compare ({countCompare})
                   </MDTypography>
                 </MDButton>
               ) : null}
 
-              <MDBox variant="contained" borderRadius="lg">
+              <MDBox variant="contained">
                 <Paper
                   elevation={3}
-                  sx={{ padding: '16px', marginBottom: '10px' }}
+                  sx={{
+                    padding: '16px',
+                    marginBottom: '10px',
+                    borderRadius: '13px',
+                    boxShadow: '#808191 0px 10.8px 10px 0px', // Your original boxShadow
+                    color: '#808191',
+                  }}
                 >
                   <Carousel showThumbs={false}>
                     {banners && banners.length > 0
@@ -401,6 +410,9 @@ const Home = () => {
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
+                                marginBottom: '10px',
+                                borderRadius: '13px',
+                                color: '#808191',
                               }}
                             >
                               <img
@@ -418,79 +430,93 @@ const Home = () => {
               </MDBox>
               {/* info component */}
               <InfoComponent />
-              <Grid
-                direction="column"
-                justifyContent="space-between"
-                alignItems="center"
-                display="flex"
-                spacing={2}
-                xs={12}
-              >
-                <MDTypography
+              <MDBox variant="contained">
+                <Paper
+                  elevation={3}
                   sx={{
-                    color: '#444444',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                    marginTop: '10px',
+                    padding: '16px',
                     marginBottom: '10px',
+                    borderRadius: '13px',
+                    boxShadow: '#808191 0px 10.8px 10px 0px',
+                    color: '#808191',
                   }}
                 >
-                  Discounted products
-                </MDTypography>
-                <Stack
-                  component={Link}
-                  direction="row"
-                  alignItems="center"
-                  display="flex"
-                  spacing={0.5}
-                  sx={{ cursor: 'pointer' }}
-                  to="/products?category=all"
-                >
-                  <MDTypography
+                  <Grid
+                    direction="column"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    display="flex"
+                    spacing={2}
+                    xs={12}
+                  >
+                    <MDTypography
+                      sx={{
+                        color: '#444444',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                      }}
+                    >
+                      Discounted products
+                    </MDTypography>
+                    <Stack
+                      component={Link}
+                      direction="row"
+                      alignItems="center"
+                      display="flex"
+                      spacing={0.5}
+                      sx={{ cursor: 'pointer' }}
+                      to="/products?category=all"
+                    >
+                      <MDTypography
+                        sx={{
+                          color: '#444444',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          marginTop: '10px',
+                          marginBottom: '10px',
+                        }}
+                      >
+                        Show more
+                      </MDTypography>
+                      <ArrowForwardIcon size="small" sx={{ color: '#111' }} />
+                    </Stack>
+                  </Grid>
+                  <MDBox
+                    variant="contained"
+                    borderRadius="lg"
                     sx={{
-                      color: '#444444',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      marginTop: '10px',
-                      marginBottom: '10px',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(5, 1fr)',
                     }}
                   >
-                    Show more
-                  </MDTypography>
-                  <ArrowForwardIcon size="small" sx={{ color: '#111' }} />
-                </Stack>
-              </Grid>
-
-              <MDBox
-                variant="contained"
-                borderRadius="lg"
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(5, 1fr)',
-                }}
-              >
-                {products.length > 0
-                  ? products.map((item, index) => {
-                      console.log('product', item);
-                      if (index < 15) {
-                        return (
-                          <Item key={index}>
-                            {/* <ProductCard
-                              compareLocal={compareLocal}
-                              setCompareLocal={setCompareLocal}
-                              setShowCompare={setShowCompare}
-                              countCompare={countCompare}
-                              category={item.category}
-                              products={item.products}
-                              setCountCompare={setCountCompare}
-                              compareProductLocal={compareProductLocal}
-                              setCompareProductLocal={setCompareProductLocal}
-                            /> */}
-                          </Item>
-                        );
-                      }
-                    })
-                  : null}
+                    {products.length > 0
+                      ? products.map((item, index) => {
+                          console.log('product', item);
+                          if (index < 15) {
+                            return (
+                              <Item key={index}>
+                                <ProductCard
+                                  compareLocal={compareLocal}
+                                  setCompareLocal={setCompareLocal}
+                                  setShowCompare={setShowCompare}
+                                  countCompare={countCompare}
+                                  category={item.category_path}
+                                  products={item.groups}
+                                  setCountCompare={setCountCompare}
+                                  compareProductLocal={compareProductLocal}
+                                  setCompareProductLocal={
+                                    setCompareProductLocal
+                                  }
+                                />
+                              </Item>
+                            );
+                          }
+                        })
+                      : null}
+                  </MDBox>
+                </Paper>
               </MDBox>
             </Grid>
           )}

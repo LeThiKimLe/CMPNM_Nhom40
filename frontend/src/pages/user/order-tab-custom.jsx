@@ -11,25 +11,25 @@ const OrderListContent = ({ orderList, type }) => {
       ? [
           {
             key: 'id',
-            fieldName: 'Mã đơn',
+            fieldName: 'Order id',
             index: 'id',
             width: 3.5,
           },
           {
             key: 'status',
-            fieldName: 'Trạng thái',
+            fieldName: 'Status',
             index: 'status',
             width: 2.5,
           },
           {
             key: 'datePurchased',
-            fieldName: 'Ngày đặt hàng',
+            fieldName: 'Date order',
             index: 'datePurchased',
             width: 2.5,
           },
           {
             key: 'totalAmount',
-            fieldName: 'Tổng đơn',
+            fieldName: 'Total amount',
             index: 'totalAmount',
             width: 2.5,
           },
@@ -43,19 +43,19 @@ const OrderListContent = ({ orderList, type }) => {
       : [
           {
             key: 'id',
-            fieldName: 'Mã đơn',
+            fieldName: 'Order id',
             index: 'id',
             width: 4,
           },
           {
             key: 'datePurchased',
-            fieldName: 'Ngày đặt hàng',
+            fieldName: 'Date order',
             index: 'datePurchased',
             width: 3,
           },
           {
             key: 'totalAmount',
-            fieldName: 'Tổng đơn',
+            fieldName: 'Total amount',
             index: 'totalAmount',
             width: 4,
           },
@@ -68,14 +68,13 @@ const OrderListContent = ({ orderList, type }) => {
         ];
 
   return (
-    <Grid>
+    <>
       <Grid item xs={12} sx={{ paddingTop: '0px' }}>
         <Stack
           direction="row"
           justifyContent="flex-start"
           alignItems="center"
           spacing={2}
-          sx={{ paddingLeft: '20px' }}
         >
           {updatedColumns.map((item) => {
             return (
@@ -85,6 +84,7 @@ const OrderListContent = ({ orderList, type }) => {
                     fontSize: '14px',
                     fontWeight: '500',
                     color: '#7d879c',
+                    paddingLeft: '0px',
                   }}
                 >
                   {item.fieldName}
@@ -121,7 +121,7 @@ const OrderListContent = ({ orderList, type }) => {
           })}
         </Box>
       </Grid>
-    </Grid>
+    </>
   );
 };
 

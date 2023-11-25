@@ -1,10 +1,12 @@
 import { useLocation } from 'react-router-dom';
 import React from 'react';
+
 import Header from '../header';
 import Navbar from '../navbar';
 import SideNavigation from '../side-navigation';
 import Footer from '../footer';
-
+import MDBox from '../../components/MDBox';
+import { Divider } from '@mui/material';
 function Layout({ children }) {
   let { pathname } = useLocation();
   pathname = pathname.replace('/', '');
@@ -19,11 +21,19 @@ function Layout({ children }) {
   } else {
     return (
       <>
-        <Header />
-        <Navbar />
-        <SideNavigation />
+        <MDBox
+          color="#000"
+          bgColor="#fff"
+          alignItems="center"
+          sx={{
+            paddingBottom: '10px',
+          }}
+        >
+          <Header />
+          <Navbar />
+          <SideNavigation />
+        </MDBox>
         {children}
-
         <Footer />
       </>
     );

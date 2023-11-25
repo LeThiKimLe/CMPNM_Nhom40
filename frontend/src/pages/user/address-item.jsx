@@ -95,7 +95,7 @@ const AddressItem = (props) => {
               sx={{
                 fontSize: '14px',
                 fontWeigh: '400',
-                color: '#444444',
+                color: '#323232',
               }}
             >
               {mobileNumber}
@@ -105,7 +105,7 @@ const AddressItem = (props) => {
             sx={{
               fontSize: '14px',
               fontWeigh: '400',
-              color: '#444444',
+              color: '#323232',
             }}
           >
             {address}
@@ -114,7 +114,7 @@ const AddressItem = (props) => {
             sx={{
               fontSize: '14px',
               fontWeigh: '400',
-              color: '#444444',
+              color: '#323232',
             }}
           >
             {`${wardName}, ${districtName}, ${provinceName}`}
@@ -128,9 +128,36 @@ const AddressItem = (props) => {
           >
             {isDefault ? (
               <>
-                <Chip color="primary" label="Mặc định" size="small" />
-                <Chip label="Địa chỉ lấy hàng" size="small" />
-                <Chip label="Địa chỉ trả hàng" size="small" />
+                <Chip
+                  label="Default"
+                  size="small"
+                  sx={{
+                    fontSize: '12px',
+                    color: '#4d69fa',
+                    backgroundColor: '#edf0ff',
+                    fontWeight: '500',
+                  }}
+                />
+                <Chip
+                  label="Pick-up address"
+                  size="small"
+                  sx={{
+                    fontSize: '12px',
+                    color: '#5b5b5b',
+                    backgroundColor: '#edf0ff',
+                    fontWeight: '500',
+                  }}
+                />
+                <Chip
+                  label="Return address"
+                  size="small"
+                  sx={{
+                    fontSize: '12px',
+                    color: '#5b5b5b',
+                    backgroundColor: '#edf0ff',
+                    fontWeight: '500',
+                  }}
+                />
               </>
             ) : null}
           </Stack>
@@ -152,12 +179,12 @@ const AddressItem = (props) => {
               sx={{
                 fontSize: '14px',
                 fontWeight: '400',
-                color: '#444444',
+                color: '#323232',
                 paddingRight: '4px',
               }}
               onClick={() => setOpen(true)}
             >
-              Cập nhật
+              Update
             </MDTypography>
             {isDefault ? null : (
               <MDTypography
@@ -165,12 +192,12 @@ const AddressItem = (props) => {
                 sx={{
                   fontSize: '14px',
                   fontWeight: '400',
-                  color: '#444444',
+                  color: '#323232',
                   paddingRight: '4px',
                 }}
                 onClick={() => setOpenDialog(true)}
               >
-                Xóa
+                Remove
               </MDTypography>
             )}
           </Stack>
@@ -187,7 +214,7 @@ const AddressItem = (props) => {
             onClick={handleSetDefault}
             disabled={isDefault}
           >
-            Thiết lập mặc định
+            Set default
           </MDButton>
         </Stack>
         <Dialog

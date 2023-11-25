@@ -18,25 +18,25 @@ import { notification } from 'antd';
 const columns = [
   {
     key: 'name',
-    fieldName: 'Sản phẩm',
+    fieldName: 'Name',
     index: 'name',
     width: 5,
   },
   {
     key: 'price',
-    fieldName: 'Đơn giá',
+    fieldName: 'Price',
     index: 'price',
     width: 3,
   },
   {
     key: 'quantity',
-    fieldName: 'Số lượng',
+    fieldName: 'Quantity',
     index: 'quantity',
     width: 1.5,
   },
   {
     key: 'totalPrice',
-    fieldName: 'Số tiền',
+    fieldName: 'Total price',
     index: 'totalPrice',
     width: 1.5,
   },
@@ -98,10 +98,11 @@ const CartPage = () => {
     return (
       <MDBox
         color="#000000"
-        bgColor="Light"
+        bgColor="#fff"
         variant="contained"
         borderRadius="none"
         opacity={1}
+        paddingTop="10px"
         display="flex"
         justifyContent="flex-start"
         width="100%"
@@ -131,7 +132,7 @@ const CartPage = () => {
   return (
     <MDBox
       color="#000000"
-      bgColor="Light"
+      bgColor="#fff"
       variant="contained"
       borderRadius="none"
       opacity={1}
@@ -160,7 +161,14 @@ const CartPage = () => {
               spacing={2}
             >
               <MDBox variant="contained">
-                <Paper elevation={3} sx={{ padding: '15px' }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: '15px',
+                    borderRadius: '13px',
+                    boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                  }}
+                >
                   <Stack
                     xs={12}
                     direction="row"
@@ -210,7 +218,14 @@ const CartPage = () => {
               spacing={2}
             >
               <MDBox variant="contained">
-                <Paper elevation={3} sx={{ padding: '15px' }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: '15px',
+                    borderRadius: '13px',
+                    boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                  }}
+                >
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -223,14 +238,14 @@ const CartPage = () => {
                       sx={{ fontSize: '14px' }}
                       variant="h4"
                     >
-                      Tổng cộng
+                      Total
                     </MDTypography>
                     <MDTypography
                       color="dark"
                       sx={{ fontSize: '14px' }}
                       variant="h4"
                     >
-                      {cartItems.length} sản phẩm
+                      {cartItems.length} products
                     </MDTypography>
                   </Stack>
 
@@ -246,7 +261,7 @@ const CartPage = () => {
                       sx={{ fontSize: '14px', fontWeight: '500' }}
                       variant="body"
                     >
-                      Tổng tiền hàng:
+                      Total price
                     </MDTypography>
                     <MDTypography
                       sx={{
@@ -275,10 +290,14 @@ const CartPage = () => {
                       textTransform: 'initial !important',
                       fontWeight: '500',
                       padding: '2px 10px',
+                      borderRadius: '13px',
+                      boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                      color: '#fff',
+                      backgroundColor: '#0b5394',
                     }}
                     onClick={() => navigate('/')}
                   >
-                    Tiếp tục mua hàng
+                    Continue shopping
                   </MDButton>
                   <MDButton
                     size="medium"
@@ -286,10 +305,14 @@ const CartPage = () => {
                     sx={{
                       textTransform: 'initial !important',
                       fontWeight: '500',
+                      borderRadius: '13px',
+                      boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                      color: '#fff',
+                      backgroundColor: '#6aa84f',
                     }}
                     onClick={handleCheckOut}
                   >
-                    Thanh toán
+                    Payment
                   </MDButton>
                 </Stack>
               </MDBox>
@@ -317,17 +340,32 @@ const CartPage = () => {
                     marginRight: '30px',
                   }}
                 />
-                <MDTypography variant="h5" color="dark">
-                  Giỏ hàng trống
+                <MDTypography
+                  sx={{
+                    color: '#323232',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                  }}
+                >
+                  Cart is empty
                 </MDTypography>
                 <MDButton
                   fontWeight="bold"
                   fontSize="1rem"
-                  color={'dark'}
+                  color={'light'}
                   component={Link}
                   to="/products"
+                  size="medium"
+                  sx={{
+                    textTransform: 'initial !important',
+                    fontWeight: '600',
+                    color: '#46bcaa',
+                    backgroundColor: '#edf8f7',
+                    borderRadius: '8px',
+                    boxShadow: '#dbd9d9 5px 5px 5px 5px',
+                  }}
                 >
-                  Tiếp tục mua hàng
+                  Continue shopping
                 </MDButton>
               </Stack>
             </MDBox>

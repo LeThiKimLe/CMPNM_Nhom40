@@ -5,18 +5,22 @@ import qrCode from '../../assets/images/qr_code.png';
 import qrAppStore from '../../assets/images/app_store.png';
 import qrGooglePlay from '../../assets/images/google_play.png';
 // react-router-dom components
-import { Link } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Container, Stack } from '@mui/material';
 
-function Footer({ light }) {
+function Footer() {
   return (
     <MDBox
-      color="#222935"
+      color="#323232"
       bgColor="#ffffff"
       borderRadius="none"
       opacity={1}
-      sx={{ paddingBottom: '20px', paddingTop: '20px' }}
+      sx={{
+        paddingBottom: '20px',
+        paddingTop: '20px',
+        boxShadow: '0px -5px 10px #bcbcbc',
+        color: '#808191',
+      }}
       display="flex"
       justifyContent="space-between"
     >
@@ -38,14 +42,14 @@ function Footer({ light }) {
             >
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '500',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '700',
                   textTransform: 'uppercase',
                   marginBottom: '4px',
                 }}
               >
-                Cửa hàng trên ứng dụng
+                Store on the app
               </MDTypography>
               <Stack
                 direction="row"
@@ -75,41 +79,41 @@ function Footer({ light }) {
             >
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '500',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '700',
                   textTransform: 'uppercase',
                   marginBottom: '4px',
                 }}
               >
-                Giới thiệu
+                Introduce
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Giới thiệu
+                Introduce
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Tuyển dụng
+                Recruitment
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Điều khoản
+                Rules
               </MDTypography>
             </Stack>
           </Grid>
@@ -122,41 +126,41 @@ function Footer({ light }) {
             >
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '500',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '700',
                   textTransform: 'uppercase',
                   marginBottom: '4px',
                 }}
               >
-                Chăm sóc khách hàng
+                Customer care
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Trung tâm trợ giúp
+                Help Center
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Shop Điện thoại
+                Phone Shop
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Hướng dẫn mua hàng
+                Shopping guide
               </MDTypography>
             </Stack>
           </Grid>
@@ -169,41 +173,42 @@ function Footer({ light }) {
             >
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '500',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '700',
                   textTransform: 'uppercase',
                   marginBottom: '4px',
                 }}
               >
-                Liên hệ
+                Contact
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                1050QL 1A Phường Linh Trung, TP. Thủ Đức, TP. Hồ Chí Minh
+                1050 National Highway 1A Linh Trung Ward, City. Thu Duc, City.
+                Ho Chi Minh
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Trung tâm trợ giúp
+                Help Center
               </MDTypography>
               <MDTypography
                 sx={{
-                  fontSize: '14px',
-                  color: '#222935',
-                  fontWeight: '400',
+                  fontSize: '13px',
+                  color: '#323232',
+                  fontWeight: '500',
                 }}
               >
-                Hướng dẫn mua hàng
+                Shopping guide
               </MDTypography>
             </Stack>
           </Grid>

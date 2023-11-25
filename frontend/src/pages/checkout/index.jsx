@@ -45,7 +45,7 @@ const wardCodeStore = '90737';
 const columns = [
   {
     key: 'name',
-    fieldName: 'Sản phẩm',
+    fieldName: 'Name',
     index: 'name',
     width: 4,
     justifyContent: 'flex-start',
@@ -59,21 +59,21 @@ const columns = [
   },
   {
     key: 'price',
-    fieldName: 'Đơn giá',
+    fieldName: 'Price',
     index: 'price',
     width: 2,
     justifyContent: 'center',
   },
   {
     key: 'quantity',
-    fieldName: 'Số lượng',
+    fieldName: 'Quantity',
     index: 'quantity',
     width: 1.5,
     justifyContent: 'center',
   },
   {
     key: 'totalPrice',
-    fieldName: 'Số tiền',
+    fieldName: 'Total price',
     index: 'totalPrice',
     justifyContent: 'flex-end',
     width: 2,
@@ -558,7 +558,7 @@ const CheckOutPage = () => {
     <>
       <MDBox
         color="#000000"
-        bgColor="Light"
+        bgColor="#fff"
         variant="contained"
         borderRadius="none"
         opacity={1}
@@ -634,15 +634,15 @@ const CheckOutPage = () => {
                         alignItems="flex-start"
                         spacing={1}
                       >
-                        <LocationOnIcon color="primary" />
+                        <LocationOnIcon sx={{ color: '#0b5394' }} />
                         <MDTypography
-                          color="primary"
                           sx={{
                             fontSize: '14px',
                             fontWeight: '700',
+                            color: '#0b5394',
                           }}
                         >
-                          Địa chỉ nhận hàng
+                          Delivery address
                         </MDTypography>
                       </Stack>
 
@@ -667,30 +667,30 @@ const CheckOutPage = () => {
                             (listAddress !== null &&
                               Object.keys(listAddress).length === 0) ? (
                               <MDTypography
-                                color="dark"
                                 sx={{
                                   fontSize: '14px',
                                   fontWeight: '500',
+                                  color: '#323232',
                                 }}
                               >
-                                Chưa có địa chỉ
+                                No address yet
                               </MDTypography>
                             ) : (
                               <>
                                 <MDTypography
-                                  color="dark"
                                   sx={{
                                     fontSize: '14px',
-                                    fontWeight: '500',
+                                    fontWeight: '600',
+                                    color: '#323232',
                                   }}
                                 >
                                   {`${addressSelected.name} | ${addressSelected.mobileNumber}`}
                                 </MDTypography>
                                 <MDTypography
-                                  color="dark"
                                   sx={{
                                     fontSize: '14px',
-                                    fontWeight: '400',
+                                    fontWeight: '500',
+                                    color: '#323232',
                                   }}
                                 >
                                   {`${addressSelected.address}, ${addressSelected.wardName}, ${addressSelected.districtName}, ${addressSelected.provinceName}`}
@@ -698,8 +698,13 @@ const CheckOutPage = () => {
                                 {addressSelected.isDefault ? (
                                   <Chip
                                     size="small"
-                                    label="Mặc định"
-                                    color="primary"
+                                    label="Default"
+                                    sx={{
+                                      fontSize: '12px',
+                                      color: '#4d69fa',
+                                      backgroundColor: '#edf0ff',
+                                      fontWeight: '500',
+                                    }}
                                   />
                                 ) : null}
                               </>
@@ -725,20 +730,26 @@ const CheckOutPage = () => {
                           onClick={() => setOpenModalAdd(true)}
                         >
                           <EditIcon sx={{ marginRight: '4px' }} />
-                          Thêm địa chỉ mới
+                          Add new address
                         </MDButton>
                       ) : (
                         <MDButton
                           size="small"
-                          color="dark"
+                          color="light"
                           sx={{
                             textTransform: 'initial !important',
-                            fontWeight: '500',
+                            fontWeight: '600',
+                            color: '#4d69fa',
+                            fontSize: '13px',
+                            pading: '4px 5px',
+                            backgroundColor: '#edf0ff',
+                            borderRadius: '8`px',
+                            boxShadow: '#dbd9d9 5px 5px 5px 5px',
                           }}
                           onClick={() => setOpenModalAddress(true)}
                         >
                           <EditIcon sx={{ marginRight: '4px' }} />
-                          Thay đổi
+                          Change
                         </MDButton>
                       )}
                     </Stack>
@@ -774,6 +785,7 @@ const CheckOutPage = () => {
                             sx={{
                               fontSize: '0.875rem',
                               fontWeight: '700',
+                              color: '#0b5394',
                             }}
                           >
                             {item.fieldName}
@@ -826,7 +838,7 @@ const CheckOutPage = () => {
                           fontWeight: '500',
                         }}
                       >
-                        Vui lòng chọn địa chỉ
+                        Please select an address
                       </MDTypography>
                     ) : (
                       <>
@@ -838,26 +850,35 @@ const CheckOutPage = () => {
                           sx={{ marginTop: '0px' }}
                         >
                           <MDTypography
-                            color="primary"
-                            sx={{ fontSize: '14px', marginRight: '20px' }}
-                            variant="h4"
+                            sx={{
+                              fontSize: '0.875rem',
+                              fontWeight: '700',
+                              color: '#0b5394',
+                            }}
                           >
-                            Phương thức vận chuyển
+                            Shipping method
                           </MDTypography>
                           <Stack
                             direction="column"
                             justifyContent="flex-start"
                             alignItems={'flex-start'}
+                            sx={{ marginLeft: '10px' }}
                           >
                             <MDTypography
-                              color="dark"
-                              sx={{ fontSize: '14px', fontWeight: '500' }}
+                              sx={{
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: '#323232',
+                              }}
                             >
-                              {serviceName}
+                              E-COMMERCE DELIVERY
                             </MDTypography>
                             <MDTypography
-                              color="dark"
-                              sx={{ fontSize: '12px', fontWeight: '400' }}
+                              sx={{
+                                fontSize: '12px',
+                                fontWeight: '500',
+                                color: '#323232',
+                              }}
                             >
                               {estimatedDeliveryDate !== null
                                 ? estimatedDeliveryDate
@@ -865,9 +886,12 @@ const CheckOutPage = () => {
                             </MDTypography>
                           </Stack>
                           <MDTypography
-                            color="primary"
-                            sx={{ fontSize: '14px', marginLeft: '20px' }}
-                            variant="h4"
+                            sx={{
+                              fontSize: '13px',
+                              fontWeight: '600',
+                              color: '#f35421',
+                              marginLeft: '10px',
+                            }}
                           >
                             {formatThousand(shipAmount)}đ
                           </MDTypography>
@@ -880,15 +904,21 @@ const CheckOutPage = () => {
                           {Object.keys(listService).length === 0 ? null : (
                             <MDButton
                               size="small"
-                              color="dark"
+                              color="light"
                               sx={{
                                 textTransform: 'initial !important',
-                                fontWeight: '500',
+                                fontWeight: '600',
+                                color: '#4d69fa',
+                                fontSize: '13px',
+                                pading: '4px 5px',
+                                backgroundColor: '#edf0ff',
+                                borderRadius: '8px',
+                                boxShadow: '#dbd9d9 5px 5px 5px 5px',
                               }}
                               onClick={() => setOpenModalService(true)}
                             >
                               <EditIcon sx={{ marginRight: '4px' }} />
-                              Thay đổi
+                              Change
                             </MDButton>
                           )}
                         </Stack>
@@ -924,11 +954,13 @@ const CheckOutPage = () => {
                     sx={{ marginBottom: '5px' }}
                   >
                     <MDTypography
-                      color="primary"
-                      sx={{ fontSize: '14px' }}
-                      variant="h4"
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: '700',
+                        color: '#0b5394',
+                      }}
                     >
-                      Phương thức thanh toán
+                      Payment methods
                     </MDTypography>
                     <Stack
                       direction="row"
@@ -937,15 +969,17 @@ const CheckOutPage = () => {
                       spacing={2}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="h4"
+                        sx={{
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          color: '#323232',
+                        }}
                       >
                         {paymentType === 0
-                          ? 'Thanh toán khi nhận hàng'
+                          ? 'Payment on delivery'
                           : paymentType === 1
-                          ? 'Thanh toán qua ví Paypal'
-                          : 'Thanh toán qua ví Momo'}
+                          ? 'Pay via Paypal wallet'
+                          : 'Payment via Momo wallet'}
                       </MDTypography>
 
                       <ExpandMore
@@ -980,11 +1014,11 @@ const CheckOutPage = () => {
                               <MDTypography
                                 sx={{
                                   fontWeight: '500',
-                                  fontSize: '14px',
-                                  color: '#344767',
+                                  fontSize: '13px',
+                                  color: '#323232',
                                 }}
                               >
-                                Thanh toán khi nhận hàng
+                                Payment on delivery
                               </MDTypography>
                             }
                           />
@@ -995,11 +1029,11 @@ const CheckOutPage = () => {
                               <MDTypography
                                 sx={{
                                   fontWeight: '500',
-                                  fontSize: '14px',
-                                  color: '#344767',
+                                  fontSize: '13px',
+                                  color: '#323232',
                                 }}
                               >
-                                Thanh toán qua ví Paypal
+                                Payment via Paypal wallet
                               </MDTypography>
                             }
                           />
@@ -1010,11 +1044,11 @@ const CheckOutPage = () => {
                               <MDTypography
                                 sx={{
                                   fontWeight: '500',
-                                  fontSize: '14px',
-                                  color: '#344767',
+                                  fontSize: '13px',
+                                  color: '#323232',
                                 }}
                               >
-                                Thanh toán qua ví Momo
+                                Payment via Momo wallet
                               </MDTypography>
                             }
                           />
@@ -1028,25 +1062,33 @@ const CheckOutPage = () => {
                       >
                         <MDButton
                           size="small"
-                          color="success"
+                          color="light"
                           sx={{
                             textTransform: 'initial !important',
-                            fontWeight: '500',
+                            fontWeight: '600',
+                            color: '#46bcaa',
+                            backgroundColor: '#edf8f7',
+                            borderRadius: '8px',
+                            boxShadow: '#dbd9d9 5px 5px 5px 5px',
                           }}
                           onClick={handleSelectedMethod}
                         >
-                          Xác nhận
+                          Confirm
                         </MDButton>
                         <MDButton
                           size="small"
-                          color="primary"
+                          color="light"
                           sx={{
                             textTransform: 'initial !important',
-                            fontWeight: '500',
+                            fontWeight: '600',
+                            color: '#f35421',
+                            backgroundColor: '#feeee9',
+                            borderRadius: '8px',
+                            boxShadow: '#dbd9d9 5px 5px 5px 5px',
                           }}
                           onClick={handleExpandClick}
                         >
-                          Hủy
+                          Cancel
                         </MDButton>
                       </Stack>
                     </Collapse>
@@ -1061,18 +1103,22 @@ const CheckOutPage = () => {
                         sx={{ marginTop: '10px' }}
                       >
                         <MDTypography
-                          color="primary"
-                          sx={{ fontSize: '14px' }}
-                          variant="h4"
+                          sx={{
+                            fontSize: '0.875rem',
+                            fontWeight: '700',
+                            color: '#0b5394',
+                          }}
                         >
-                          Tổng cộng
+                          Total
                         </MDTypography>
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px' }}
-                          variant="h4"
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
-                          {cartItems.length} sản phẩm
+                          {cartItems.length} items
                         </MDTypography>
                       </Stack>
 
@@ -1085,15 +1131,20 @@ const CheckOutPage = () => {
                         sx={{ marginBottom: '5px' }}
                       >
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
-                          variant="body"
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
-                          Tổng tiền hàng:
+                          Total price
                         </MDTypography>
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
                           {formatThousand(getTotalPrice(items))}đ
                         </MDTypography>
@@ -1106,15 +1157,20 @@ const CheckOutPage = () => {
                         sx={{ marginBottom: '5px' }}
                       >
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
-                          variant="body"
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
-                          Tổng phí vận chuyển:
+                          Total shipping fee
                         </MDTypography>
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                           variant="body1"
                         >
                           {shipAmount ? formatThousand(shipAmount) : 0}đ
@@ -1127,15 +1183,20 @@ const CheckOutPage = () => {
                         spacing={2}
                       >
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
-                          variant="body"
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
-                          Tổng giảm phí vận chuyển:
+                          Total shipping fee reduction
                         </MDTypography>
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                           variant="body1"
                         >
                           - {formatThousand(freeShip)}đ
@@ -1149,17 +1210,19 @@ const CheckOutPage = () => {
                         spacing={2}
                       >
                         <MDTypography
-                          color="dark"
-                          sx={{ fontSize: '14px', fontWeight: '500' }}
-                          variant="body"
+                          sx={{
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#323232',
+                          }}
                         >
-                          Tổng thanh toán:
+                          Total payment
                         </MDTypography>
                         <MDTypography
                           sx={{
                             fontSize: '14px',
-                            color: '#990000',
-                            fontWeight: '500',
+                            color: '#f35421',
+                            fontWeight: '600',
                           }}
                         >
                           {totalAmount
@@ -1182,21 +1245,29 @@ const CheckOutPage = () => {
                 >
                   <MDButton
                     size="medium"
-                    color="dark"
+                    color="light"
                     sx={{
                       textTransform: 'initial !important',
-                      fontWeight: '500',
+                      fontWeight: '600',
+                      color: '#f35421',
+                      backgroundColor: '#feeee9',
+                      borderRadius: '8px',
+                      boxShadow: '#dbd9d9 5px 5px 5px 5px',
                     }}
                     onClick={() => navigate('/cart')}
                   >
-                    Quay lại
+                    Back
                   </MDButton>
                   <MDButton
                     size="medium"
-                    color="success"
+                    color="light"
                     sx={{
                       textTransform: 'initial !important',
-                      fontWeight: '500',
+                      fontWeight: '600',
+                      color: '#46bcaa',
+                      backgroundColor: '#edf8f7',
+                      borderRadius: '8px',
+                      boxShadow: '#dbd9d9 5px 5px 5px 5px',
                     }}
                     onClick={handleOrder}
                   >
@@ -1207,9 +1278,9 @@ const CheckOutPage = () => {
                       spacing={1}
                     >
                       {checkoutLoading ? (
-                        <CircularProgress size={20} color="light" />
+                        <CircularProgress size={20} color="dark" />
                       ) : null}
-                      <span>Đặt hàng</span>
+                      <span>Purchase</span>
                     </Stack>
                   </MDButton>
                 </Stack>

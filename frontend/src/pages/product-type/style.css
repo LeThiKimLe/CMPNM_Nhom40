@@ -54,7 +54,6 @@ h3 {
 .thumbnail {
   width: 63px;
   height: 63px;
-  border: 1px solid #f0f0f0;
   overflow: hidden;
   text-align: center;
 }
@@ -74,7 +73,6 @@ h3 {
   height: 440px;
   overflow: hidden;
   text-align: center;
-  border: 1px solid #f0f0f0;
 }
 .productDescImgContainer > img {
   max-width: 100%;
@@ -225,15 +223,13 @@ h3 {
   width: 100%;
   max-width: 716px;
   padding: 10px;
-  border: 1px solid rgba(244, 231, 231);
-  border-radius: 5px;
+  border-radius: 13px;
 }
 
 .product__detail-list-img {
   margin-top: 10px;
   display: flex;
-  border: 1px solid rgba(244, 231, 231);
-  border-radius: 5px;
+  border-radius: 13px;
 }
 
 .detail__list-img-small {
@@ -242,13 +238,12 @@ h3 {
   width: 20%;
   margin: 15px;
   padding: 5px;
-  border: 1px solid transparent;
+  border-radius: 13px;
 }
 .commentProduct > .ant-card-body {
   display: block;
 }
 .detail__list-img-small:hover {
-  border: solid 1px var(--blue-color);
   border-radius: 4px;
   cursor: pointer;
 }
@@ -285,7 +280,6 @@ h3 {
   background-color: var(--white-color);
   padding: 5px;
   border-radius: 50%;
-  border: 1px solid #f1f1f1;
   margin-right: 6px;
 }
 
@@ -301,7 +295,6 @@ h3 {
   background-color: var(--white-color);
   padding: 7px 10px;
   border-radius: 24px;
-  border: 1px solid #f1f1f1;
   color: var(--text-color);
   font-weight: 400;
   font-size: 1.4rem;
@@ -350,8 +343,6 @@ h3 {
   justify-content: center;
   padding: 0 20px;
   margin: 0 20px 0 5px;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
 }
 
 .content__evaluate-value {

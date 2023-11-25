@@ -22,7 +22,7 @@ const getAllItems = (req, res) => {
   Cart.findOne({ user: userId })
     .populate(
       'cartItems.product',
-      '_id name salePrice regularPrice productPictures detailsProduct color category'
+      '_id name salePrice regularPrice productPictures ram storage color'
     )
     .exec((error, cart) => {
       if (error) return res.status(400).json({ error });
@@ -33,7 +33,8 @@ const getAllItems = (req, res) => {
             _id: item.product._id.toString(),
             name: item.product.name,
             productPicture: item.product.productPictures[0],
-            detailsProduct: item.product.detailsProduct,
+            ram: item.product.ram,
+            storage: item.product.storage,
             salePrice: item.product.salePrice,
             regularPrice: item.product.regularPrice,
             quantity: item.quantity,

@@ -37,18 +37,16 @@ const ProfilePage = () => {
             sx={{ paddingLeft: '10px' }}
           >
             <MDTypography
-              sx={{ color: '#444444' }}
+              sx={{ color: '#323232' }}
               fontWeight="medium"
               variant="h5"
             >
-              Hồ sơ của tôi
+              My profile
             </MDTypography>
             <MDTypography
-              sx={{ color: '#444444', fontSize: '0.875rem' }}
-              fontWeight="regular"
-              variant="subtitle1"
+              sx={{ color: '#323232', fontSize: '0.875rem', fontWeight: '500' }}
             >
-              Quản lý thông tin hồ sơ để bảo mật tài khoản
+              Manage profile information for account security
             </MDTypography>
           </Stack>
 
@@ -62,22 +60,31 @@ const ProfilePage = () => {
                 spacing={2}
               >
                 <MDTypography
-                  sx={{ color: '#999999', fontSize: '0.875rem' }}
-                  fontWeight="regular"
+                  sx={{
+                    color: '#323232',
+                    fontWeight: '600',
+                    fontSize: '0.875rem',
+                  }}
                 >
-                  Tên:
+                  Name:
                 </MDTypography>
                 <MDTypography
-                  sx={{ color: '#999999', fontSize: '0.875rem' }}
-                  fontWeight="regular"
+                  sx={{
+                    color: '#323232',
+                    fontWeight: '600',
+                    fontSize: '0.875rem',
+                  }}
                 >
                   Email:
                 </MDTypography>
                 <MDTypography
-                  sx={{ color: '#999999', fontSize: '0.875rem' }}
-                  fontWeight="regular"
+                  sx={{
+                    color: '#323232',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                  }}
                 >
-                  Số điện thoại:
+                  Phone number:
                 </MDTypography>
               </Stack>
             </Grid>
@@ -88,25 +95,14 @@ const ProfilePage = () => {
                 alignItems="flex-start"
                 spacing={2}
               >
-                <MDTypography
-                  sx={{ color: '#444444', fontSize: '0.875rem' }}
-                  fontWeight="regular"
-                >
+                <MDTypography sx={{ color: '#323232', fontSize: '0.875rem' }}>
                   {profile ? `${profile.lastName} ${profile.firstName}` : null}
                 </MDTypography>
-                <MDTypography
-                  sx={{ color: '#444444', fontSize: '0.875rem' }}
-                  fontWeight="regular"
-                >
+                <MDTypography sx={{ color: '#323232', fontSize: '0.875rem' }}>
                   {profile.email ? profile.email : null}
                 </MDTypography>
-                <MDTypography
-                  sx={{ color: '#444444', fontSize: '0.875rem' }}
-                  fontWeight="regular"
-                >
-                  {profile.contactNumber
-                    ? profile.contactNumber
-                    : 'Chưa cập nhật'}
+                <MDTypography sx={{ color: '#323232', fontSize: '0.875rem' }}>
+                  {profile.contactNumber ? profile.contactNumber : 'not update'}
                 </MDTypography>
               </Stack>
             </Grid>

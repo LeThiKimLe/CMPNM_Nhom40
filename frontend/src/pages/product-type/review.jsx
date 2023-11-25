@@ -133,16 +133,16 @@ const ReviewComponent = (props) => {
         setReviewData(value);
       });
   };
-  useEffect(() => {
-    if (product) {
-      dispatch(userThunk.getReviewAPI(product._id))
-        .unwrap()
-        .then((value) => {
-          console.log(value);
-          setReviewData(value);
-        });
-    }
-  }, [product, dispatch]);
+  // useEffect(() => {
+  //   if (product) {
+  //     dispatch(userThunk.getReviewAPI(product._id))
+  //       .unwrap()
+  //       .then((value) => {
+  //         console.log(value);
+  //         setReviewData(value);
+  //       });
+  //   }
+  // }, [product, dispatch]);
   return (
     <Box
       sx={{

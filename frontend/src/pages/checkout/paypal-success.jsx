@@ -45,7 +45,7 @@ const PaypalSuccessPage = () => {
       .then((value) => {
         setLoading(false);
         setOrderId(value.orderFull._id);
-        notification.success({ message: 'Đặt hàng thành công!' });
+        notification.success({ message: 'Order successfully!' });
         dispatch(cartActions.reset());
       })
       .catch(() => {});
@@ -98,7 +98,8 @@ const PaypalSuccessPage = () => {
                       {`Đơn hàng có mã ${orderId} của bạn đã hoàn thành!`}
                     </MDTypography>
                     <MDTypography variant="body1" color="dark">
-                      Bạn sẽ nhận được email xác nhận với các chi tiết đơn hàng.
+                      You will receive a confirmation email with your order
+                      details.
                     </MDTypography>
                     <MDButton
                       component={Link}
@@ -110,7 +111,7 @@ const PaypalSuccessPage = () => {
                         fontWeight: '500',
                       }}
                     >
-                      Đến đơn hàng
+                      Go to order
                     </MDButton>
                   </Stack>
                 </Paper>

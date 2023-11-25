@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Row, Col, Checkbox } from 'antd';
 import { Chip } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
-import { Link } from 'react-router-dom';
 const AddressItem = (props) => {
   const { item, keyIndex, addressIndex, setAddressIndex } = props;
   const {
@@ -56,16 +55,16 @@ const AddressItem = (props) => {
                 <>
                   <Chip
                     color="primary"
-                    label="Mặc định"
+                    label="Default"
                     size="small"
                     sx={{ marginRight: '5px' }}
                   />
                   <Chip
-                    label="Địa chỉ lấy hàng"
+                    label="Delivery address"
                     size="small"
                     sx={{ marginRight: '5px' }}
                   />
-                  <Chip label="Địa chỉ trả hàng" size="small" />
+                  <Chip label="Return address" size="small" />
                 </>
               ) : null}
             </Row>

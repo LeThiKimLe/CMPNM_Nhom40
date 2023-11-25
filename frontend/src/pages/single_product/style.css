@@ -222,14 +222,12 @@ h3 {
   width: 100%;
   max-width: 716px;
   padding: 10px;
-  border: 1px solid rgba(244, 231, 231);
   border-radius: 5px;
 }
 
 .product__detail-list-img {
   margin-top: 10px;
   display: flex;
-  border: 1px solid rgba(244, 231, 231);
   border-radius: 5px;
 }
 

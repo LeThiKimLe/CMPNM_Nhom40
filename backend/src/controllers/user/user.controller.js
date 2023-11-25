@@ -80,15 +80,15 @@ const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).exec();
   if (!user) {
-    return BadRequest(res, 'Email chưa được đăng ký tài khoản');
+    return BadRequest(res, 'Email account has not been registered!');
   }
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return BadRequest(res, 'Vui lòng xem lại mật khẩu');
+    return BadRequest(res, 'Please review your password!');
   }
   if (!user.isVerified) {
-    return Unauthenticated(res, 'Tài khoản chưa được kích hoạt');
+    return Unauthenticated(res, 'Account has not been activated!');
   }
 
   const userData = createTokenUser(user);
@@ -325,36 +325,73 @@ const reSendRefreshToken = async (req, res) => {
 };
 // route
 const getProduct = async (req, res) => {
-  const { categorySlug } = req.params;
+  const { categoryId } = req.params;
+  const id = mongoose.Types.ObjectId(categoryId);
   const products = await Product.aggregate([
     {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category',
+      $match: {
+        active: true,
+        $expr: {
+          $eq: [
+            id,
+            { $arrayElemAt: ['$category_path', -1] }
+          ]
+        }
       },
     },
     {
-      $match: {
-        'category.slug': categorySlug,
+      $project: {
+        _id: 1,
+        name: 1,
+        slug: 1,
+        regularPrice: 1,
+        detailsProduct: 1,
+        productPictures: 1,
+        description: 1,
+        sale: 1,
+        stock: 1,
+        salePrice: 1,
+        ram: 1,
+        storage: 1,
+        color: 1, // Include the color field in the project stage
+        category_path: 1,
       },
     },
     {
       $group: {
         _id: {
-          ram: '$detailsProduct.ram',
-          storage: '$detailsProduct.storage',
-        },
-        colors: {
-          $push: '$color',
+          category_path: '$category_path',
+          ram: '$ram',
+          storage: '$storage',
         },
         products: { $push: '$$ROOT' },
+        colors: { $addToSet: '$color' }, // Accumulate unique colors within the group
+      },
+    },
+    {
+      $group: {
+        _id: '$_id.category_path',
+        groups: {
+          $push: {
+            _id: {
+              ram: '$_id.ram',
+              storage: '$_id.storage',
+            },
+            items: '$products',
+            colors: '$colors', // Include the colors field in the result
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category_path: '$_id',
+        groups: 1,
       },
     },
   ]);
-
-  return Response(res, { products });
+  return Response(res, { products: products[0].groups });
 };
 const getAllData = async (req, res) => {
   try {
@@ -362,74 +399,69 @@ const getAllData = async (req, res) => {
     const listBanner = await Banner.find({}).lean().exec();
     const products = await Product.aggregate([
       {
+        $match: {
+          active: true,
+          category_path: { $exists: true, $ne: [] },
+        },
+      },
+      {
         $project: {
-          category_path: { $slice: ["$category_path", -1] },
+          _id: 0,
           name: 1,
-          attribute: 1,
           slug: 1,
           regularPrice: 1,
+          detailsProduct: 1,
+          productPictures: 1,
           sale: 1,
           salePrice: 1,
-          "detailsProduct.screen": 1,
-          "productPictures": 1,
-        },
-      },
-      {
-        $unwind: "$category_path",
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category_path",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      {
-        $unwind: "$category",
-      },
-      {
-        $group: {
-          _id: "$category._id",
-          products: { $push: "$$ROOT" },
-        },
-      },
-      {
-        $unwind: "$products",
-      },
-      {
-        $project: {
-          category: "$_id",
-          product: "$products",
-        },
-      },
-      {
-        $group: {
-          _id: "$category",
-          products: { $push: "$product" },
-          attributes: { $addToSet: "$product.attribute" },
+          ram: 1,
+          storage: 1,
+          category_path: { $arrayElemAt: ['$category_path', -1] },
+          category_slug: 1,
         },
       },
       {
         $lookup: {
-          from: "attributes",
-          localField: "attributes",
-          foreignField: "_id",
-          as: "resolvedAttributes",
+          from: 'categories', // Assuming the collection name is 'categories'
+          localField: 'category_path',
+          foreignField: '_id',
+          as: 'category',
         },
       },
       {
-        $project: {
-          _id: 1,
-          products: 1,
-          attributes: {
-            $map: {
-              input: "$resolvedAttributes",
-              as: "attribute",
-              in: "$$attribute.code",
+        $unwind: '$category',
+      },
+      {
+        $group: {
+          _id: {
+            category_path: '$category_path',
+            ram: '$ram',
+            storage: '$storage',
+          },
+          products: { $push: '$$ROOT' },
+          category_slug: { $first: '$category.slug' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.category_path',
+          groups: {
+            $push: {
+              _id: {
+                ram: '$_id.ram',
+                storage: '$_id.storage',
+              },
+              items: '$products',
+              category_slug: '$category_slug',
             },
           },
-          // Include other fields here
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category_path: '$_id',
+          groups: 1,
         },
       },
     ]);

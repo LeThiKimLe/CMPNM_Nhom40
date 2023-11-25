@@ -65,32 +65,32 @@ const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
 const orderStatusList = [
   {
     key: 'pending',
-    value: 'Chờ xác nhận',
+    value: 'Pending',
     icon: <WorkHistoryIcon />,
   },
   {
     key: 'packed',
-    value: 'Đã đóng gói',
+    value: 'Packaged',
     icon: <FontAwesomeIcon icon={faBoxArchive} />,
   },
   {
     key: 'shipping',
-    value: 'Đang giao hàng',
+    value: 'Delivery',
     icon: <FontAwesomeIcon icon={faTruckFast} />,
   },
   {
     key: 'delivered',
-    value: 'Đã giao hàng',
+    value: 'Delivered',
     icon: <AssignmentTurnedInIcon />,
   },
   {
     key: 'cancelled',
-    value: 'Đã hủy',
+    value: 'Canceled',
     icon: <FontAwesomeIcon icon={faTriangleExclamation} />,
   },
   {
     key: 'refund',
-    value: 'Trả hàng',
+    value: 'Return',
     icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
   },
 ];
@@ -134,7 +134,7 @@ export default function CustomizedSteppers(props) {
                 sx={{
                   color: stepActive === index ? '#e91e63' : '#111111',
                   fontSize: '12px',
-                  fontWeight: stepActive === index ? '500' : '400',
+                  fontWeight: stepActive === index ? '600' : '500',
                 }}
               >
                 {label}
@@ -142,7 +142,6 @@ export default function CustomizedSteppers(props) {
             </StepLabel>
           </Step>
         ))}
-    
       </Stepper>
     </>
   );

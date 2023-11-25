@@ -164,7 +164,6 @@ function Products() {
     let productData = {};
     let listImage = [];
     let infoValues, digitalValues;
-
     fileList.forEach((file, index) => {
       const image = getBase64(file.originFileObj);
       listImage.push(image);
@@ -195,7 +194,7 @@ function Products() {
       await dispatch(productThunk.createAPI(productData)).unwrap();
 
       notification.success({
-        message: 'Tạo sản phẩm thành công',
+        message: 'Create product successfully!',
         placement: 'top',
       });
       formTabInfo.resetFields();
@@ -312,7 +311,9 @@ function Products() {
         attribute: (
           <>
             <div className="author-info">
-              <Tag color="cyan">{productItem.attribute.code}</Tag>
+              <Tag color="cyan">
+                {productItem.ram} - {productItem.storage}
+              </Tag>
             </div>
           </>
         ),
@@ -320,12 +321,11 @@ function Products() {
           <Tag
             color={productItem.color}
             style={{
-              backgroundColor: productItem.color.value,
-              color:
-                productItem.color.value === 'White' ? '#111111' : '#ffffff',
+              backgroundColor: productItem.color,
+              color: productItem.color === 'White' ? '#111111' : '#ffffff',
             }}
           >
-            {productItem.color.value}
+            {productItem.color}
           </Tag>
         ),
         stock: (

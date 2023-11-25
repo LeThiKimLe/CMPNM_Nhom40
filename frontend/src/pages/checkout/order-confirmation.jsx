@@ -12,7 +12,7 @@ const OrderConfirmation = () => {
   return (
     <MDBox
       color="#000000"
-      bgColor="Light"
+      bgColor="#fff"
       variant="contained"
       borderRadius="none"
       opacity={1}
@@ -32,7 +32,14 @@ const OrderConfirmation = () => {
         >
           <Grid item xs={8} justifyContent="center" alignItems="center">
             <MDBox variant="contained">
-              <Paper elevation={2} sx={{ padding: '15px' }}>
+              <Paper
+                elevation={2}
+                sx={{
+                  padding: '15px',
+                  borderRadius: '13px',
+                  boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                }}
+              >
                 <div style={{ marginBottom: '40px', marginTop: '30px' }}>
                   <img
                     src={orderComplete}
@@ -51,20 +58,37 @@ const OrderConfirmation = () => {
                   alignItems="center"
                   spacing={2}
                 >
-                  <MDTypography variant="h4" color="primary">
-                    {`Đơn hàng có mã ${state.id} của bạn đã hoàn thành!`}
+                  <MDTypography
+                    sx={{
+                      color: '#323232',
+                      fontSize: '20px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Your order with code {state.id} has been completed!
                   </MDTypography>
-                  <MDTypography variant="body1" color="dark">
-                    Bạn sẽ nhận được email xác nhận với các chi tiết đơn hàng.
+                  <MDTypography
+                    sx={{
+                      color: '#323232',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    You will receive a confirmation email with your order
+                    details.
                   </MDTypography>
                   <MDButton
                     component={Link}
                     to="/user/order"
                     size="medium"
-                    color="primary"
+                    color="light"
                     sx={{
                       textTransform: 'initial !important',
-                      fontWeight: '500',
+                      fontWeight: '600',
+                      color: '#46bcaa',
+                      backgroundColor: '#edf8f7',
+                      borderRadius: '8px',
+                      boxShadow: '#dbd9d9 5px 5px 5px 5px',
                     }}
                   >
                     Đến đơn hàng

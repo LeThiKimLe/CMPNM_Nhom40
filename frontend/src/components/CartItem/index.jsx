@@ -13,31 +13,24 @@ import { useDispatch } from 'react-redux';
 import cartThunk from '../../features/cart/cart.service';
 import { getColorProduct } from '../../utils/custom-products';
 import { notification } from 'antd';
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
-];
 
 const CartItem = (props) => {
   const dispatch = useDispatch();
   const { product, keyIndex, handleDelete } = props;
   console.log(product);
-  const { ram, storage } = product.detailsProduct;
-  const { productPicture, name, salePrice, regularPrice, quantity } = product;
+  const {
+    productPicture,
+    name,
+    salePrice,
+    regularPrice,
+    quantity,
+    color,
+    ram,
+    storage,
+  } = product;
 
   const [amount, setAmount] = useState(quantity);
 
-  const colorName = getColorProduct(product, colorList);
-  console.log(colorName);
   const handleIncrease = () => {
     let newCartItem = { product: product._id, quantity: amount + 1 };
     dispatch(
@@ -52,7 +45,7 @@ const CartItem = (props) => {
       })
       .catch(() => {
         notification.error({
-          message: 'Số lượng sản phẩm vượt quá số lượng trong kho!',
+          message: 'The quantity of product exceeds the quantity in stock!',
           placement: 'top',
         });
       });
@@ -101,12 +94,15 @@ const CartItem = (props) => {
           <MDBox ml={2} lineHeight={1}>
             <MDTypography
               display="block"
-              sx={{ fontSize: '14px', color: '#111111', fontWeight: '500' }}
+              sx={{ fontSize: '14px', color: '#323232', fontWeight: '600' }}
             >
               {name}
             </MDTypography>
-            <MDTypography sx={{ color: '#5b5b5b' }} variant="overline">
-              {ram}-{storage}-{colorName}
+            <MDTypography
+              sx={{ color: '#323232', fontSize: '12px', fontWeight: '600' }}
+              variant="overline"
+            >
+              {ram}-{storage}-{color}
             </MDTypography>
           </MDBox>
         </MDBox>
@@ -114,16 +110,16 @@ const CartItem = (props) => {
       <Grid xs={3}>
         <Stack direction="row" spacing={1}>
           <MDTypography
-            sx={{ fontSize: '0.875rem', fontWeight: '400', color: '#000000' }}
+            sx={{ fontSize: '14px', fontWeight: '600', color: '#323232' }}
           >
             {formatThousand(Number(salePrice))}đ
           </MDTypography>
           <MDTypography
             sx={{
-              fontSize: '0.875rem',
-              fontWeight: '400',
+              fontSize: '13px',
+              fontWeight: '600',
+              color: '#f35421',
               textDecoration: 'line-through',
-              color: '#5b5b5b',
             }}
           >
             {formatThousand(Number(regularPrice))}đ
@@ -145,9 +141,9 @@ const CartItem = (props) => {
             sx={{
               borderRadius: '0.3rem',
               padding: '1px 1px',
-              color: '#000000',
+              color: '#323232',
               textAlign: 'center',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: '500',
             }}
             variant="outlined"
@@ -179,8 +175,9 @@ const CartItem = (props) => {
           <IconButton
             sx={{
               borderRadius: '8px',
-              border: '1px solid #999999',
+              border: '1px solid #e7eef8',
               paddingLeft: '15px',
+              boxShadow: '#dbd9d9 0px 5px 5px 5px',
               paddingRight: '15px',
             }}
           >
@@ -191,13 +188,18 @@ const CartItem = (props) => {
             size="smaill"
             sx={{
               borderRadius: '8px',
-              border: '1px solid #999999',
+              border: '1px solid #e7eef8',
               paddingLeft: '15px',
+              boxShadow: '#dbd9d9 0px 5px 5px 5px',
               paddingRight: '15px',
             }}
             onClick={handleDelete}
           >
-            <DeleteIcon fontSize="small" color="dark" />
+            <DeleteIcon
+              fontSize="small"
+              color="dark"
+              sx={{ color: '#0b5394' }}
+            />
           </IconButton>
         </Stack>
       </Grid>

@@ -107,13 +107,13 @@ const ModalAddAddress = (props) => {
             {' '}
             <Form.Item
               className="username"
-              label="Tên"
+              label="Name"
               style={{ fontWeight: '500' }}
               name="name"
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhập tên!',
+                  message: 'Please enter name!',
                 },
               ]}
               hasFeedback
@@ -127,13 +127,13 @@ const ModalAddAddress = (props) => {
           <Col span={12}>
             <Form.Item
               className="username"
-              label="Số điện thoại"
+              label="Phone number"
               style={{ fontWeight: '500' }}
               name="mobileNumber"
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhập số điện thoại!',
+                  message: 'Please enter the phone number!',
                 },
               ]}
               hasFeedback
@@ -147,13 +147,13 @@ const ModalAddAddress = (props) => {
         </Row>
         <Form.Item
           className="username"
-          label="Tỉnh, Thành phố"
+          label="Province, City"
           style={{ fontWeight: '500' }}
           name="provinceName"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập tỉnh, thành phố!',
+              message: 'Please enter province or city!',
             },
           ]}
         >
@@ -178,13 +178,13 @@ const ModalAddAddress = (props) => {
         </Form.Item>
         <Form.Item
           className="username"
-          label="Quận, Huyện"
+          label="District, District"
           style={{ fontWeight: '500' }}
           name="districtName"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập quận, huyện!',
+              message: 'Please enter a district!',
             },
           ]}
         >
@@ -209,13 +209,13 @@ const ModalAddAddress = (props) => {
         </Form.Item>
         <Form.Item
           className="username"
-          label="Xã, Phường"
+          label="Commune, Ward"
           style={{ fontWeight: '500' }}
           name="wardName"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập xã, phường!',
+              message: 'Please enter commune, ward!',
             },
           ]}
         >
@@ -240,13 +240,13 @@ const ModalAddAddress = (props) => {
         </Form.Item>
         <Form.Item
           className="username"
-          label="Địa chỉ cụ thể"
+          label="Specific address"
           style={{ fontWeight: '500' }}
           name="address"
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập địa chỉ!',
+              message: 'Please enter an address!',
             },
           ]}
           hasFeedback
@@ -263,7 +263,7 @@ const ModalAddAddress = (props) => {
           hasFeedback
         >
           <Checkbox checked={checkDefault} onChange={onCheckboxChange}>
-            Đặt làm địa chỉ mặc định
+            Set as default address
           </Checkbox>
         </Form.Item>
         {addressUser.updatingAddress ? (
@@ -291,7 +291,7 @@ const ModalAddAddress = (props) => {
             }}
             onClick={handleAddAddress}
           >
-            Thêm mới
+            Add new
           </Button>
 
           <Button
@@ -304,7 +304,7 @@ const ModalAddAddress = (props) => {
               width: '30%',
             }}
           >
-            Hủy
+            Cancel
           </Button>
         </Form.Item>
       </Form>

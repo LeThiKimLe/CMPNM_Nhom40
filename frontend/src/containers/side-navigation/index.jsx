@@ -6,7 +6,14 @@ import { useSelector } from 'react-redux';
 // react-router-dom components
 import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Container, Stack, Menu, Button, MenuItem } from '@mui/material';
+import {
+  Container,
+  Stack,
+  Menu,
+  Button,
+  MenuItem,
+  Divider,
+} from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
@@ -55,16 +62,15 @@ const SideNavigation = () => {
   }, [categoryList]);
   return (
     <MDBox
-      color="dark"
-      bgColor="white"
+      color="#323232"
+      bgColor="#ffffff"
+      borderRadius="none"
       opacity={1}
-      display="flex"
       sx={{
-        paddingTop: '10px',
-        paddingBottom: '10px',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.2)',
       }}
-      shadow="md"
-      alignItems="center"
+      display="flex"
+      justifyContent="space-between"
     >
       <Container>
         <Grid xs={12} container display="flex" justifyContent="space-between">
@@ -99,7 +105,7 @@ const SideNavigation = () => {
                 aria-haspopup="true"
                 onClick={handleClick}
               >
-                Danh sách điện thoại
+                Phone list
               </Button>
               <Menu
                 id={`simple-menu`}

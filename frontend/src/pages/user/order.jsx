@@ -89,18 +89,18 @@ const OrderPage = () => {
               >
                 <ShoppingBagIcon
                   fontSize="medium"
-                  color="error"
+                  color="dark"
                   sx={{ marginTop: '3px' }}
                 />
                 <MDTypography
                   sx={{ color: '#444444', fontSize: '20px' }}
                   fontWeight="medium"
                 >
-                  Đơn mua của tôi
+                  My orders
                 </MDTypography>
               </Stack>
             </Grid>
-            <Grid item xs={12} sx={{ paddingTop: '0px' }}>
+            <Grid item xs={12} sx={{ paddingTop: '0px', paddingLeft: '0px' }}>
               <Stack
                 direction="row"
                 justifyContent="flex-start"

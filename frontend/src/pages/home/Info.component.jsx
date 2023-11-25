@@ -10,7 +10,15 @@ import payment from '../../assets/images/payment.png';
 const InfoComponent = () => {
   return (
     <MDBox variant="contained" borderRadius="lg" width="100%">
-      <Paper elevation={3} sx={{ padding: '20px', marginBottom: '10px' }}>
+      <Paper
+        elevation={3}
+        sx={{
+          padding: '20px',
+          marginBottom: '10px',
+          boxShadow: '#808191 0px 10.8px 10px 0px',
+          borderRadius: '13px',
+        }}
+      >
         <Grid
           direction="column"
           justifyContent="space-between"
@@ -44,10 +52,10 @@ const InfoComponent = () => {
                     fontWeight: '600',
                   }}
                 >
-                  Giao hàng nhanh chóng
+                  Fast shipping
                 </MDTypography>
                 <MDTypography sx={{ color: '#444444', fontSize: '14px' }}>
-                  Phí vận chuyển thấp
+                  Low shipping fee
                 </MDTypography>
               </Stack>
             </Stack>
@@ -77,10 +85,10 @@ const InfoComponent = () => {
                     fontWeight: '600',
                   }}
                 >
-                  Đảm bảo tiền tệ
+                  Monetary guarantee
                 </MDTypography>
                 <MDTypography sx={{ color: '#444444', fontSize: '14px' }}>
-                  Tiền sẽ được hoàn lại trong 7 ngày
+                  Money will be refunded within a week
                 </MDTypography>
               </Stack>
             </Stack>
@@ -110,10 +118,10 @@ const InfoComponent = () => {
                     fontWeight: '600',
                   }}
                 >
-                  Bảo hành
+                  Guarantee
                 </MDTypography>
                 <MDTypography sx={{ color: '#444444', fontSize: '14px' }}>
-                  Sản phẩm bảo hành 1 năm
+                  One year warranty products
                 </MDTypography>
               </Stack>
             </Stack>
@@ -143,10 +151,10 @@ const InfoComponent = () => {
                     fontWeight: '600',
                   }}
                 >
-                  Thanh toán
+                  Payment
                 </MDTypography>
                 <MDTypography sx={{ color: '#444444', fontSize: '14px' }}>
-                  Thanh toán bảo mật, tiện lợi
+                  Secure and convenient payment
                 </MDTypography>
               </Stack>
             </Stack>

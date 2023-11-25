@@ -38,13 +38,14 @@ const createProduct = async (req, res) => {
       category_path: categoryPath,
       stock: Number(info.stock),
       description,
-      attribute: digital.attribute,
+      ram: digital.ram,
+      storage: digital.storage,
       detailsProduct: {
         ...digital,
       },
     });
     product.slug = slugify(
-      `${info.name}-${info.color}-${digital.attribute}`,
+      `${info.name}-${digital.ram}-${digital.storage}-${info.color}`,
       {
         lower: true,
         remove: /[*+~.()'"!:@]/g,
@@ -62,8 +63,6 @@ const getAll = async (req, res) => {
   let listProducts = [];
   try {
     listProducts = await Product.find({ active: true })
-      .populate('color', 'value')
-      .populate('attribute', 'code')
       .populate({
         path: 'category_path',
         select: 'name',
@@ -94,7 +93,7 @@ const deleteProduct = async (req, res) => {
 const getProductById = async (req, res) => {
   const { id } = req.params;
   const product = await Product.findById(id).select(
-    '_id name slug regularPrice salePrice color stock productPictures category active createdAt detailsProduct sale description quantitySold'
+    '_id name slug regularPrice salePrice color ram storage stock productPictures category active createdAt detailsProduct sale description quantitySold'
   );
   Response(res, { product });
 };

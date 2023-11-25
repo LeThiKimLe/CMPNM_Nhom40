@@ -8,20 +8,20 @@ import AddAlertIcon from '@mui/icons-material/AddAlert';
 // react-router-dom components
 import { Link } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Container, Stack } from '@mui/material';
+import { Container, Paper, Stack } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 
 const Header = () => {
   return (
     <MDBox
-      color="#FFFFFF"
-      bgColor="#0F3460"
-      borderRadius="none"
-      opacity={1}
-      p={2.5}
+      color="#000"
+      bgColor="#fff"
       height="20px"
       display="flex"
       alignItems="center"
+      sx={{
+        padding: '20px',
+      }}
     >
       {' '}
       <Container>
@@ -40,17 +40,19 @@ const Header = () => {
               <PhoneIcon />
               <MDTypography
                 variant="button"
-                fontWeight="regular"
-                color={'white'}
+                fontWeight="medium"
+                sx={{ fontSize: '14px' }}
+                color={'black'}
               >
-                Nhóm 9
+                Group 50
               </MDTypography>
               <Stack direction="row" spacing={1}>
                 <EmailIcon />
                 <MDTypography
                   variant="button"
-                  fontWeight="regular"
-                  color={'white'}
+                  fontWeight="medium"
+                  color={'black'}
+                  sx={{ fontSize: '14px' }}
                 >
                   18110379@student.hcmute.edu.vn
                 </MDTypography>
@@ -67,18 +69,20 @@ const Header = () => {
               <AddAlertIcon />
               <MDTypography
                 variant="button"
-                fontWeight="regular"
-                color={'white'}
+                fontWeight="medium"
+                color={'black'}
+                sx={{ fontSize: '14px' }}
                 component={Link}
                 to="/notification"
               >
-                Thông báo
+                Notification
               </MDTypography>
               <LanguageIcon />
               <MDTypography
                 variant="button"
-                fontWeight="regular"
-                color={'white'}
+                fontWeight="medium"
+                color={'black'}
+                sx={{ fontSize: '14px' }}
               >
                 VIE
               </MDTypography>

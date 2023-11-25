@@ -26,7 +26,7 @@ const ModalAddress = (props) => {
       footer={null}
       open={open}
       onCancel={onCancel}
-      title="Địa chỉ của tôi"
+      title="My Addresses"
       width={600}
     >
       <ModalAddAddress
@@ -67,7 +67,7 @@ const ModalAddress = (props) => {
           }}
           onClick={() => setOpenModalAdd(true)}
         >
-          Thêm mới
+          Add new
         </MDButton>
       </div>
       <div
@@ -87,7 +87,7 @@ const ModalAddress = (props) => {
           }}
           onClick={onHandleCancel}
         >
-          Hủy
+          Cancel
         </MDButton>
 
         <MDButton
@@ -100,7 +100,7 @@ const ModalAddress = (props) => {
           }}
           onClick={handleChangeAddress}
         >
-          Xác nhận
+          Confirm
         </MDButton>
       </div>
     </Modal>

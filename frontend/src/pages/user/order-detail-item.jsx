@@ -8,25 +8,10 @@ import MDButton from '../../components/MDButton';
 import MDBox from '../../components/MDBox';
 import MDAvatar from '../../components/MDAvatar';
 import { formatThousand } from '../../utils/custom-price';
-const colorList = [
-  { name: 'Đỏ', value: 'Red' },
-  { name: 'Cam', value: 'Orange' },
-  { name: 'Vàng', value: 'Yellow' },
-  { name: 'Xanh lá cây', value: 'Green' },
-  { name: 'Xanh dương', value: 'Blue' },
-  { name: 'Tím', value: 'Purple' },
-  { name: 'Hồng', value: 'Pink' },
-  { name: 'Nâu', value: 'Brown' },
-  { name: 'Xám', value: 'Gray' },
-  { name: 'Đen', value: 'Black' },
-  { name: 'Trắng', value: 'White' },
-];
 const OrderDetailItem = (props) => {
   const { item } = props;
   const { productId, purchasedQty } = item;
-  const { salePrice, productPictures, name, detailsProduct } = productId;
-  const { ram, storage } = detailsProduct;
-  const colorName = getColorProduct(productId, colorList);
+  const { salePrice, productPictures, name, ram, storage, color } = productId;
 
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -50,7 +35,8 @@ const OrderDetailItem = (props) => {
               {name}
             </MDTypography>
             <MDTypography
-              sx={{ fontWeight: '500', color: '#fa113d' }}
+              color="primary"
+              sx={{ fontWeight: '600', color: '#0b5394' }}
               variant="overline"
             >
               {formatThousand(salePrice)}đ x {purchasedQty}
@@ -68,7 +54,7 @@ const OrderDetailItem = (props) => {
               fontWeight: '500',
             }}
           >
-            {ram} - {storage} - {colorName}
+            {ram} - {storage} - {color}
           </MDTypography>
         </Stack>
       </Grid>
@@ -76,14 +62,14 @@ const OrderDetailItem = (props) => {
         <Stack direction="row" justifyContent="center" alignItems="center">
           <MDButton
             size="medium"
-            color="primary"
             variant="text"
             sx={{
               textTransform: 'initial !important',
               fontWeight: '500',
+              color: '#0b5394',
             }}
           >
-            Viết đánh giá
+            Write a review
           </MDButton>
         </Stack>
       </Grid>

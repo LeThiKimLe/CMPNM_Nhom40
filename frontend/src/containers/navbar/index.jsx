@@ -6,6 +6,7 @@ import {
   InputBase,
   Menu,
   MenuItem,
+  InputAdornment,
   Badge,
 } from '@mui/material';
 import { notification } from 'antd';
@@ -72,12 +73,11 @@ const Navbar = () => {
   }
   const isLoggedIn = useSelector((state) => selectIsLoggedIn(state));
   const handleSignOut = () => {
-    // const pathname = location.pathname.replace('/', '');
     dispatch(userActions.signout());
     dispatch(cartActions.reset());
     dispatch(addressActions.reset());
     notification.success({
-      message: 'Đăng xuất thành công!',
+      message: 'Logout successfully!',
       placement: 'top',
     });
     navigate('/');
@@ -97,17 +97,7 @@ const Navbar = () => {
     }
   }, [cart, cartItemsLocal, isLoggedIn]);
   return (
-    <MDBox
-      color="#000000"
-      bgColor="#ffffff"
-      variant="contained"
-      borderRadius="none"
-      opacity={1}
-      sx={{
-        paddingTop: '10px',
-      }}
-      display="flex"
-    >
+    <MDBox color="#000" bgColor="#fff" display="flex" alignItems="center">
       <Container>
         <Grid xs={12} container display="flex" justifyContent="space-between">
           <Stack
@@ -128,24 +118,35 @@ const Navbar = () => {
               alignItems="center"
               spacing={3}
             >
-              <Paper
-                component="form"
+              <InputBase
                 sx={{
+                  alignItems: 'center',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '13px',
+                  boxShadow: '#dbd9d9 5px 10px 10px 5px',
+                  color: '#808191',
                   display: 'flex',
-                  borderRadius: '10px',
+                  fontFamily: 'Poppins',
+                  fontSize: '13px',
+                  fontWeight: 'medium',
+                  gridArea: 'auto',
+                  lineHeight: '19.5px',
+                  margin: '13px 19.5px',
+                  padding: '0px 9.75px',
+                  width: '1000px',
+                  height: '45px',
                 }}
-                variant="outlined"
-              >
-                <InputBase
-                  sx={{ ml: 1, flex: 1, fontSize: '14px', width: '800px' }}
-                  placeholder="Tìm kiếm sản phẩm..."
-                  value={phrase}
-                  onChange={handlePhraseChange}
-                />{' '}
-                <IconButton type="button" sx={{ p: '10px' }}>
-                  <SearchIcon />
-                </IconButton>
-              </Paper>
+                placeholder="Search.."
+                value={phrase}
+                onChange={handlePhraseChange}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton edge="end" aria-label="search" size="small">
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
             </Stack>
 
             {suggestions.length !== 0 && showItems && (
@@ -205,14 +206,15 @@ const Navbar = () => {
                   onClick={handleClick}
                   sx={{
                     borderRadius: '8px',
-                    border: '1px solid #111111',
+                    border: '1px solid #e7eef8',
                     paddingLeft: '15px',
+                    boxShadow: '#dbd9d9 5px 10px 10px 5px',
                     paddingRight: '15px',
                   }}
                 >
                   <AccountCircleIcon
                     sx={{
-                      color: '#111111',
+                      color: '#0b5394',
                     }}
                   />
                 </IconButton>
@@ -224,13 +226,24 @@ const Navbar = () => {
                   onClose={handleClose}
                   MenuListProps={{ onMouseLeave: handleClose }}
                 >
-                  <MenuItem onClick={() => navigate('/user/profile')}>
-                    Tài khoản của Tôi
+                  <MenuItem
+                    onClick={() => navigate('/user/profile')}
+                    sx={{ fontWeight: '600', fontSize: '13px' }}
+                  >
+                    My Account
                   </MenuItem>
-                  <MenuItem onClick={() => navigate('/user/order')}>
-                    Đơn mua
+                  <MenuItem
+                    onClick={() => navigate('/user/order')}
+                    sx={{ fontWeight: '600', fontSize: '13px' }}
+                  >
+                    My Orders
                   </MenuItem>
-                  <MenuItem onClick={handleSignOut}>Đăng xuất</MenuItem>
+                  <MenuItem
+                    onClick={handleSignOut}
+                    sx={{ fontWeight: '600', fontSize: '13px' }}
+                  >
+                    Logout
+                  </MenuItem>
                 </Menu>
               </>
             ) : (
@@ -239,30 +252,43 @@ const Navbar = () => {
                 to="/sign-in"
                 sx={{
                   borderRadius: '8px',
-                  border: '1px solid #111111',
+                  border: '1px solid #e7eef8',
                   paddingLeft: '15px',
+                  boxShadow: '#dbd9d9 5px 10px 10px 5px',
                   paddingRight: '15px',
                 }}
               >
-                <ArrowBackIcon color="dark" />
+                <ArrowBackIcon
+                  sx={{
+                    color: '#46bcaa',
+                  }}
+                />
               </IconButton>
             )}
 
             <Badge
               badgeContent={cartAmount === 0 ? 0 : cartAmount}
               color="secondary"
+              sx={{
+                color: '#1f2128',
+              }}
             >
               <IconButton
                 component={Link}
                 to="/cart"
                 sx={{
                   borderRadius: '8px',
-                  border: '1px solid #111111',
+                  border: '1px solid #e7eef8',
                   paddingLeft: '15px',
+                  boxShadow: '#dbd9d9 5px 10px 10px 5px',
                   paddingRight: '15px',
                 }}
               >
-                <ShoppingCartIcon color="dark" />
+                <ShoppingCartIcon
+                  sx={{
+                    color: '#46bcaa',
+                  }}
+                />
               </IconButton>
             </Badge>
           </Stack>

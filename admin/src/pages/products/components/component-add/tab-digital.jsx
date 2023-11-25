@@ -4,10 +4,6 @@ import { Form, Input } from 'antd';
 import { Select } from 'antd';
 
 const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
-
 const mobileOS = [
   {
     key: '1',

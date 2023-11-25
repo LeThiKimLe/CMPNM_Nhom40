@@ -20,6 +20,7 @@ function ProductCard({ product }) {
     sale,
     detailsProduct,
   } = product;
+
   const { ram, storage } = detailsProduct;
   const screenCustom = renderScreen(detailsProduct.screen);
 

@@ -38,7 +38,7 @@ const OrderDetails = () => {
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Cập nhật trạng thái đơn hàng thành công',
+          message: 'Update order status successfully!',
           placement: 'top',
         });
         dispatch(orderThunk.getOrder(orderId))
@@ -110,10 +110,10 @@ const OrderDetails = () => {
                     sx={{ marginTop: '3px' }}
                   />
                   <MDTypography
-                    sx={{ color: '#444444', fontSize: '20px' }}
+                    sx={{ color: '#323232', fontSize: '20px' }}
                     fontWeight="medium"
                   >
-                    Chi tiết đơn hàng
+                    Order detail
                   </MDTypography>
                 </Stack>
                 {orderSelected.orderStatus &&
@@ -128,13 +128,20 @@ const OrderDetails = () => {
                       padding: '2px 10px',
                     }}
                   >
-                    Mua lần nữa
+                    ReOrder
                   </MDButton>
                 ) : null}
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <MDBox variant="contained" bgColor="light">
+              <MDBox
+                variant="contained"
+                bgColor="light"
+                sx={{
+                  borderRadius: '13px',
+                  boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                }}
+              >
                 <CustomizedSteppers
                   stepActive={orderSelected.orderStatus.length - 1}
                   orderStatus={orderSelected.orderStatus}
@@ -142,8 +149,22 @@ const OrderDetails = () => {
               </MDBox>
             </Grid>
             <Grid item xs={12}>
-              <MDBox variant="contained" bgColor="light">
-                <Paper elevation={2} sx={{ padding: '10px 10px' }}>
+              <MDBox
+                variant="contained"
+                bgColor="light"
+                sx={{
+                  borderRadius: '13px',
+                  boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                }}
+              >
+                <Paper
+                  elevation={2}
+                  sx={{
+                    padding: '10px 10px',
+                    borderRadius: '13px',
+                    boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                  }}
+                >
                   <Stack
                     direction="row"
                     spacing={2}
@@ -160,17 +181,17 @@ const OrderDetails = () => {
                         {' '}
                         <MDTypography
                           sx={{
-                            color: '#7d879c',
-                            fontSize: '14px',
+                            color: '#323232',
+                            fontSize: '13px',
                             fontWeight: '500',
                           }}
                         >
-                          Mã đơn hàng:
+                          Order id:
                         </MDTypography>
                         <MDTypography
                           sx={{
                             color: '#2b3445',
-                            fontSize: '14px',
+                            fontSize: '13px',
                             fontWeight: '500',
                           }}
                         >
@@ -188,17 +209,17 @@ const OrderDetails = () => {
                         {' '}
                         <MDTypography
                           sx={{
-                            color: '#7d879c',
-                            fontSize: '14px',
+                            color: '#323232',
+                            fontSize: '13px',
                             fontWeight: '500',
                           }}
                         >
-                          Ngày đặt hàng:
+                          Order date:
                         </MDTypography>
                         <MDTypography
                           sx={{
                             color: '#2b3445',
-                            fontSize: '14px',
+                            fontSize: '13px',
                             fontWeight: '500',
                           }}
                         >
@@ -225,17 +246,17 @@ const OrderDetails = () => {
                           {' '}
                           <MDTypography
                             sx={{
-                              color: '#7d879c',
-                              fontSize: '14px',
+                              color: '#323232',
+                              fontSize: '13px',
                               fontWeight: '500',
                             }}
                           >
-                            Ngày giao hàng
+                            Delivery date:
                           </MDTypography>
                           <MDTypography
                             sx={{
                               color: '#2b3445',
-                              fontSize: '14px',
+                              fontSize: '13px',
                               fontWeight: '500',
                             }}
                           >
@@ -268,20 +289,19 @@ const OrderDetails = () => {
                           justifyContent="center"
                           alignItems="center"
                         >
-                          {' '}
                           <MDTypography
                             sx={{
-                              color: '#7d879c',
-                              fontSize: '14px',
+                              color: '#323232',
+                              fontSize: '13px',
                               fontWeight: '500',
                             }}
                           >
-                            Ngày giao hàng dự kiến:
+                            Estimated delivery:
                           </MDTypography>
                           <MDTypography
                             sx={{
                               color: '#2b3445',
-                              fontSize: '14px',
+                              fontSize: '13px',
                               fontWeight: '500',
                             }}
                           >
@@ -319,7 +339,14 @@ const OrderDetails = () => {
                 spacing={2}
               >
                 <MDBox variant="contained">
-                  <Paper elevation={3} sx={{ padding: '15px' }}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: '15px',
+                      borderRadius: '13px',
+                      boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                    }}
+                  >
                     <Stack
                       justifyContent="flex-start"
                       alignItems="flex-start"
@@ -328,18 +355,18 @@ const OrderDetails = () => {
                     >
                       <MDTypography
                         sx={{
-                          color: '#444444',
-                          fontSize: '14px',
+                          color: '#323232',
+                          fontSize: '16px',
                           fontWeight: '500',
                         }}
                       >
-                        Địa chỉ giao hàng
+                        Delivery address
                       </MDTypography>
                       <MDTypography
                         sx={{
-                          color: '#5b5b5b',
-                          fontSize: '14px',
-                          fontWeight: '400',
+                          color: '#323232',
+                          fontSize: '13px',
+                          fontWeight: '500',
                         }}
                       >
                         {orderSelected.address.name} -{' '}
@@ -357,25 +384,25 @@ const OrderDetails = () => {
                     >
                       <MDTypography
                         sx={{
-                          color: '#444444',
-                          fontSize: '14px',
+                          color: '#323232',
+                          fontSize: '16px',
                           fontWeight: '500',
                         }}
                       >
-                        Phương thức thanh toán
+                        Payment method
                       </MDTypography>
                       <MDTypography
                         sx={{
-                          color: '#5b5b5b',
-                          fontSize: '14px',
-                          fontWeight: '400',
+                          color: '#323232',
+                          fontSize: '13px',
+                          fontWeight: '500',
                         }}
                       >
                         {orderSelected.paymentType === 'momo'
-                          ? 'Thanh toán qua ví điện tử Momo'
+                          ? 'Payment via Momo e-wallet'
                           : orderSelected.paymentType === 'cod'
-                          ? 'Thanh toán khi nhận hàng'
-                          : 'Thanh toán qua ví điện tử Paypal'}
+                          ? 'Payment on delivery'
+                          : 'Payment via Paypal e-wallet'}
                       </MDTypography>
                     </Stack>
                   </Paper>
@@ -389,7 +416,14 @@ const OrderDetails = () => {
                 spacing={2}
               >
                 <MDBox variant="contained">
-                  <Paper elevation={3} sx={{ padding: '15px' }}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      padding: '15px',
+                      borderRadius: '13px',
+                      boxShadow: '#dbd9d9 5px 5px 10px 10px',
+                    }}
+                  >
                     <Stack
                       direction="row"
                       justifyContent="space-between"
@@ -398,18 +432,16 @@ const OrderDetails = () => {
                       sx={{ marginBottom: '5px' }}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
+                        sx={{ color: '#323232', fontSize: '13px' }}
                         variant="h4"
                       >
-                        Tổng cộng
+                        Total items
                       </MDTypography>
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
+                        sx={{ color: '#323232', fontSize: '13px' }}
                         variant="h4"
                       >
-                        {orderSelected.items.length} sản phẩm
+                        {orderSelected.items.length} items
                       </MDTypography>
                     </Stack>
 
@@ -422,16 +454,17 @@ const OrderDetails = () => {
                       sx={{ marginBottom: '5px' }}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
+                        sx={{ color: '#323232', fontSize: '13px' }}
+                        variant="h4"
                       >
-                        Tổng tiền hàng:
+                        Total amount:
                       </MDTypography>
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
+                        sx={{
+                          color: '#323232',
+                          fontWeight: '500',
+                          fontSize: '13px',
+                        }}
                       >
                         {formatThousand(getTotalPrice(orderSelected.items))}đ
                       </MDTypography>
@@ -444,16 +477,17 @@ const OrderDetails = () => {
                       sx={{ marginBottom: '5px' }}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
+                        sx={{ color: '#323232', fontSize: '13px' }}
+                        variant="h4"
                       >
-                        Tổng phí vận chuyển:
+                        Total shipping fee:
                       </MDTypography>
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
+                        sx={{
+                          color: '#323232',
+                          fontWeight: '500',
+                          fontSize: '13px',
+                        }}
                       >
                         {' '}
                         {formatThousand(orderSelected.shipAmount)}đ
@@ -467,16 +501,17 @@ const OrderDetails = () => {
                       sx={{ marginBottom: '5px' }}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body"
+                        sx={{ color: '#323232', fontSize: '13px' }}
+                        variant="h4"
                       >
-                        Tổng phí vận chuyển:
+                        Total shipping fee:
                       </MDTypography>
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px' }}
-                        variant="body1"
+                        sx={{
+                          color: '#323232',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                        }}
                       >
                         {' '}
                         - {formatThousand(orderSelected.freeShip)}đ
@@ -490,15 +525,18 @@ const OrderDetails = () => {
                       spacing={2}
                     >
                       <MDTypography
-                        color="dark"
-                        sx={{ fontSize: '14px', fontWeight: '500' }}
-                        variant="body"
+                        sx={{
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          color: '#323232',
+                        }}
+                        variant="h4"
                       >
-                        Tổng thanh toán:
+                        Total payment:
                       </MDTypography>
                       <MDTypography
                         sx={{
-                          fontSize: '14px',
+                          fontSize: '13px',
                           color: '#990000',
                           fontWeight: '500',
                         }}
@@ -523,10 +561,12 @@ const OrderDetails = () => {
                           width: '100%',
                           textTransform: 'initial !important',
                           fontWeight: '500',
+                          borderRadius: '13px',
+                          boxShadow: '#dbd9d9 5px 5px 10px 10px',
                         }}
                         onClick={handleCancelOrder}
                       >
-                        Hủy đơn
+                        Cancel order
                       </MDButton>
                     </Stack>
                   ) : null}

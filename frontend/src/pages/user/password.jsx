@@ -26,19 +26,16 @@ const PasswordPage = () => {
   // * validation shema
   const signupValidationSchema = Yup.object().shape({
     password: Yup.string()
-      .required('Vui lòng nhập mật khẩu!')
-      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
-      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+      .required('Please enter password!')
+      .min(6, 'Password must be at least 6 characters!')
+      .max(40, 'Password cannot be more than 40 characters!'),
     newPassword: Yup.string()
-      .required('Vui lòng nhập mật khẩu!')
-      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
-      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+      .required('Please enter password!')
+      .min(6, 'Password must be at least 6 characters!')
+      .max(40, 'Password cannot be more than 40 characters!'),
     newConfirmPassword: Yup.string()
-      .required('Vui lòng nhập lại mật khẩu')
-      .oneOf(
-        [Yup.ref('newPassword'), null],
-        'Xác nhập mật khẩu không trùng khớp'
-      ),
+      .required('Please re-enter your password')
+      .oneOf([Yup.ref('newPassword'), null], 'Password input does not match'),
   });
   const {
     register,
@@ -56,7 +53,7 @@ const PasswordPage = () => {
       .then((value) => {
         setLoading(false);
         setShowSuccess(true);
-        setMessage('Đổi mật khẩu thành công!');
+        setMessage('Change password successfully!');
         reset();
       })
       .catch((value) => {
@@ -87,18 +84,17 @@ const PasswordPage = () => {
             spacing={1}
           >
             <MDTypography
-              sx={{ color: '#444444', fontSize: '20px' }}
+              sx={{ color: '#323232', fontSize: '20px' }}
               fontWeight="medium"
             >
-              Đổi Mật Khẩu
+              Change password
             </MDTypography>
           </Stack>
           <MDTypography
-            sx={{ color: '#444444', fontSize: '0.875rem' }}
-            fontWeight="regular"
+            sx={{ color: '#323232', fontSize: '0.875rem', fontWeight: '500' }}
             variant="subtitle1"
           >
-            Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác
+            For account security, please do not share your password with others
           </MDTypography>
         </Stack>
       </Stack>
@@ -113,22 +109,22 @@ const PasswordPage = () => {
             sx={{ marginTop: '10px' }}
           >
             <MDTypography
-              sx={{ color: '#757575', fontSize: '0.875rem' }}
+              sx={{ color: '#323232', fontSize: '0.875rem' }}
               fontWeight="regular"
             >
-              Mật mật khẩu hiện tại
+              Current password
             </MDTypography>
             <MDTypography
-              sx={{ color: '#757575', fontSize: '0.875rem' }}
+              sx={{ color: '#323232', fontSize: '0.875rem' }}
               fontWeight="regular"
             >
-              Mật khẩu mới
+              New password
             </MDTypography>
             <MDTypography
-              sx={{ color: '#757575', fontSize: '0.875rem' }}
+              sx={{ color: '#323232', fontSize: '0.875rem' }}
               fontWeight="regular"
             >
-              Xác nhận mật khẩu
+              Confirm new password
             </MDTypography>
           </Stack>
         </Grid>
@@ -148,7 +144,7 @@ const PasswordPage = () => {
                 {...register('password')}
                 error={errors.password ? true : false}
                 type="password"
-                label="Mật khẩu"
+                label="Current password"
                 variant="outlined"
                 size="small"
                 sx={{ width: '300px' }}
@@ -165,7 +161,7 @@ const PasswordPage = () => {
                 {...register('newPassword')}
                 error={errors.newPassword ? true : false}
                 type="password"
-                label="Mật khẩu mới"
+                label="New password"
                 variant="outlined"
                 size="small"
                 sx={{ width: '300px' }}
@@ -182,7 +178,7 @@ const PasswordPage = () => {
                 {...register('newConfirmPassword')}
                 error={errors.newConfirmPassword ? true : false}
                 type="password"
-                label="Nhập lại mật khẩu mới"
+                label="Confirm new password"
                 variant="outlined"
                 size="small"
                 sx={{ width: '300px' }}
@@ -213,16 +209,22 @@ const PasswordPage = () => {
             </Box>
 
             <MDButton
-              size="medium"
               color="dark"
               sx={{
+                fontSize: '12px',
+                fontWeight: '600',
+                padding: '2px 3px',
+                borderRadius: '9px',
+                marginRight: '3px',
+                marginBottom: '3px',
+                width: '30px',
+                color: '#fff',
+                backgroundColor: '#0b5394',
                 textTransform: 'initial !important',
-                fontWeight: '500',
-                padding: '2px 10px',
               }}
               onClick={handleSubmit(onSubmit)}
             >
-              Xác nhận
+              Change
             </MDButton>
           </Stack>
         </Grid>
@@ -235,14 +237,14 @@ const PasswordPage = () => {
           >
             <MDTypography
               sx={{
-                color: '#757575',
+                color: '#323232',
                 fontSize: '0.875rem',
                 cursor: 'pointer',
                 fontWeight: '600',
               }}
               fontWeight="regular"
             >
-              Quên mật khẩu
+              Forgot password
             </MDTypography>
           </Stack>
         </Grid>

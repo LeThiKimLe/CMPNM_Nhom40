@@ -30,29 +30,29 @@ export default styled(Button)(({ theme, ownerState }) => {
   // styles for the button with variant="contained"
   const containedStyles = () => {
     // background color value
-    const backgroundValue = palette[color] ? palette[color].main : white.main;
+    const backgroundValue = palette[color] ? palette[color].main : grey.main;
 
     // backgroundColor value when button is focused
-    const focusedBackgroundValue = palette[color] ? palette[color].focus : white.focus;
+    const focusedBackgroundValue = palette[color] ? palette[color].focus : grey.focus;
 
     // boxShadow value
     const boxShadowValue = colored[color]
       ? `${boxShadow([0, 3], [3, 0], palette[color].main, 0.15)}, ${boxShadow(
-          [0, 3],
-          [1, -2],
-          palette[color].main,
-          0.2
-        )}, ${boxShadow([0, 1], [5, 0], palette[color].main, 0.15)}`
+        [0, 3],
+        [1, -2],
+        palette[color].main,
+        0.2
+      )}, ${boxShadow([0, 1], [5, 0], palette[color].main, 0.15)}`
       : "none";
 
     // boxShadow value when button is hovered
     const hoveredBoxShadowValue = colored[color]
       ? `${boxShadow([0, 14], [26, -12], palette[color].main, 0.4)}, ${boxShadow(
-          [0, 4],
-          [23, 0],
-          palette[color].main,
-          0.15
-        )}, ${boxShadow([0, 8], [10, -5], palette[color].main, 0.2)}`
+        [0, 4],
+        [23, 0],
+        palette[color].main,
+        0.15
+      )}, ${boxShadow([0, 8], [10, -5], palette[color].main, 0.2)}`
       : "none";
 
     // color value
@@ -156,21 +156,21 @@ export default styled(Button)(({ theme, ownerState }) => {
     // boxShadow value
     const boxShadowValue = colored[color]
       ? `${boxShadow([0, 3], [3, 0], palette[color].main, 0.15)}, ${boxShadow(
-          [0, 3],
-          [1, -2],
-          palette[color].main,
-          0.2
-        )}, ${boxShadow([0, 1], [5, 0], palette[color].main, 0.15)}`
+        [0, 3],
+        [1, -2],
+        palette[color].main,
+        0.2
+      )}, ${boxShadow([0, 1], [5, 0], palette[color].main, 0.15)}`
       : "none";
 
     // boxShadow value when button is hovered
     const hoveredBoxShadowValue = colored[color]
       ? `${boxShadow([0, 14], [26, -12], palette[color].main, 0.4)}, ${boxShadow(
-          [0, 4],
-          [23, 0],
-          palette[color].main,
-          0.15
-        )}, ${boxShadow([0, 8], [10, -5], palette[color].main, 0.2)}`
+        [0, 4],
+        [23, 0],
+        palette[color].main,
+        0.15
+      )}, ${boxShadow([0, 8], [10, -5], palette[color].main, 0.2)}`
       : "none";
 
     // color value
