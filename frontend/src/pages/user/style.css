@@ -1,0 +1,41 @@
+.input-element {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: #dadada 5px 5px 5px 5px;
+  color: #323232;
+  font-weight: 500;
+  display: flex;
+  font-family: 'Poppins';
+  font-size: 13px;
+  font-weight: medium;
+  grid-area: auto;
+  line-height: 19.5px;
+  padding: 0px 9.75px;
+  height: 45px;
+  margin-bottom: 5px;
+}
+.input-label {
+  padding-left: 2px;
+  margin-bottom: 3px;
+  color: #323232;
+  font-size: 13px;
+  font-weight: 600;
+}
+.button-add {
+  text-transform: initial !important;
+  font-weight: 600;
+  color: #4d69fa;
+  background-color: #edf0ff;
+  border-radius: 8px;
+  box-shadow: #dbd9d9 5px 5px 5px 5px;
+}
+
+.button-cancel {
+  text-transform: initial !important;
+  font-weight: 600;
+  color: #f35421;
+  background-color: #edf0ff;
+  border-radius: 8px;
+  box-shadow: #dbd9d9 5px 5px 5px 5px;
+}

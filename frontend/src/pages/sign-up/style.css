@@ -1,0 +1,16 @@
+.input-element {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: #dbd9d9 5px 5px 5px 5px;
+  color: #323232;
+  font-weight: 500;
+  display: flex;
+  font-family: 'Poppins';
+  font-size: 13px;
+  font-weight: medium;
+  grid-area: auto;
+  line-height: 19.5px;
+  padding: 0px 9.75px;
+  height: 45px;
+}

@@ -87,8 +87,10 @@ const userSlice = createSlice({
       .addCase(userThunk.showProfileAPI.pending, (state) => {
         state.loading = true;
       })
-      .addCase(userThunk.showProfileAPI.fulfilled, (state) => {
+      .addCase(userThunk.showProfileAPI.fulfilled, (state, action) => {
         state.loading = false;
+        state.user = action.payload.user;
+        console.log(action.payload);
       })
       .addCase(userThunk.showProfileAPI.rejected, (state, action) => {
         state.loading = false;

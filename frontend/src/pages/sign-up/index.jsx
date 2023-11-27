@@ -10,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import MuiLink from '@mui/material/Link';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -19,14 +18,13 @@ import GoogleIcon from '@mui/icons-material/Google';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
-import MDInput from '../../components/MDInput';
 import MDButton from '../../components/MDButton';
 import Footer from '../../containers/footer';
 // Authentication layout components
 // Images
 import Header from '../../containers/header';
 import Navbar from '../../containers/navbar';
-import { Stack } from '@mui/material';
+import { Input, Stack } from '@mui/material';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,6 +33,7 @@ import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
 import SideNavigation from '../../containers/side-navigation';
 import { notification } from 'antd';
+import './style.css';
 
 function SignUp() {
   const [open, setOpen] = useState(false);
@@ -46,18 +45,18 @@ function SignUp() {
   };
   // * validation shema
   const signupValidationSchema = Yup.object().shape({
-    firstName: Yup.string().required('Vui lòng nhập tên!'),
-    lastName: Yup.string().required('Vui lòng nhập họ!'),
+    firstName: Yup.string().required('Please enter name!'),
+    lastName: Yup.string().required('Please enter last name!'),
     email: Yup.string()
-      .required('Vui lòng nhập địa chỉ email!')
-      .email('Địa chỉ email không đúng!'),
+      .required('Please enter email address!')
+      .email('Incorrect email address!'),
     password: Yup.string()
-      .required('Vui lòng nhập mật khẩu!')
-      .min(6, 'Mật khẩu phải ít nhất 6 ký tự!')
-      .max(40, 'Mật khẩu không được nhiều hơn 40 ký tự!'),
+      .required('Please enter password!')
+      .min(6, 'Password must be at least 6 characters!')
+      .max(40, 'Password cannot be more than 40 characters!'),
     confirmPassword: Yup.string()
-      .required('Vui lòng nhập lại mật khẩu')
-      .oneOf([Yup.ref('password'), null], 'Xác nhập mật khẩu không trùng khớp'),
+      .required('Please re-enter your password')
+      .oneOf([Yup.ref('password'), null], 'Password input does not match'),
   });
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -78,7 +77,7 @@ function SignUp() {
         navigate('/finish-signup', { state: { firstName, email } });
         dispatch(userActions.reset());
         notification.success({
-          message: 'Tạo tài khoản thành công!',
+          message: 'Create account succesfully!',
           placement: 'top',
         });
       })
@@ -91,7 +90,7 @@ function SignUp() {
       width="100vw"
       height="100%"
       minHeight="100vh"
-      sx={{ overflowX: 'hidden' }}
+      sx={{ overflowX: 'hidden', backgroundColor: '#fff' }}
     >
       <MDBox position="absolute" width="100%" minHeight="100vh" />
       <MDBox width="100%" height="100vh" mx="auto">
@@ -120,13 +119,20 @@ function SignUp() {
             </Alert>
           </Snackbar>
           <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
-            <Card>
+            <Card
+              sx={{
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 10px 10px',
+              }}
+            >
               <MDBox
                 variant="gradient"
                 borderRadius="lg"
                 sx={{
-                  backgroundColor: '#0F3460',
+                  backgroundColor: '#1f2128',
                   color: '#fff',
+                  borderRadius: '8px',
+                  boxShadow: '#dbd9d9 5px 5px 10px 10px',
                 }}
                 mx={2}
                 mt={-3}
@@ -134,13 +140,24 @@ function SignUp() {
                 mb={1}
                 textAlign="center"
               >
+                {' '}
                 <MDTypography
-                  variant="h5"
-                  fontWeight="medium"
-                  color="white"
-                  mt={1}
+                  sx={{
+                    color: '#fff',
+                    fontSize: '32px',
+                    fontWeight: '700',
+                  }}
                 >
-                  Đăng ký
+                  Create Account,
+                </MDTypography>
+                <MDTypography
+                  sx={{
+                    color: '#fff',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                  }}
+                >
+                  Sign up to get started!
                 </MDTypography>
                 <Grid
                   container
@@ -192,100 +209,95 @@ function SignUp() {
                     justifyContent="space-between"
                   >
                     <MDBox mb={2}>
-                      <MDInput
+                      <Input
+                        className="input-element"
+                        placeholder="First name"
                         required
                         id="firstName"
                         name="firstName"
                         type="text"
                         {...register('firstName')}
-                        error={errors.firstName ? true : false}
-                        label="Tên"
-                        sx={{ width: '200px' }}
+                        label="First name"
                       />
-                      <Typography
-                        fontSize="14px"
-                        variant="inherit"
-                        color="primary"
-                      >
-                        {errors.firstName?.message}
-                      </Typography>
+                      {errors.firstName && (
+                        <MDTypography variant="caption" color="error">
+                          {errors.firstName.message}
+                        </MDTypography>
+                      )}
                     </MDBox>
                     <MDBox mb={2}>
-                      <MDInput
+                      <Input
+                        className="input-element"
                         required
                         id="lastName"
                         name="lastName"
                         {...register('lastName')}
-                        error={errors.lastName ? true : false}
                         type="text"
                         label="Họ"
-                        sx={{ width: '200px' }}
+                        placeholder="Last name"
                       />
-                      <Typography
-                        variant="inherit"
-                        fontSize="14px"
-                        color="primary"
-                      >
-                        {errors.lastName?.message}
-                      </Typography>
+                      {errors.lastName && (
+                        <MDTypography variant="caption" color="error">
+                          {errors.lastName.message}
+                        </MDTypography>
+                      )}
                     </MDBox>
                   </Stack>
                   <MDBox mb={2}>
-                    <MDInput
+                    <Input
+                      className="input-element"
                       required
                       id="email"
                       name="email"
                       {...register('email')}
-                      error={errors.email ? true : false}
                       type="email"
                       label="Email"
                       fullWidth
+                      placeholder="Email"
                     />
-                    <Typography
-                      fontSize="14px"
-                      variant="inherit"
-                      color="primary"
-                    >
-                      {errors.email?.message}
-                    </Typography>
+                    {errors.email && (
+                      <MDTypography variant="caption" color="error">
+                        {errors.email.message}
+                      </MDTypography>
+                    )}
                   </MDBox>
                   <MDBox mb={2}>
-                    <MDInput
+                    <Input
+                      className="input-element"
                       required
                       id="password"
                       name="password"
                       {...register('password')}
                       error={errors.password ? true : false}
                       type="password"
-                      label="Mật khẩu"
+                      label="Password"
+                      placeholder="Password"
                       fullWidth
                     />
-                    <Typography
-                      fontSize="14px"
-                      variant="inherit"
-                      color="primary"
-                    >
-                      {errors.password?.message}
-                    </Typography>
+                    {errors.password && (
+                      <MDTypography variant="caption" color="error">
+                        {errors.password.message}
+                      </MDTypography>
+                    )}
                   </MDBox>
                   <MDBox mb={2}>
-                    <MDInput
+                    <Input
+                      className="input-element"
                       required
                       id="confirmPassword"
                       name="confirmPassword"
                       {...register('confirmPassword')}
                       error={errors.confirmPassword ? true : false}
                       type="password"
-                      label="Nhập lại mật khẩu"
+                      label="Confirm password"
+                      placeholder="Confirm password"
                       fullWidth
                     />
-                    <Typography
-                      fontSize="14px"
-                      variant="inherit"
-                      color="primary"
-                    >
-                      {errors.confirmPassword?.message}
-                    </Typography>
+                    {errors.confirmPassword && (
+                      <MDTypography variant="caption" color="error">
+                        {errors.confirmPassword.message}
+                      </MDTypography>
+                    )}
                   </MDBox>
                   <Box
                     sx={{
@@ -294,33 +306,35 @@ function SignUp() {
                       justifyContent: 'center',
                     }}
                   >
-                    {user.loading ? (
-                      <CircularProgress color={'success'} />
-                    ) : null}
+                    {user.loading ? <CircularProgress color={'dark'} /> : null}
                   </Box>
 
                   <MDBox mt={4} mb={1}>
                     <MDButton
                       variant="contained"
-                      color="dark"
                       fullWidth
+                      color="info"
+                      sx={{
+                        color: '#fff',
+                        backgroundColor: '#4d69fa',
+                      }}
                       onClick={handleSubmit(onSubmit)}
                     >
-                      Đăng ký
+                      Sign up
                     </MDButton>
                   </MDBox>
                   <MDBox mt={3} mb={1} textAlign="center">
-                    <MDTypography variant="button" color="text">
-                      Đã có tài khoản?
+                    <MDTypography variant="button" sx={{ color: '#1f2128' }}>
+                      Already have an account?
                       <MDTypography
                         component={Link}
                         to="/sign-in"
                         variant="button"
                         color="dark"
                         fontWeight="medium"
-                        textGradient
+                        sx={{ color: '#1f2128' }}
                       >
-                        Đăng nhập
+                        Login
                       </MDTypography>
                     </MDTypography>
                   </MDBox>

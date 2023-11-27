@@ -41,8 +41,7 @@ const Header = () => {
               <MDTypography
                 variant="button"
                 fontWeight="medium"
-                sx={{ fontSize: '14px' }}
-                color={'black'}
+                sx={{ fontSize: '14px', color: '#323232' }}
               >
                 Group 50
               </MDTypography>
@@ -51,8 +50,7 @@ const Header = () => {
                 <MDTypography
                   variant="button"
                   fontWeight="medium"
-                  color={'black'}
-                  sx={{ fontSize: '14px' }}
+                  sx={{ fontSize: '14px', color: '#323232' }}
                 >
                   18110379@student.hcmute.edu.vn
                 </MDTypography>
@@ -70,8 +68,7 @@ const Header = () => {
               <MDTypography
                 variant="button"
                 fontWeight="medium"
-                color={'black'}
-                sx={{ fontSize: '14px' }}
+                sx={{ fontSize: '14px', color: '#323232' }}
                 component={Link}
                 to="/notification"
               >
@@ -81,8 +78,7 @@ const Header = () => {
               <MDTypography
                 variant="button"
                 fontWeight="medium"
-                color={'black'}
-                sx={{ fontSize: '14px' }}
+                sx={{ fontSize: '14px', color: '#323232' }}
               >
                 VIE
               </MDTypography>

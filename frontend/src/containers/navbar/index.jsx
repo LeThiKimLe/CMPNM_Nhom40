@@ -1,7 +1,6 @@
 import {
   Container,
   Stack,
-  Paper,
   IconButton,
   InputBase,
   Menu,
@@ -19,6 +18,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 import './style.css';
 import logo from '../../assets/images/tmshop.png';
 import userThunk from '../../features/user/user.service';

@@ -44,7 +44,7 @@ const AddressItem = (props) => {
       .unwrap()
       .then(() => {
         setOpenDialog(false);
-        notification.success({ message: 'Xóa địa chỉ thành công!' });
+        notification.success({ message: 'Delete address successfully=' });
         getAddressList();
       });
   };
@@ -223,7 +223,7 @@ const AddressItem = (props) => {
           aria-labelledby="responsive-dialog-title"
         >
           <DialogTitle id="responsive-dialog-title">
-            {'Bạn có chắc muốn xóa địa chỉ này?'}
+            {'Are you sure you want to delete this address??'}
           </DialogTitle>
           <DialogActions>
             <Button autoFocus onClick={() => setOpenDialog(false)}>

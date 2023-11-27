@@ -6,6 +6,7 @@ import {
   Typography,
   Box,
   CircularProgress,
+  Input,
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -16,7 +17,7 @@ import MDTypography from '../../components/MDTypography';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import MDButton from '../../components/MDButton';
 import MDBox from '../../components/MDBox';
-import MDInput from '../../components/MDInput';
+import './style.css';
 const PasswordPage = () => {
   const dispatch = useDispatch();
   const [message, setMessage] = useState('');
@@ -105,8 +106,8 @@ const PasswordPage = () => {
             direction="column"
             justifyContent="center"
             alignItems="flex-end"
-            spacing={4}
-            sx={{ marginTop: '10px' }}
+            spacing={5}
+            sx={{ marginTop: '20px' }}
           >
             <MDTypography
               sx={{ color: '#323232', fontSize: '0.875rem' }}
@@ -137,7 +138,8 @@ const PasswordPage = () => {
             alignItems="flex-start"
           >
             <MDBox>
-              <MDInput
+              <Input
+                className="input-element"
                 required
                 id="password"
                 name="password"
@@ -154,7 +156,8 @@ const PasswordPage = () => {
               </Typography>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput
+              <Input
+                className="input-element"
                 required
                 id="newPassword"
                 name="newPassword"
@@ -171,7 +174,8 @@ const PasswordPage = () => {
               </Typography>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput
+              <Input
+                className="input-element"
                 required
                 id="newConfirmPassword"
                 name="newConfirmPassword"
@@ -187,6 +191,24 @@ const PasswordPage = () => {
                 {errors.newConfirmPassword?.message}
               </Typography>
             </MDBox>
+            <Stack
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              spacing={2}
+              sx={{ marginTop: '20px' }}
+            >
+              <MDTypography
+                sx={{
+                  color: '#323232',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                }}
+                fontWeight="regular"
+              >
+                Forgot password
+              </MDTypography>
+            </Stack>
             <Box
               sx={{
                 display: 'flex',
@@ -211,41 +233,17 @@ const PasswordPage = () => {
             <MDButton
               color="dark"
               sx={{
-                fontSize: '12px',
-                fontWeight: '600',
-                padding: '2px 3px',
-                borderRadius: '9px',
-                marginRight: '3px',
-                marginBottom: '3px',
-                width: '30px',
-                color: '#fff',
-                backgroundColor: '#0b5394',
                 textTransform: 'initial !important',
+                fontWeight: '600',
+                color: '#4d69fa',
+                backgroundColor: '#edf0ff',
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 5px 5px',
               }}
               onClick={handleSubmit(onSubmit)}
             >
               Change
             </MDButton>
-          </Stack>
-        </Grid>
-        <Grid spacing={2} xs={3}>
-          <Stack
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            spacing={2}
-            sx={{ marginTop: '10px' }}
-          >
-            <MDTypography
-              sx={{
-                color: '#323232',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                fontWeight: '600',
-              }}
-              fontWeight="regular"
-            >
-              Forgot password
-            </MDTypography>
           </Stack>
         </Grid>
       </Grid>

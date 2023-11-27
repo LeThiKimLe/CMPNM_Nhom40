@@ -3,10 +3,13 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
 import { Stack, Paper } from '@mui/material';
-import delivery from '../../assets/images/fast-delivery.png';
-import money from '../../assets/images/money.png';
-import history from '../../assets/images/history.png';
-import payment from '../../assets/images/payment.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTruck,
+  faMoneyBillTransfer,
+  faHourglassStart,
+  faMoneyCheckDollar,
+} from '@fortawesome/free-solid-svg-icons';
 const InfoComponent = () => {
   return (
     <MDBox variant="contained" borderRadius="lg" width="100%">
@@ -39,7 +42,11 @@ const InfoComponent = () => {
               alignItems="center"
               spacing={2}
             >
-              <img src={delivery} alt="giao hang nhanh" width="60px" />
+              <FontAwesomeIcon
+                icon={faTruck}
+                size="xl"
+                style={{ color: '#46bcaa' }}
+              />
               <Stack
                 direction="column"
                 justifyContent="flex-start"
@@ -72,7 +79,11 @@ const InfoComponent = () => {
               alignItems="center"
               spacing={2}
             >
-              <img src={money} alt="Đảm bảo tiền" width="60px" />
+              <FontAwesomeIcon
+                icon={faMoneyBillTransfer}
+                size="xl"
+                style={{ color: '#46bcaa' }}
+              />
               <Stack
                 direction="column"
                 justifyContent="flex-start"
@@ -105,7 +116,11 @@ const InfoComponent = () => {
               alignItems="center"
               spacing={2}
             >
-              <img src={history} alt="Bảo hành" width="60px" />
+              <FontAwesomeIcon
+                icon={faHourglassStart}
+                size="xl"
+                style={{ color: '#46bcaa' }}
+              />
               <Stack
                 direction="column"
                 justifyContent="flex-start"
@@ -138,7 +153,11 @@ const InfoComponent = () => {
               alignItems="center"
               spacing={2}
             >
-              <img src={payment} alt="Thanh toán" width="60px" />
+              <FontAwesomeIcon
+                icon={faMoneyCheckDollar}
+                size="xl"
+                style={{ color: '#46bcaa' }}
+              />
               <Stack
                 direction="column"
                 justifyContent="flex-start"

@@ -12,7 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
-import { InputBase } from '@mui/material';
+import { Input, InputBase, TextField } from '@mui/material';
 // @mui icons
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -21,7 +21,6 @@ import GoogleIcon from '@mui/icons-material/Google';
 // Material Dashboard 2 React components
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
-import MDInput from '../../components/MDInput';
 import MDButton from '../../components/MDButton';
 import Footer from '../../containers/footer';
 // Authentication layout components
@@ -37,6 +36,7 @@ import * as Yup from 'yup';
 import userThunk from '../../features/user/user.service';
 import { userActions } from '../../features/user/user.slice';
 import SideNavigation from '../../containers/side-navigation';
+import '../sign-up/style.css';
 function SignIn() {
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()
@@ -51,7 +51,7 @@ function SignIn() {
   const [open, setOpen] = useState(false);
   const userState = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const { isLoggedIn, user, error, message } = userState;
+  const { message } = userState;
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -119,7 +119,7 @@ function SignIn() {
               <MDBox
                 variant="contained"
                 sx={{
-                  backgroundColor: '#edf8f7',
+                  backgroundColor: '#1f2128',
                   borderRadius: '8px',
                   boxShadow: '#dbd9d9 5px 5px 10px 10px',
                 }}
@@ -131,7 +131,7 @@ function SignIn() {
               >
                 <MDTypography
                   sx={{
-                    color: '#46bcaa',
+                    color: '#fff',
                     fontSize: '32px',
                     fontWeight: '700',
                   }}
@@ -140,7 +140,7 @@ function SignIn() {
                 </MDTypography>
                 <MDTypography
                   sx={{
-                    color: '#46bcaa',
+                    color: '#fff',
                     fontSize: '20px',
                     fontWeight: '600',
                   }}
@@ -158,7 +158,7 @@ function SignIn() {
                       component={MuiLink}
                       href="#"
                       sx={{
-                        color: '#46bcaa',
+                        color: '#fff',
                       }}
                     >
                       <FacebookIcon color="inherit" />
@@ -169,7 +169,7 @@ function SignIn() {
                       component={MuiLink}
                       href="#"
                       sx={{
-                        color: '#46bcaa',
+                        color: '#fff',
                       }}
                     >
                       <GitHubIcon color="inherit" />
@@ -180,7 +180,7 @@ function SignIn() {
                       component={MuiLink}
                       href="#"
                       sx={{
-                        color: '#46bcaa',
+                        color: '#fff',
                       }}
                     >
                       <GoogleIcon color="inherit" />
@@ -191,60 +191,40 @@ function SignIn() {
               <MDBox pt={4} pb={3} px={3}>
                 <MDBox component="form" role="form">
                   <MDBox mb={2}>
-                    <InputBase
-                      sx={{
-                        alignItems: 'center',
-                        backgroundColor: '#ffffff',
-                        borderRadius: '8px',
-                        boxShadow: '#dbd9d9 5px 5px 5px 5px',
-                        color: '#808191',
-                        display: 'flex',
-                        fontFamily: 'Poppins',
-                        fontSize: '13px',
-                        fontWeight: 'medium',
-                        gridArea: 'auto',
-                        lineHeight: '19.5px',
-                        padding: '0px 9.75px',
-                        height: '45px',
-                      }}
+                    <Input
+                      className="input-element"
                       placeholder="Email"
                       required
                       id="email"
                       name="email"
                       {...register('email')}
-                      error={errors.email ? true : false}
                       type="email"
                       label="Email"
                       fullWidth
                     />
+                    {errors.email && (
+                      <MDTypography variant="caption" color="error">
+                        {errors.email.message}
+                      </MDTypography>
+                    )}
                   </MDBox>
                   <MDBox mb={2}>
-                    <InputBase
-                      sx={{
-                        alignItems: 'center',
-                        backgroundColor: '#ffffff',
-                        borderRadius: '8px',
-                        boxShadow: '#dbd9d9 5px 5px 5px 5px',
-                        color: '#808191',
-                        display: 'flex',
-                        fontFamily: 'Poppins',
-                        fontSize: '13px',
-                        fontWeight: 'medium',
-                        gridArea: 'auto',
-                        lineHeight: '19.5px',
-                        padding: '0px 9.75px',
-                        height: '45px',
-                      }}
+                    <Input
+                      className="input-element"
                       placeholder="Password"
                       required
                       id="password"
                       name="password"
                       {...register('password')}
-                      error={errors.password ? true : false}
                       type="password"
                       label="Password"
                       fullWidth
                     />
+                    {errors.password && (
+                      <MDTypography variant="caption" color="error">
+                        {errors.password.message}
+                      </MDTypography>
+                    )}
                   </MDBox>
                   <Box
                     sx={{
@@ -254,7 +234,7 @@ function SignIn() {
                     }}
                   >
                     {userState.logging ? (
-                      <CircularProgress color={'success'} />
+                      <CircularProgress color={'dark'} />
                     ) : null}
                   </Box>
                   <MDBox mt={4} mb={1}>

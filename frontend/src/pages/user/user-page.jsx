@@ -18,16 +18,16 @@ import { Link, useNavigate } from 'react-router-dom';
 const UserPage = ({ children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const [profile, setProfile] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(user.user);
   useEffect(() => {
-    dispatch(userThunk.showProfileAPI())
-      .unwrap()
-      .then((value) => {
-        setProfile(value.user);
-        setLoading(false);
-      });
-  }, [dispatch]);
+    if (user.user == null) {
+      dispatch(userThunk.showProfileAPI())
+        .unwrap()
+        .then((value) => {
+          setProfile(value.user);
+        });
+    }
+  }, [dispatch, user.user]);
   const navigate = useNavigate();
   return (
     <MDBox
