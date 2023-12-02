@@ -39,7 +39,7 @@ const VerifyEmail = () => {
       .then(() => {
         setUpdateLoading(false);
         notification.success({
-          message: 'Gửi lại thành công!',
+          message: 'Resend successfully!',
           placement: 'top',
         });
         navigate('/finish-signup');
@@ -76,7 +76,7 @@ const VerifyEmail = () => {
         width="100vw"
         height="100%"
         minHeight="100vh"
-        sx={{ overflowX: 'hidden' }}
+        sx={{ overflowX: 'hidden', backgroundColor: '#fff' }}
       >
         <MDBox position="absolute" width="100%" minHeight="100vh" />
         <MDBox width="100%" height="100vh" mx="auto">

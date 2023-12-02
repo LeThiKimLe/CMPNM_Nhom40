@@ -76,7 +76,9 @@ const UserPage = ({ children }) => {
                           fontWeight: '500',
                         }}
                       >
-                        {profile.lastName && profile.firstName
+                        {profile != null &&
+                        profile.lastName &&
+                        profile.firstName
                           ? `${profile.lastName} ${profile.firstName}`
                           : null}
                       </MDTypography>

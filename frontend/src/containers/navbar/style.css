@@ -76,3 +76,21 @@
   text-align: center;
   width: 100px;
 }
+.title-element {
+  font-size: 14px;
+  font-weight: 600;
+  color: #323232;
+  margin-bottom: 8px;
+}
+.category-title {
+  font-size: 13px;
+  color: #323232;
+  font-weight: 600;
+}
+.filter-box {
+  padding: 18px 27px;
+  margin-bottom: 10px;
+  border-radius: 13px;
+  box-shadow: #808191 0px 10.8px 10px 0px;
+  color: #808191;
+}

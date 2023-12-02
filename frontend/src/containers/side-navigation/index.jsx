@@ -122,7 +122,7 @@ const SideNavigation = () => {
                       : { backgroundColor: 'transparent' }
                   }
                 >
-                  Chọn theo hãng
+                  Choose by category
                 </MenuItem>
               </Menu>
             </>

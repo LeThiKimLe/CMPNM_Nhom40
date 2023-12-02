@@ -17,6 +17,77 @@ const { Product, Category } = require('../../models');
 const { Response, ServerError, Create, getCategoryPath } = require('../../utils');
 const cloudinary = require('../../utils/upload_file/cloudinary');
 
+const getProductAll = async () => {
+  const products = await Product.aggregate([
+    {
+      $match: {
+        active: true,
+        category_path: { $exists: true, $ne: [] },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        name: 1,
+        slug: 1,
+        regularPrice: 1,
+        detailsProduct: 1,
+        productPictures: 1,
+        sale: 1,
+        salePrice: 1,
+        ram: 1,
+        storage: 1,
+        category_path: { $arrayElemAt: ['$category_path', -1] },
+        category_slug: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories', // Assuming the collection name is 'categories'
+        localField: 'category_path',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+    {
+      $unwind: '$category',
+    },
+    {
+      $group: {
+        _id: {
+          category_path: '$category_path',
+          ram: '$ram',
+          storage: '$storage',
+        },
+        products: { $push: '$$ROOT' },
+        category_slug: { $first: '$category.slug' },
+      },
+    },
+    {
+      $group: {
+        _id: '$_id.category_path',
+        groups: {
+          $push: {
+            _id: {
+              ram: '$_id.ram',
+              storage: '$_id.storage',
+            },
+            items: '$products',
+            category_slug: '$category_slug',
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category_path: '$_id',
+        groups: 1,
+      },
+    },
+  ]);
+  return products;
+}
 const createProduct = async (req, res) => {
   try {
     const { info, digital, description } = req.body.data;
@@ -99,68 +170,29 @@ const getProductById = async (req, res) => {
 };
 
 const getProductsOption = async (req, res) => {
-  const size = 12;
   const filterData = req.body.data;
-  const page = filterData.page || 1;
-  let categoryId;
-  let query = {};
-  if (filterData.level && filterData.level === '2') {
-    const categoryLevel = await Category.findOne({ slug: filterData.category });
-    categoryId = await Category.find({
-      parent: categoryLevel._id,
-    });
-  } else if (filterData.level && filterData.level === '3') {
-    const categorySlugs = filterData.category.split('+');
-    categoryId = await Category.aggregate([
-      { $match: { slug: { $in: categorySlugs } } },
-    ]);
-  } else if (filterData.category === 'all') {
-    categoryId = await Category.find({}).select('_id name slug').lean();
-  } else {
-    const categorySlugs = filterData.category.split('+');
-    categoryId = await Category.aggregate([
-      { $match: { slug: { $in: categorySlugs } } },
-      {
-        $graphLookup: {
-          from: 'categories',
-          startWith: '$_id',
-          connectFromField: '_id',
-          connectToField: 'parent',
-          as: 'descendants',
-        },
-      },
-      { $unwind: '$descendants' },
-      { $replaceRoot: { newRoot: '$descendants' } },
-      {
-        $match: {
-          'descendants.children': { $exists: false },
-        },
-      },
-    ]);
-  }
 
-  const categoryIds = categoryId.map((item) => item._id);
-  query = {
-    category: { $in: categoryIds },
-  };
-  if (filterData.type && filterData.type !== 'all') {
-    const osSlugs = filterData.type.split('+');
-    query['detailsProduct.OS'] = { $in: osSlugs };
-  }
-  if (filterData.ram && filterData.ram !== 'all') {
-    const ramSlugs = filterData.ram.split('+');
-    query['detailsProduct.ram'] = { $in: ramSlugs };
-  }
-  if (filterData.storage && filterData.storage !== 'all') {
-    const storageSlugs = filterData.storage.split('+');
-    query['detailsProduct.storage'] = { $in: storageSlugs };
-  }
-  const products = await Product.aggregate([
-    { $match: query },
+  const commonPipeline = [
+    {
+      $project: {
+        _id: 0,
+        name: 1,
+        slug: 1,
+        regularPrice: 1,
+        detailsProduct: 1,
+        productPictures: 1,
+        sale: 1,
+        salePrice: 1,
+        ram: 1,
+        storage: 1,
+        category_path: { $arrayElemAt: ['$category_path', -1] },
+        category_slug: 1,
+      },
+    },
     {
       $lookup: {
         from: 'categories',
-        localField: 'category',
+        localField: 'category_path',
         foreignField: '_id',
         as: 'category',
       },
@@ -171,63 +203,85 @@ const getProductsOption = async (req, res) => {
     {
       $group: {
         _id: {
-          category: '$category._id',
-          name: '$category.name',
-          slug: '$category.slug',
-          ram: '$detailsProduct.ram',
-          storage: '$detailsProduct.storage',
+          category_path: '$category_path',
+          ram: '$ram',
+          storage: '$storage',
         },
-
-        products: {
-          $push: {
-            _id: '$_id',
-            name: '$name',
-            slug: '$slug',
-            regularPrice: '$regularPrice',
-            salePrice: '$salePrice',
-            sale: '$sale',
-            productPictures: '$productPictures',
-            detailsProduct: '$detailsProduct',
-          },
-        },
-        colors: { $addToSet: '$color' },
+        products: { $push: '$$ROOT' },
+        category_slug: { $first: '$category.slug' },
       },
     },
     {
       $group: {
-        _id: {
-          category: '$_id.category',
-          name: '$_id.name',
-          slug: '$_id.slug',
-          ram: '$_id.ram',
-          storage: '$_id.storage',
-        },
-        products: { $first: '$products' },
-        colors: { $first: '$colors' },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          category: '$_id.category',
-          name: '$_id.name',
-          slug: '$_id.slug',
-        },
+        _id: '$_id.category_path',
         groups: {
-          $addToSet: {
-            ram: '$_id.ram',
-            storage: '$_id.storage',
-            products: '$products',
-            colors: '$colors',
+          $push: {
+            _id: {
+              ram: '$_id.ram',
+              storage: '$_id.storage',
+            },
+            items: '$products',
+            category_slug: '$category_slug',
           },
         },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category_path: '$_id',
+        groups: 1,
+      },
+    },
+  ];
+
+  if (filterData.category === 'all') {
+    const products = await Product.aggregate(commonPipeline);
+    return Response(res, { products });
+  }
+  if (filterData.level && filterData.level === '2') {
+    const categoryLevel = await Category.findOne({ slug: filterData.category }).select('id').lean();
+    const products = await Product.aggregate([
+      {
+        $match: {
+          active: true,
+          category_path: { $exists: true, $ne: [] },
+          'category_path.1': categoryLevel._id,
+        },
+      },
+      ...commonPipeline,
+    ]);
+    return Response(res, { products });
+  } if (filterData.level && filterData.level === '3') {
+    const categorySlugs = filterData.category.split('+');
+    const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
+    const categoryIDs = categories.map(obj => obj._id);
+    const products = await Product.aggregate([
+      {
+        $match: {
+          active: true,
+          category_path: { $exists: true, $ne: [] },
+          'category_path.2': { $in: categoryIDs },
+        },
+      },
+      ...commonPipeline,
+    ]);
+    return Response(res, { products });
+  }
+  const categorySlugs = filterData.category.split('+');
+  const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
+  const categoryIDs = categories.map(obj => obj._id);
+  const products = await Product.aggregate([
+    ...commonPipeline,
+    {
+      $match: {
+        active: true,
+        category_path: { $exists: true, $ne: [] },
+        'category_path.0': { $in: categoryIDs },
       },
     },
   ]);
-
-  Response(res, {
-    products,
-  });
+  return Response(res, { products });
 };
 
 module.exports = {

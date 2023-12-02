@@ -43,29 +43,21 @@ const oneDay = 60 * 60 * 24;
 const signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (user) return BadRequest(res, 'Email đã được đăng ký tài khoản');
+    if (user) return BadRequest(res, 'Email account has been registered!');
     const { firstName, lastName, email, password } = req.body;
-    const verificationToken = crypto.randomBytes(40).toString('hex');
     let newUser;
-    const verifyDate = new Date(Date.now() + oneDay);
     // eslint-disable-next-line prefer-const
     newUser = new User({
       firstName,
       lastName,
       email,
       password,
-      verificationToken,
-      verifyDate,
+      isVerified,
     });
     // eslint-disable-next-line no-shadow,
     newUser.save(async (error, user) => {
       if (error) return ServerError(res, error.message);
       if (user) {
-        await sendVerificationEmail({
-          firstName,
-          email,
-          verificationToken,
-        });
         // nhận toàn bộ dư liệu của user
         return Create(res, {
           firstName,

@@ -1,9 +1,9 @@
 const typePhone = [
   {
-    name: 'iOS',
+    value: 'iOS',
   },
   {
-    name: 'Android',
+    value: 'Android',
   },
 ];
 const rams = [
@@ -48,23 +48,23 @@ const storages = [
 ];
 const sortOptions = [
   {
-    key: 'Nổi bật',
-    name: 'Nổi bật',
+    key: 'Featured',
+    name: 'Featured',
     value: 2,
   },
   {
-    key: '% giảm',
-    name: '% giảm',
+    key: '% reduction',
+    name: '% reduction',
     value: 0,
   },
   {
-    key: 'Giá giảm dần',
-    name: 'Giá giảm dần',
+    key: 'Price decreasing',
+    name: 'Price decreasing',
     value: -1,
   },
   {
-    key: 'Giá tăng dần',
-    name: 'Giá tăng dần',
+    key: 'Price increasing',
+    name: 'Price increasing',
     value: 1,
   },
 ];

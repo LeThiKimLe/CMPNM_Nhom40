@@ -39,15 +39,13 @@ function getOptions(products) {
 
   return option;
 }
-function ProductCard({ category, groups }) {
+function ProductCard({ category, products }) {
   const [optionSelected, setOptionSelected] = useState(0);
-  const options = groups.map((item) => {
-    return { ramt: item.ram, storage: item.storage };
-  });
+  const options = products.map((item) => item._id);
   const optionsCustom = getOptions(options);
   const product = useMemo(() => {
-    return groups[optionSelected].products[0];
-  }, [optionSelected, groups]);
+    return products[optionSelected].items[0];
+  }, [optionSelected, products]);
   const {
     name,
     productPictures,
@@ -55,23 +53,14 @@ function ProductCard({ category, groups }) {
     salePrice,
     sale,
     detailsProduct,
+    ram,
+    storage,
   } = product;
   const screenCustom = renderScreen(detailsProduct.screen);
   return (
-    <Card
-      key={category._id}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'transparent',
-        boxShadow: 'none',
-        overflow: 'visible',
-      }}
-    >
+    <Card key={category._id} className="product-card">
       <>
-        <Link
-          to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
-        >
+        <Link to={`/product-page/${category}?ram=${ram}&storage=${storage}`}>
           <MDBox
             position="relative"
             width="100%"
@@ -103,11 +92,7 @@ function ProductCard({ category, groups }) {
               to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
             >
               <MDTypography
-                sx={{
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  height: '50px',
-                }}
+                className="product-name"
                 textTransform="capitalize"
                 color="dark"
               >
@@ -133,13 +118,7 @@ function ProductCard({ category, groups }) {
                   <Chip
                     key={index}
                     size="medium"
-                    sx={{
-                      fontSize: '0.65rem',
-                      fontWeight: '500',
-                      borderRadius: '0.3rem',
-                      marginRight: '3px',
-                      marginBottom: '3px',
-                    }}
+                    className="product-chip"
                     label={item}
                   />
                 );
@@ -163,17 +142,19 @@ function ProductCard({ category, groups }) {
                   <Button
                     key={index}
                     size="small"
+                    color="dark"
                     sx={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
+                      fontSize: '0.7rem',
+                      fontWeight: '600',
                       padding: '2px 3px',
-                      border: optionSelected === index ? '1px solid #111' : '',
+                      border:
+                        optionSelected === index ? '1px solid #3d85c6' : '',
                       borderRadius: '0.3rem',
                       marginRight: '3px',
                       marginBottom: '3px',
                       width: '30px',
                       color: '#111',
-                      backgroundColor: '#d0e0e3',
+                      backgroundColor: '#edf0ff',
                     }}
                     onClick={() => setOptionSelected(index)}
                   >
@@ -189,7 +170,7 @@ function ProductCard({ category, groups }) {
               sx={{
                 fontSize: '0.875rem',
                 fontWeight: '500',
-                color: '#696969',
+                color: '#5b5b5b',
                 textDecoration: 'line-through',
               }}
               textTransform="capitalize"
@@ -216,6 +197,7 @@ function ProductCard({ category, groups }) {
               sx={{
                 fontSize: '1rem',
                 fontWeight: 'bold',
+                color: '#1f2128',
               }}
               textTransform="capitalize"
               color="dark"

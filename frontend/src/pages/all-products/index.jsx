@@ -2,25 +2,15 @@
 import {
   Container,
   Divider,
-  Checkbox,
   Select,
   MenuItem,
-  Box,
   Pagination,
   CircularProgress,
-  FormControlLabel,
-  Slider,
 } from '@mui/material';
 
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import _ from 'lodash';
 import MDBox from '../../components/MDBox';
 import MDTypography from '../../components/MDTypography';
@@ -28,27 +18,30 @@ import { Stack } from '@mui/system';
 import { useSelector, useDispatch } from 'react-redux';
 import userThunk from '../../features/user/user.service';
 import optionFilter from './options';
+import './custom.css';
 import ProductCard from './product-card.jsx';
+import FilterInput from './filter-input.jsx';
+import FilterCategory from './filter-category.jsx';
 function Item(props) {
   const { sx, ...other } = props;
   return (
-    <Box
+    <MDBox
       sx={{
         bgcolor: (theme) =>
           theme.palette.mode === 'dark' ? '#101010' : '#fff',
         color: (theme) =>
           theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
-        border: '1px solid',
-        borderColor: (theme) =>
-          theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300',
         p: 1,
-        borderRadius: 2,
+
         fontSize: '0.875rem',
         fontWeight: '700',
         maxWidth: '250px',
-        minWidth: '240px',
-        marginRight: '13px',
+        minWidth: '244px',
+        marginRight: '12px',
         marginBottom: '8px',
+        borderRadius: '16px',
+        paddingTop: '16px',
+        boxShadow: '#808191 0px 10.8px 10px 0px',
         ...sx,
       }}
       {...other}
@@ -81,7 +74,7 @@ const AllProductPage = () => {
       const categoryLevel = categories.find(
         (item) => item.slug === filterData.category
       );
-      list = categories.filter((item) => item.parentId === categoryLevel._id);
+      list = categories.filter((item) => item.parent === categoryLevel._id);
     } else {
       list = categories.filter((item) => item.level === 1);
     }
@@ -91,7 +84,7 @@ const AllProductPage = () => {
   const [listProduct, setListProduct] = useState([]);
   const [productPage, setProductPage] = useState([]);
   const [osOption, setOsOption] = useState([]);
-  const [sortOption, setSortOption] = useState('Nổi bật');
+  const [sortOption, setSortOption] = useState('Featured');
   const [ramOption, setRamOption] = useState([]);
   const [storageOption, setStorageOption] = useState([]);
   const [categoryOption, setCategoryOption] = useState([]);
@@ -209,6 +202,7 @@ const AllProductPage = () => {
       .unwrap()
       .then((value) => {
         const { products } = value;
+        console.log('Products', products);
         // Chia mảng sản phẩm thành các phần tử con có độ dài bằng với kích thước trang
         const chunks = _.chunk(products, pageSize);
         // Tính toán các giá trị cần trả về
@@ -239,12 +233,9 @@ const AllProductPage = () => {
       display="flex"
       justifyContent="space-between"
       minHeight="80vh"
+      sx={{ backgroundColor: '#fff' }}
     >
-      <Container
-        sx={{
-          backgroundColor: 'Light',
-        }}
-      >
+      <Container>
         <Grid
           item
           sx={{ paddingTop: '10px', marginTop: '10px' }}
@@ -265,160 +256,28 @@ const AllProductPage = () => {
               borderRadius="lg"
               width="100%"
               height="100%"
-              bgColor="white"
               variant="contained"
-              sx={{ padding: '18px 27px', marginBottom: '10px' }}
+              className="filter-box"
             >
               {' '}
-              <Stack sx={{ marginBottom: '15px', minWidth: '210px' }}>
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Thương hiệu
-                </MDTypography>
-                {categoryCustomList && categoryCustomList.length !== 0
-                  ? categoryCustomList.map((item, index) => {
-                      return (
-                        <FormControlLabel
-                          key={index}
-                          label={
-                            <MDTypography
-                              sx={{
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                color: '#2b3445',
-                              }}
-                            >
-                              {item.name}
-                            </MDTypography>
-                          }
-                          control={
-                            <Checkbox
-                              value={item.slug}
-                              onChange={handleCategoryChange}
-                            />
-                          }
-                        />
-                      );
-                    })
-                  : null}
-              </Stack>
+              <FilterCategory
+                data={categoryCustomList}
+                onChange={handleCategoryChange}
+              />
               <Divider />
-              <Stack direction="column" sx={{ marginBottom: '15px' }}>
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Loại điện thoại
-                </MDTypography>
-                {typePhone.map((item, index) => {
-                  return (
-                    <FormControlLabel
-                      key={index}
-                      label={
-                        <MDTypography
-                          sx={{
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            color: '#2b3445',
-                          }}
-                        >
-                          {item.name}
-                        </MDTypography>
-                      }
-                      control={
-                        <Checkbox
-                          value={item.name}
-                          onChange={handleChangeType}
-                        />
-                      }
-                    />
-                  );
-                })}
-              </Stack>
+              <FilterInput
+                data={typePhone}
+                title={'Type os'}
+                onChange={handleChangeType}
+              />
               <Divider />
-              <Stack direction="column" sx={{ marginBottom: '15px' }}>
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                    marginBottom: '8px',
-                  }}
-                >
-                  RAM
-                </MDTypography>
-                {rams.map((item, index) => {
-                  return (
-                    <FormControlLabel
-                      key={index}
-                      label={
-                        <MDTypography
-                          sx={{
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            color: '#2b3445',
-                          }}
-                        >
-                          {item.value}
-                        </MDTypography>
-                      }
-                      control={
-                        <Checkbox
-                          value={item.value}
-                          onChange={handleRamChange}
-                        />
-                      }
-                    />
-                  );
-                })}
-              </Stack>
+              <FilterInput data={rams} title="Ram" onChange={handleRamChange} />
               <Divider />
-              <Stack direction="column" sx={{ marginBottom: '15px' }}>
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Dung lượng lưu trữ
-                </MDTypography>
-                {storages.map((item, index) => {
-                  return (
-                    <FormControlLabel
-                      key={index}
-                      label={
-                        <MDTypography
-                          sx={{
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            color: '#2b3445',
-                          }}
-                        >
-                          {item.value}
-                        </MDTypography>
-                      }
-                      control={
-                        <Checkbox
-                          value={item.value}
-                          onChange={handleStorageChange}
-                        />
-                      }
-                    />
-                  );
-                })}
-              </Stack>
+              <FilterInput
+                data={storages}
+                title="Storage"
+                onChange={handleStorageChange}
+              />
             </MDBox>
           </Grid>
           <Grid
@@ -432,23 +291,16 @@ const AllProductPage = () => {
               borderRadius="lg"
               width="100%"
               height="100%"
-              bgColor="white"
               variant="contained"
-              sx={{ padding: '16px 27px', marginBottom: '10px' }}
+              className="filter-box"
             >
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <MDTypography
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#2b3445',
-                  }}
-                >
-                  {!totalCount ? '0 sản phẩm' : `${totalCount} sản phẩm`}
+                <MDTypography className="title-element">
+                  {!totalCount ? '0 product' : `${totalCount} products`}
                 </MDTypography>
                 <Stack
                   direction="row"
@@ -456,14 +308,8 @@ const AllProductPage = () => {
                   alignItems="center"
                   spacing={2}
                 >
-                  <MDTypography
-                    sx={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#2b3445',
-                    }}
-                  >
-                    Sắp xếp theo:
+                  <MDTypography className="title-element">
+                    Order by:
                   </MDTypography>
                   <Select
                     sx={{ width: '150px', height: '35px' }}
@@ -496,7 +342,6 @@ const AllProductPage = () => {
             ) : Object.keys(productPage).length > 0 ? (
               <MDBox
                 variant="contained"
-                borderRadius="lg"
                 sx={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(4, 1fr)',
@@ -506,7 +351,10 @@ const AllProductPage = () => {
                   if (index < 15) {
                     return (
                       <Item key={index}>
-                        <ProductCard category={item._id} groups={item.groups} />
+                        <ProductCard
+                          category={item.category_path}
+                          products={item.groups}
+                        />
                       </Item>
                     );
                   }
@@ -519,9 +367,7 @@ const AllProductPage = () => {
                 alignItems="center"
                 p={2}
               >
-                <MDTypography sx={{ color: '#111111' }}>
-                  Không tìm thấy sản phẩm
-                </MDTypography>
+                <MDTypography sx={{ color: '#111111' }}>0 product</MDTypography>
               </MDBox>
             )}
             {dataLoading || Object.keys(productPage).length === 0 ? null : (

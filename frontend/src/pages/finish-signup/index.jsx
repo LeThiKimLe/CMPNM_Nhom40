@@ -21,7 +21,7 @@ const FinishSignUp = () => {
       width="100vw"
       height="100%"
       minHeight="100vh"
-      sx={{ overflowX: 'hidden' }}
+      sx={{ overflowX: 'hidden', backgroundColor: '#fff' }}
     >
       <MDBox position="absolute" width="100%" minHeight="100vh" />
       <MDBox width="100%" height="100vh" mx="auto">
@@ -49,9 +49,9 @@ const FinishSignUp = () => {
               />
             </div>
             <MDTypography variant="body2" color="dark">
-              Chúng tôi đã gửi một thư đến địa chỉ email buitiep@gmail.com để
-              xác nhận địa chỉ email và kích hoạt tài khoản của bạn. Đường dẫn
-              trong email sẽ hết hạn trong vòng 24 giờ.
+              We have sent a mail to the email address to Confirm your email
+              address and activate your account. Path in the email will expire
+              within 24 hours.
             </MDTypography>
             <MDTypography
               variant="button"
@@ -61,12 +61,12 @@ const FinishSignUp = () => {
               component={Link}
               to="/notification"
             >
-              Nhấn vào đây{' '}
+              Click here{' '}
             </MDTypography>
             <span style={{ fontSize: '1rem' }}>
               {' '}
-              nếu bạn không nhận được email và muốn thay đổi địa chỉ email mà
-              bạn đăng ký.
+              If you do not receive emails and want to change your email address
+              you register.
             </span>
           </Grid>
         </Grid>
