@@ -7,7 +7,6 @@ import {
   Pagination,
   CircularProgress,
 } from '@mui/material';
-import './style.css';
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useLocation } from 'react-router-dom';

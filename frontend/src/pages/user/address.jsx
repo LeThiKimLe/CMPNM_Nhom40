@@ -118,7 +118,13 @@ const AddressPage = () => {
           alignItems="center"
           spacing={2}
         >
-          <MDTypography variant="h4" color="primary">
+          <MDTypography
+            sx={{
+              fontSize: '19.5px',
+              fontWeight: '600',
+              color: '#323232',
+            }}
+          >
             {`You don't have any address yet!`}
           </MDTypography>
         </Stack>

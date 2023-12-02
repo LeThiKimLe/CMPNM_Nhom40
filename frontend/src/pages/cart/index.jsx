@@ -184,7 +184,7 @@ const CartPage = () => {
                           <MDTypography
                             sx={{
                               fontSize: '0.875rem',
-                              fontWeight: '500',
+                              fontWeight: 600,
                               color: '#111111',
                             }}
                           >
@@ -234,16 +234,20 @@ const CartPage = () => {
                     sx={{ marginBottom: '5px' }}
                   >
                     <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px' }}
-                      variant="h4"
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: '#111111',
+                      }}
                     >
                       Total
                     </MDTypography>
                     <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px' }}
-                      variant="h4"
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: '#111111',
+                      }}
                     >
                       {cartItems.length} products
                     </MDTypography>
@@ -257,9 +261,11 @@ const CartPage = () => {
                     spacing={2}
                   >
                     <MDTypography
-                      color="dark"
-                      sx={{ fontSize: '14px', fontWeight: '500' }}
-                      variant="body"
+                      sx={{
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: '#111111',
+                      }}
                     >
                       Total price
                     </MDTypography>
@@ -285,15 +291,16 @@ const CartPage = () => {
                 >
                   <MDButton
                     size="medium"
-                    color="dark"
+                    color="light"
                     sx={{
-                      textTransform: 'initial !important',
-                      fontWeight: '500',
-                      padding: '2px 10px',
-                      borderRadius: '13px',
+                      textTransform: 'initial',
+                      fontWeight: 600,
+                      color: '#46bcaa',
+                      fontSize: '13px',
+                      padding: '4px 10px',
+                      backgroundColor: '#edf0ff',
+                      borderRadius: '8px',
                       boxShadow: '#dbd9d9 5px 5px 5px 5px',
-                      color: '#fff',
-                      backgroundColor: '#0b5394',
                     }}
                     onClick={() => navigate('/')}
                   >
@@ -301,14 +308,16 @@ const CartPage = () => {
                   </MDButton>
                   <MDButton
                     size="medium"
-                    color="success"
+                    color="light"
                     sx={{
-                      textTransform: 'initial !important',
-                      fontWeight: '500',
-                      borderRadius: '13px',
+                      textTransform: 'initial',
+                      fontWeight: 600,
+                      color: '#4d69fa',
+                      fontSize: '13px',
+                      padding: '4px 10px',
+                      backgroundColor: '#edf0ff',
+                      borderRadius: '8px',
                       boxShadow: '#dbd9d9 5px 5px 5px 5px',
-                      color: '#fff',
-                      backgroundColor: '#6aa84f',
                     }}
                     onClick={handleCheckOut}
                   >
@@ -357,10 +366,12 @@ const CartPage = () => {
                   to="/products?category=all"
                   size="medium"
                   sx={{
-                    textTransform: 'initial !important',
-                    fontWeight: '600',
+                    textTransform: 'initial',
+                    fontWeight: 600,
                     color: '#46bcaa',
-                    backgroundColor: '#edf8f7',
+                    fontSize: '13px',
+                    padding: '4px 5px',
+                    backgroundColor: '#edf0ff',
                     borderRadius: '8px',
                     boxShadow: '#dbd9d9 5px 5px 5px 5px',
                   }}

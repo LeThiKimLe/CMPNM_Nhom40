@@ -5,15 +5,16 @@ import {
   Row,
   Col,
   Input,
-  Button,
   Checkbox,
   notification,
   Spin,
 } from 'antd';
+import { Stack } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import getAddressAPI from '../../utils/get-details-address';
 import { useDispatch, useSelector } from 'react-redux';
 import addressThunk from '../../features/address/address.service';
+import MDButton from '../../components/MDButton';
 const { Option } = Select;
 const ModalAddAddress = (props) => {
   const { open, onCancel, setOpen, getAddressList } = props;
@@ -82,7 +83,7 @@ const ModalAddAddress = (props) => {
     dispatch(addressThunk.addAddressAPI({ address: addressData }))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Thêm địa chỉ thành công!' });
+        notification.success({ message: 'Add new address successfully!' });
         setOpen(false);
         form.resetFields();
         getAddressList();
@@ -94,7 +95,12 @@ const ModalAddAddress = (props) => {
     });
   }, []);
   return (
-    <Modal footer={null} open={open} onCancel={onCancel} title="Địa chỉ mới">
+    <Modal
+      footer={null}
+      open={open}
+      onCancel={onCancel}
+      title="Add new address"
+    >
       <Form
         form={form}
         layout="vertical"
@@ -279,33 +285,46 @@ const ModalAddAddress = (props) => {
           </div>
         ) : null}
         <Form.Item>
-          <Button
-            style={{
-              border: '1px solid #C0C0C0',
-              borderRadius: '10px',
-              background: '#40E0D0',
-              color: 'white',
-              width: '30%',
-              marginRight: '10px',
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={3}
+            sx={{
               marginTop: '20px',
             }}
-            onClick={handleAddAddress}
           >
-            Add new
-          </Button>
-
-          <Button
-            onClick={handleCancel}
-            style={{
-              border: '1px solid #C0C0C0',
-              borderRadius: '10px',
-              background: '#FF6347',
-              color: 'white',
-              width: '30%',
-            }}
-          >
-            Cancel
-          </Button>
+            <MDButton
+              size="small"
+              color="light"
+              sx={{
+                textTransform: 'initial !important',
+                fontWeight: '600',
+                color: '#4d69fa',
+                backgroundColor: '#edf0ff',
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 5px 5px',
+              }}
+              onClick={handleAddAddress}
+            >
+              Add
+            </MDButton>
+            <MDButton
+              size="small"
+              color="light"
+              sx={{
+                textTransform: 'initial !important',
+                fontWeight: '600',
+                color: '#f35421',
+                backgroundColor: '#feeee9',
+                borderRadius: '8px',
+                boxShadow: '#dbd9d9 5px 5px 5px 5px',
+              }}
+              onClick={handleCancel}
+            >
+              Back
+            </MDButton>
+          </Stack>
         </Form.Item>
       </Form>
     </Modal>

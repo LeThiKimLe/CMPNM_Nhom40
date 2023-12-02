@@ -91,7 +91,7 @@ const OrderConfirmation = () => {
                       boxShadow: '#dbd9d9 5px 5px 5px 5px',
                     }}
                   >
-                    Đến đơn hàng
+                    Go to order
                   </MDButton>
                 </Stack>
               </Paper>

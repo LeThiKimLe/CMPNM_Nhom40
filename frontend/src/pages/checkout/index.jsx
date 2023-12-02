@@ -16,7 +16,6 @@ import {
   IconButton,
 } from '@mui/material';
 import ServiceModal from './modal-service';
-// *socket io
 import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -32,7 +31,6 @@ import CheckOutItem from '../../components/CheckOutItem';
 
 import ModalAddress from './modal-address';
 import addressThunk from '../../features/address/address.service';
-import _ from 'lodash';
 import {
   customListOrderProducts,
   customeListOrderProductsPaypal,
@@ -40,45 +38,10 @@ import {
 import orderThunk from '../../features/order/order.service';
 import { cartActions } from '../../features/cart/cart.slice';
 import ModalAddAddress from './modal-add-address';
+import columns from './fieldName';
 const districtIdStore = 3695;
 const wardCodeStore = '90737';
-const columns = [
-  {
-    key: 'name',
-    fieldName: 'Name',
-    index: 'name',
-    width: 4,
-    justifyContent: 'flex-start',
-  },
-  {
-    key: 'details',
-    fieldName: '',
-    index: 'details',
-    width: 2.5,
-    justifyContent: 'center',
-  },
-  {
-    key: 'price',
-    fieldName: 'Price',
-    index: 'price',
-    width: 2,
-    justifyContent: 'center',
-  },
-  {
-    key: 'quantity',
-    fieldName: 'Quantity',
-    index: 'quantity',
-    width: 1.5,
-    justifyContent: 'center',
-  },
-  {
-    key: 'totalPrice',
-    fieldName: 'Total price',
-    index: 'totalPrice',
-    justifyContent: 'flex-end',
-    width: 2,
-  },
-];
+
 const BpIcon = styled('span')(({ theme }) => ({
   borderRadius: '50%',
   width: 16,
@@ -912,7 +875,7 @@ const CheckOutPage = () => {
                                 fontSize: '13px',
                                 pading: '4px 5px',
                                 backgroundColor: '#edf0ff',
-                                borderRadius: '8px',
+                                borderRadius: '8`px',
                                 boxShadow: '#dbd9d9 5px 5px 5px 5px',
                               }}
                               onClick={() => setOpenModalService(true)}

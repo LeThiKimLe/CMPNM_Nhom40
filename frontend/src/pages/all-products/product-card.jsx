@@ -56,6 +56,7 @@ function ProductCard({ category, products }) {
     ram,
     storage,
   } = product;
+  console.log('product select', product);
   const screenCustom = renderScreen(detailsProduct.screen);
   return (
     <Card
@@ -99,7 +100,7 @@ function ProductCard({ category, products }) {
         <MDBox mb={0.5} mx={0.5}>
           <MDBox mb={0.5}>
             <Link
-              to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
+              to={`/product-page/${category}?ram=${ram}&storage=${storage}`}
             >
               <MDTypography
                 sx={{
