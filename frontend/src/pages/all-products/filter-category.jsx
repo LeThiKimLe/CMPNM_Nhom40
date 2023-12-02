@@ -1,18 +1,33 @@
 import React from 'react';
 import { Checkbox, FormControlLabel, Stack } from '@mui/material';
 import MDTypography from '../../components/MDTypography';
-import './custom.css';
+
 const FilterCategory = ({ data, onChange }) => {
   return (
     <Stack sx={{ marginBottom: '15px', minWidth: '210px' }}>
-      <MDTypography className="title-element">Category</MDTypography>
+      <MDTypography
+        sx={{
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#323232',
+          marginBottom: '8px',
+        }}
+      >
+        Category
+      </MDTypography>
       {data && data.length !== 0
         ? data.map((item, index) => {
             return (
               <FormControlLabel
                 key={index}
                 label={
-                  <MDTypography className="category-title">
+                  <MDTypography
+                    sx={{
+                      fontSize: '13px',
+                      color: '#323232',
+                      fontWeight: '600',
+                    }}
+                  >
                     {item.name}
                   </MDTypography>
                 }

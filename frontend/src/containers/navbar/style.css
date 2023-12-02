@@ -4,12 +4,13 @@
   margin: 0;
   position: absolute;
   z-index: 999;
-  margin-top: 5px;
-  width: 850px;
+  width: 820px;
+  margin-left: 15px;
   height: 500px;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   overflow: hidden;
+  border-radius: 8px;
   overflow-y: auto;
 }
 .suggestion-item {
@@ -93,4 +94,20 @@
   border-radius: 13px;
   box-shadow: #808191 0px 10.8px 10px 0px;
   color: #808191;
+}
+.search-input-base {
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 13px;
+  box-shadow: #dbd9d9 5px 10px 10px 5px;
+  color: #808191;
+  display: flex;
+  font-size: 13px;
+  font-weight: medium;
+  grid-area: auto;
+  line-height: 19.5px;
+  margin: 13px 19.5px;
+  padding: 0px 9.75px;
+  width: 1000px;
+  height: 45px;
 }

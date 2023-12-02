@@ -58,7 +58,17 @@ function ProductCard({ category, products }) {
   } = product;
   const screenCustom = renderScreen(detailsProduct.screen);
   return (
-    <Card key={category._id} className="product-card">
+    <Card
+      key={category._id}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        height: '100%',
+        overflow: 'visible',
+      }}
+    >
       <>
         <Link to={`/product-page/${category}?ram=${ram}&storage=${storage}`}>
           <MDBox
@@ -92,7 +102,12 @@ function ProductCard({ category, products }) {
               to={`/product-page/${category.slug}?ram=${detailsProduct.ram}&storage=${detailsProduct.storage}`}
             >
               <MDTypography
-                className="product-name"
+                sx={{
+                  fontSize: '16.25px',
+                  fontWeight: 700,
+                  height: '50px',
+                  color: '#323232',
+                }}
                 textTransform="capitalize"
                 color="dark"
               >
@@ -118,7 +133,14 @@ function ProductCard({ category, products }) {
                   <Chip
                     key={index}
                     size="medium"
-                    className="product-chip"
+                    sx={{
+                      fontSize: '0.65rem',
+                      fontWeight: 600,
+                      borderRadius: '8px',
+                      marginRight: '3px',
+                      marginBottom: '3px',
+                      backgroundColor: '#edf8f7',
+                    }}
                     label={item}
                   />
                 );

@@ -155,32 +155,36 @@ const Navbar = () => {
                 style={{ height: `${suggestionListHeight}px` }}
               >
                 {suggestions.map((suggestion, key) => {
-                  const { ram, storage } = suggestion.detailsProduct;
+                  console.log(suggestion);
+                  const product = suggestion.groups[0].items[0];
+                  const category = product.category.slug;
+                  const {
+                    ram,
+                    storage,
+                    name,
+                    salePrice,
+                    regularPrice,
+                    sale,
+                    productPictures,
+                  } = product;
                   return (
                     <Link
-                      onClick={() =>
-                        handleOnClick(suggestion.category, ram, storage)
-                      }
-                      to={`/product-page/${suggestion.category}?ram=${ram}&storage=${storage}`}
+                      onClick={() => handleOnClick(category, ram, storage)}
+                      to={`/product-page/${category}?ram=${ram}&storage=${storage}`}
                       key={key}
                     >
                       <div className="suggestion-item">
-                        <img
-                          src={suggestion.productPictures[0]}
-                          alt={suggestion.name}
-                        />
+                        <img src={productPictures[0]} alt={name} />
                         <div className="suggestion-item-details">
-                          <div className="suggestion-item-name">
-                            {suggestion.name}
-                          </div>
+                          <div className="suggestion-item-name">{name}</div>
                           <div className="suggestion-item-price">
                             <div className="sale-price">
-                              {formatThousand(suggestion.salePrice)}đ
+                              {formatThousand(salePrice)}đ
                             </div>
                             <div className="regular-price">
-                              {formatThousand(suggestion.regularPrice)}đ{' '}
+                              {formatThousand(regularPrice)}đ{' '}
                             </div>
-                            <div className="sale">{suggestion.sale}%</div>
+                            <div className="sale">{sale}%</div>
                           </div>
                         </div>
                       </div>

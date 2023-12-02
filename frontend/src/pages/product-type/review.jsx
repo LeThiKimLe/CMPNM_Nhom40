@@ -133,16 +133,6 @@ const ReviewComponent = (props) => {
         setReviewData(value);
       });
   };
-  // useEffect(() => {
-  //   if (product) {
-  //     dispatch(userThunk.getReviewAPI(product._id))
-  //       .unwrap()
-  //       .then((value) => {
-  //         console.log(value);
-  //         setReviewData(value);
-  //       });
-  //   }
-  // }, [product, dispatch]);
   return (
     <Box
       sx={{
@@ -184,7 +174,7 @@ const ReviewComponent = (props) => {
           fontSize: '20px',
         }}
       >
-        Đánh giá Điện thoại {product.name}
+        Review {product.name}
       </MDTypography>
       <MDBox display="flex" justifyContent="flex-start">
         <MDBox>
@@ -236,7 +226,7 @@ const ReviewComponent = (props) => {
                 {reviewData && reviewData.reviewCount
                   ? reviewData.reviewCount
                   : 0}{' '}
-                Đánh giá
+                Review
               </MDTypography>
             </MDBox>
           </Stack>
@@ -300,7 +290,7 @@ const ReviewComponent = (props) => {
             }}
             onClick={() => setOpenReview(true)}
           >
-            Viết đánh giá
+            Review
           </MDButton>
 
           <MDButton
@@ -315,8 +305,8 @@ const ReviewComponent = (props) => {
             }}
           >
             {reviewData && reviewData.reviewCount > 0
-              ? `Xem ${reviewData.reviewCount} đánh giá`
-              : 'Chưa có đánh giá'}
+              ? `See ${reviewData.reviewCount} review`
+              : 'No review'}
           </MDButton>
         </MDBox>
       ) : null}

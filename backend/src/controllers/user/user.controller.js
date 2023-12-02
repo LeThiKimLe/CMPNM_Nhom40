@@ -503,9 +503,25 @@ const searchProduct = async (req, res) => {
         },
       },
       {
+        $project: {
+          _id: 0,
+          name: 1,
+          slug: 1,
+          regularPrice: 1,
+          detailsProduct: 1,
+          productPictures: 1,
+          sale: 1,
+          salePrice: 1,
+          ram: 1,
+          storage: 1,
+          category_path: { $arrayElemAt: ['$category_path', -1] },
+          category_slug: 1,
+        },
+      },
+      {
         $lookup: {
           from: 'categories',
-          localField: 'category',
+          localField: 'category_path',
           foreignField: '_id',
           as: 'category',
         },
@@ -515,27 +531,39 @@ const searchProduct = async (req, res) => {
       },
       {
         $group: {
-          _id: '$category',
-          product: { $first: '$$ROOT' },
+          _id: {
+            category_path: '$category_path',
+            ram: '$ram',
+            storage: '$storage',
+          },
+          products: { $push: '$$ROOT' },
+          category_slug: { $first: '$category.slug' },
         },
       },
       {
-        $replaceRoot: {
-          newRoot: '$product',
+        $group: {
+          _id: '$_id.category_path',
+          groups: {
+            $push: {
+              _id: {
+                ram: '$_id.ram',
+                storage: '$_id.storage',
+              },
+              items: '$products',
+              category_slug: '$category_slug',
+            },
+          },
         },
       },
       {
         $project: {
-          name: 1,
-          productPictures: 1,
-          sale: 1,
-          salePrice: 1,
-          regularPrice: 1,
-          detailsProduct: 1,
-          category: '$category.slug',
+          _id: 0,
+          category_path: '$_id',
+          groups: 1,
         },
       },
     ]);
+    console.log("product search", products);
     res.status(200).json(products);
   } catch (error) {
     console.error(error);

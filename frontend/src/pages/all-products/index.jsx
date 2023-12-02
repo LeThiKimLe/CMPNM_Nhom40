@@ -7,7 +7,7 @@ import {
   Pagination,
   CircularProgress,
 } from '@mui/material';
-
+import './style.css';
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useLocation } from 'react-router-dom';
@@ -18,7 +18,6 @@ import { Stack } from '@mui/system';
 import { useSelector, useDispatch } from 'react-redux';
 import userThunk from '../../features/user/user.service';
 import optionFilter from './options';
-import './custom.css';
 import ProductCard from './product-card.jsx';
 import FilterInput from './filter-input.jsx';
 import FilterCategory from './filter-category.jsx';
@@ -257,7 +256,12 @@ const AllProductPage = () => {
               width="100%"
               height="100%"
               variant="contained"
-              className="filter-box"
+              sx={{
+                padding: '18px 27px',
+                marginBottom: '10px',
+                borderRadius: '13px',
+                boxShadow: '#bdbdbd 5px 5px 5px 5px',
+              }}
             >
               {' '}
               <FilterCategory
@@ -292,14 +296,26 @@ const AllProductPage = () => {
               width="100%"
               height="100%"
               variant="contained"
-              className="filter-box"
+              sx={{
+                padding: '18px 27px',
+                marginBottom: '10px',
+                borderRadius: '13px',
+                boxShadow: '#bdbdbd 5px 5px 5px 5px',
+              }}
             >
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <MDTypography className="title-element">
+                <MDTypography
+                  sx={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#323232',
+                    marginBottom: '8px',
+                  }}
+                >
                   {!totalCount ? '0 product' : `${totalCount} products`}
                 </MDTypography>
                 <Stack
@@ -308,7 +324,14 @@ const AllProductPage = () => {
                   alignItems="center"
                   spacing={2}
                 >
-                  <MDTypography className="title-element">
+                  <MDTypography
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#323232',
+                      marginBottom: '8px',
+                    }}
+                  >
                     Order by:
                   </MDTypography>
                   <Select

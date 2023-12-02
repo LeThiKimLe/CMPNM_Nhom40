@@ -354,7 +354,7 @@ const CartPage = () => {
                   fontSize="1rem"
                   color={'light'}
                   component={Link}
-                  to="/products"
+                  to="/products?category=all"
                   size="medium"
                   sx={{
                     textTransform: 'initial !important',

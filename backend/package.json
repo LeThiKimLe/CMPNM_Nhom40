@@ -32,7 +32,7 @@
     "mongoose-paginate-v2": "^1.7.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.7.8",
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.0.2",
     "paypal-rest-sdk": "^1.8.1",
     "shortid": "^2.2.16",
     "slugify": "^1.6.5",

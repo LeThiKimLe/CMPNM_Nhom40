@@ -171,8 +171,56 @@ const getProductById = async (req, res) => {
 
 const getProductsOption = async (req, res) => {
   const filterData = req.body.data;
+  let products = [];
+  let query = {};
+  if (filterData.category == "all") {
+    query = {
+      active: true,
+      category_path: { $exists: true, $ne: [] },
+    }
+  } else if (filterData.level && filterData.level == '2') {
+    const categoryLevel = await Category.findOne({ slug: filterData.category }).select('id').lean();
+    query = {
+      active: true,
+      category_path: { $exists: true, $ne: [] },
+      'category_path.1': categoryLevel._id,
+    };
+  } else if (filterData.level && filterData.level == "3") {
+    const categorySlugs = filterData.category.split("+");
+    const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
+    const categoryIDs = categories.map(obj => obj._id);
+    query = {
+      active: true,
+      category_path: { $exists: true, $ne: [] },
+      'category_path.2': { $in: categoryIDs },
+    }
+  } else {
+    const categorySlugs = filterData.category.split("+");
+    const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
+    const categoryIDs = categories.map(obj => obj._id);
+    query = {
+      active: true,
+      category_path: { $exists: true, $ne: [] },
+      'category_path.0': { $in: categoryIDs },
+    };
+  }
+  if (filterData.type && filterData.type !== 'all') {
+    const osSlugs = filterData.type.split('+');
+    query['detailsProduct.os'] = { $in: osSlugs };
+  }
+  if (filterData.ram && filterData.ram !== 'all') {
+    const ramSlugs = filterData.ram.split('+');
+    query.ram = { $in: ramSlugs };
+  }
+  if (filterData.storage && filterData.storage !== 'all') {
+    const storageSlugs = filterData.storage.split('+');
+    query.storage = { $in: storageSlugs };
+  }
 
-  const commonPipeline = [
+  products = await Product.aggregate([
+    {
+      $match: query
+    },
     {
       $project: {
         _id: 0,
@@ -233,55 +281,10 @@ const getProductsOption = async (req, res) => {
         groups: 1,
       },
     },
-  ];
-
-  if (filterData.category === 'all') {
-    const products = await Product.aggregate(commonPipeline);
-    return Response(res, { products });
-  }
-  if (filterData.level && filterData.level === '2') {
-    const categoryLevel = await Category.findOne({ slug: filterData.category }).select('id').lean();
-    const products = await Product.aggregate([
-      {
-        $match: {
-          active: true,
-          category_path: { $exists: true, $ne: [] },
-          'category_path.1': categoryLevel._id,
-        },
-      },
-      ...commonPipeline,
-    ]);
-    return Response(res, { products });
-  } if (filterData.level && filterData.level === '3') {
-    const categorySlugs = filterData.category.split('+');
-    const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
-    const categoryIDs = categories.map(obj => obj._id);
-    const products = await Product.aggregate([
-      {
-        $match: {
-          active: true,
-          category_path: { $exists: true, $ne: [] },
-          'category_path.2': { $in: categoryIDs },
-        },
-      },
-      ...commonPipeline,
-    ]);
-    return Response(res, { products });
-  }
-  const categorySlugs = filterData.category.split('+');
-  const categories = await Category.find({ slug: { $in: categorySlugs } }, 'id');
-  const categoryIDs = categories.map(obj => obj._id);
-  const products = await Product.aggregate([
-    ...commonPipeline,
-    {
-      $match: {
-        active: true,
-        category_path: { $exists: true, $ne: [] },
-        'category_path.0': { $in: categoryIDs },
-      },
-    },
   ]);
-  return Response(res, { products });
+  return Response(res, {
+    products,
+  });
 };
 
 module.exports = {
