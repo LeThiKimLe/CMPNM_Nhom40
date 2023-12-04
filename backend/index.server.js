@@ -67,7 +67,7 @@ app.use('/api/banner/', bannerRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', userRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, async () => {
   connect(urlMongoose);
   console.log(`App listen at https://localhost:${PORT}`);

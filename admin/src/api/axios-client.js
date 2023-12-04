@@ -1,6 +1,6 @@
 import axios from 'axios';
 import TokenService from '../features/token/token.service';
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://ec2-54-89-125-130.compute-1.amazonaws.com:3000/api';
 const token = TokenService.getLocalAccessToken();
 const axiosClient = axios.create({
   baseURL: API_URL,
