@@ -5,5 +5,4 @@ const allowedOrigins = [
   'http://tmshopfrontend.s3-website-us-east-1.amazonaws.com',
   'http://tmshopadmin.s3-website-us-east-1.amazonaws.com'
 ];
-
 module.exports = allowedOrigins;
