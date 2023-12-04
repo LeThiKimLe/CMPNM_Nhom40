@@ -56,7 +56,6 @@ function ProductCard({ category, products }) {
     ram,
     storage,
   } = product;
-  console.log('product select', product);
   const screenCustom = renderScreen(detailsProduct.screen);
   return (
     <Card

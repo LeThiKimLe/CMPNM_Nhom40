@@ -204,8 +204,6 @@ const ProductPage = () => {
       const { ram, storage } = dataOption[index];
       setRamSelected(ram);
       setStorageSelected(storage);
-      console.log(index, ram, storage);
-      console.log('data product', dataProducts);
       dataProducts.map((item, index) => {
         if (item._id.ram === ram && item._id.storage === storage) {
           setColorListProduct(item.colors);
