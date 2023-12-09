@@ -2,7 +2,6 @@ import {
   Row,
   Col,
   Image,
-  Switch,
   Table,
   Typography,
   Button,
@@ -239,14 +238,6 @@ function ListCategories() {
                   <Button className="search-button">Search</Button>
                 </Col>
                 <Col>
-                  <Button
-                    className="add-button"
-                    onClick={() => setVisibleAdd(true)}
-                  >
-                    Add
-                  </Button>
-                </Col>
-                <Col>
                   <Button className="add-button">Edit</Button>
                 </Col>
                 <Col>
@@ -259,7 +250,7 @@ function ListCategories() {
           </Col>
         </Row>
         <Row gutter={[24, 0]}>
-          <Col span={24} md={14} className="mb-24">
+          <Col span={24} md={16} className="mb-24">
             <Card
               bordered={true}
               className="criclebox tablespace mb-24"
@@ -276,16 +267,18 @@ function ListCategories() {
               </div>
             </Card>
           </Col>
-          <Col span={24} md={10} className="mb-24">
+          <Col span={24} md={8} className="mb-24">
             <Card
               bordered={true}
-              className="criclebox tablespace mb-24"
               title="Create new category"
             >
               <Form form={formAdd} onFinish={handleAddCategory}>
                 <Form.Item
                   name="name"
                   className="input-product"
+                  sx={{
+                    width: "100%"
+                  }}
                   rules={[
                     {
                       required: true,
@@ -297,6 +290,7 @@ function ListCategories() {
                 </Form.Item>
                 <Form.Item
                   name="parentId"
+                  size="large"
                   className="custom-selector"
                   rules={[
                     {
@@ -306,8 +300,9 @@ function ListCategories() {
                   ]}
                 >
                   <Select
-                    placeholder="select a category level one"
+                    placeholder="select a category parent"
                     showSearch
+                    size="large"
                     optionFilterProp="children"
                     onChange={handleCategoryParent}
                     filterOption={(input, option) =>

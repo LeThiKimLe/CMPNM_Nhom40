@@ -11,11 +11,11 @@ const EditUserModel = (props) => {
   };
   const options = [
     {
-      label: 'Quảng trị viên',
+      label: 'Admin',
       value: 'admin',
     },
     {
-      label: 'Người dùng',
+      label: 'User',
       value: 'user',
     },
   ];
@@ -32,7 +32,7 @@ const EditUserModel = (props) => {
         width={600}
         footer={null}
         open={visible}
-        title="Chi tiết người dùng"
+        title="Edit user"
         onCancel={onCancel}
       >
         <Form
@@ -45,103 +45,106 @@ const EditUserModel = (props) => {
             <Col span={12}>
               {' '}
               <Form.Item
-                className="username"
-                label="Tên"
-                style={{ fontWeight: '600' }}
-                name="firstName"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input first name!',
-                  },
-                ]}
-                hasFeedback
+                  className="username"
+                  label="First name"
+                  style={{ fontWeight: '600' }}
+                  name="firstName"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter first name!',
+                    },
+                  ]}
+                  hasFeedback
               >
                 <Input
-                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                  placeholder="Tên"
+                    style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                    placeholder="First name"
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                className="username"
-                label="Họ"
-                style={{ fontWeight: '600' }}
-                name="lastName"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input last name!',
-                  },
-                ]}
-                hasFeedback
+                  className="username"
+                  label="Last name"
+                  style={{ fontWeight: '600' }}
+                  name="lastName"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter lastname!',
+                    },
+                  ]}
+                  hasFeedback
               >
                 <Input
-                  style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                  placeholder="Họ"
+                    style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                    placeholder="Last name"
                 />
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item
-            className="username"
-            label="Email"
-            style={{ fontWeight: '600' }}
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your email!',
-              },
-              {
-                type: 'email',
-                message: 'Please enter a valid email',
-              },
-            ]}
-            hasFeedback
+              className="username"
+              label="Email"
+              style={{ fontWeight: '600' }}
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter email address!',
+                },
+                {
+                  type: 'email',
+                  message: 'Please enter the correct email address!',
+                },
+              ]}
+              hasFeedback
           >
             <Input
-              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-              placeholder="Email"
+                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                placeholder="Email"
             />
           </Form.Item>
           <Form.Item
-            className="username"
-            label="Số điện thoại"
-            style={{ fontWeight: '600' }}
-            name="contactNumber"
-            rules={[
-              {
-                required: true,
-                message: 'Please input contact number!',
-              },
-            ]}
-            hasFeedback
+              className="username"
+              label="Phone number"
+              style={{ fontWeight: '600' }}
+              name="contactNumber"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter phone number!',
+                },
+                {
+                  message: 'Please enter the correct phone number!',
+                  pattern: new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g),
+                },
+              ]}
+              hasFeedback
           >
             <Input
-              style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-              placeholder="Số điện thoại"
+                style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
+                placeholder="Phone number"
             />
           </Form.Item>
           <Form.Item
-            className="username"
-            label="Quyền"
-            name="roles"
-            style={{ fontWeight: '600' }}
-            hasFeedback
+              className="username"
+              label="Role"
+              name="roles"
+              style={{ fontWeight: '600' }}
+              hasFeedback
           >
             <Radio.Group
-              onChange={onChange}
-              defaultValue="admin"
-              options={options}
-              optionType="button"
+                onChange={onChange}
+                options={options}
+                optionType="button"
             />
           </Form.Item>
           <Form.Item
             className="username"
-            label="Ngày tạo"
+            label="Created at"
             name="createdAt"
             style={{ fontWeight: '600' }}
             hasFeedback
