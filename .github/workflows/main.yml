@@ -1,0 +1,53 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: SSH into EC2 and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # SSH into EC2 and execute commands
+            ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+              # Remove all files and directories in the destination folder
+              rm -rf /home/${{ secrets.SSH_USERNAME }}/app/backend/*
+          
+              # Copy backend folder to EC2
+              scp -r backend/* ${SSH_USERNAME}@${EC2_HOST}:/home/${{ secrets.SSH_USERNAME }}/app/backend
+          
+              cd /home/${{ secrets.SSH_USERNAME }}/app/backend/
+          
+              # Install dependencies using Yarn
+              yarn install --production
+          
+              # Check if any PM2 processes are running
+              if pm2 list | grep -q "index.server"; then
+                # Stop the existing PM2 process
+                pm2 stop index.server
+                pm2 delete index.server
+              fi
+          
+              # Start the application with PM2
+              pm2 start index.server.js
+            EOF
