@@ -20,6 +20,14 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+        
+      - name: Set up SSH
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          mkdir -p ~/.ssh
+          chmod -R 700 ~/.ssh
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
       - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
@@ -28,13 +36,13 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # SSH into EC2 and execute commands
-            ssh -T ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+              # SSH into EC2 and execute commands
+              ssh -T ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
               # Remove all files and directories in the destination folder
               rm -rf /home/${{ secrets.SSH_USERNAME }}/app/backend/*
           
               # Copy backend folder to EC2
-              scp -r backend/* ${SSH_USERNAME}@${EC2_HOST}:/home/${{ secrets.SSH_USERNAME }}/app/backend
+              scp -r backend/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_USERNAME }}:/home/${{ secrets.SSH_USERNAME }}/app/backend
           
               cd /home/${{ secrets.SSH_USERNAME }}/app/backend/
           
@@ -50,4 +58,4 @@ jobs:
           
               # Start the application with PM2
               pm2 start index.server.js
-            EOF
+              EOF
