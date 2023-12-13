@@ -21,41 +21,29 @@ jobs:
       - name: Install dependencies
         run: yarn install
         
-      - name: Set up SSH
-        run: |
-          eval $(ssh-agent -s)
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
-          mkdir -p ~/.ssh
-          chmod -R 700 ~/.ssh
-          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-
       - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-              # SSH into EC2 and execute commands
-              ssh -T ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
-              # Remove all files and directories in the destination folder
-              rm -rf /home/${{ secrets.SSH_USERNAME }}/app/backend/*
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.EC2_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} "
+            # Remove all files and directories in the destination folder
+            rm -rf /home/${{ secrets.SSH_USERNAME }}/app/backend/*
           
-              # Copy backend folder to EC2
-              scp -r backend/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_USERNAME }}:/home/${{ secrets.SSH_USERNAME }}/app/backend
+            # Copy backend folder to EC2
+            scp -r backend/* ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.SSH_USERNAME }}/app/backend
           
-              cd /home/${{ secrets.SSH_USERNAME }}/app/backend/
+            cd /home/${{ secrets.SSH_USERNAME }}/app/backend/
           
-              # Install dependencies using Yarn
-              yarn install --production
+            # Install dependencies using Yarn
+            yarn install --production
           
-              # Check if any PM2 processes are running
-              if pm2 list | grep -q "index.server"; then
-                # Stop the existing PM2 process
-                pm2 stop index.server
-                pm2 delete index.server
-              fi
+            # Check if any PM2 processes are running
+            if pm2 list | grep -q 'index.server'; then
+              # Stop the existing PM2 process
+              pm2 stop index.server
+              pm2 delete index.server
+            fi
           
-              # Start the application with PM2
-              pm2 start index.server.js
-              EOF
+            # Start the application with PM2
+            pm2 start index.server.js
+          "
