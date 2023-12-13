@@ -13,3 +13,21 @@
   background-color: white;
   border: 1px solid darkgray;
 }
+
+.edit-button {
+  background-color: #e9e9ea;
+  border-color: #e9e9ea;
+  border-radius: 13px;
+  border-style: solid;
+  border-width: 1px;
+  color: #1f2128;
+  display: inline-block;
+  font-family: Poppins;
+  font-size: 13px;
+  font-weight: 600;
+  grid-area: auto;
+  line-height: 19.5px;
+  padding: 6.5px 10px;
+  text-align: center;
+}
+

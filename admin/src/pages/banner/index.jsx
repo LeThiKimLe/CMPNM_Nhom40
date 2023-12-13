@@ -10,7 +10,7 @@ import {
   notification,
   Image,
   Spin,
-  Table,
+  Table, Card,
 } from 'antd';
 import {
   PlusOutlined,
@@ -26,19 +26,19 @@ const { Title } = Typography;
 
 const columns = [
   {
-    title: 'Tên',
+    title: 'Name',
     dataIndex: 'name',
     key: 'name',
     width: '30%',
   },
   {
-    title: 'Hình ảnh',
+    title: 'Image',
     dataIndex: 'image',
     key: 'image',
     width: '50%',
   },
   {
-    title: 'Ngày tạo',
+    title: 'Date created',
     key: 'created',
     dataIndex: 'created',
     width: '20%',
@@ -84,7 +84,7 @@ const Banner = () => {
     dispatch(bannerThunk.createAPI(bannerData))
       .unwrap()
       .then(() => {
-        notification.success({ message: 'Thêm quảng cáo thành công!' });
+        notification.success({ message: 'Add banner successfully!' });
         formAdd.resetFields();
         dispatch(bannerActions.reset());
         setTimeout(() => {
@@ -169,86 +169,22 @@ const Banner = () => {
         loading={loading}
       />
       <Row gutter={[24, 0]}>
-        <Col xs="24" xl={24}>
-          <Title level={3}>List banner</Title>
-        </Col>
-        <Col xs="24" xl={24}>
-          <Row
-            gutter={[32, 16]}
-            style={{ marginTop: '10px', marginBottom: '20px' }}
+        <Col span={24} md={24} className="mb-24">
+          <Card
+              bordered={true}
+              className="criclebox tablespace mb-24"
+              title="Categories"
           >
-            <Col>
-              <Button
-                style={{
-                  background: '#FFB266',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<SearchOutlined />}
-              >
-                Tìm kiếm
-              </Button>
-            </Col>
-            <Col>
-              <Button
-                style={{
-                  background: '#00994C',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<PlusOutlined />}
-                onClick={() => setOpenAdd(true)}
-              >
-                Thêm
-              </Button>
-            </Col>
-            <Col>
-              <Button
-                style={{
-                  background: '#0066CC',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<EditOutlined />}
-              >
-                Chỉnh sửa
-              </Button>
-            </Col>
-            <Col>
-              <Button
-                style={{
-                  background: '#FF3333',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<DeleteOutlined />}
-              >
-                Xóa
-              </Button>
-            </Col>
-          </Row>
-          <div className="table-responsive">
-            {getLoading ? (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '20px',
-                }}
-              >
-                <Spin size="large" />
-              </div>
-            ) : (
+            <div className="table-responsive">
               <Table
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={data}
-                pagination={true}
-                className="ant-border-space"
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={data}
+                  pagination={true}
+                  className="ant-border-space"
               />
-            )}
-          </div>
+            </div>
+          </Card>
         </Col>
       </Row>
     </div>

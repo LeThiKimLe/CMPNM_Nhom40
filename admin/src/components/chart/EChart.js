@@ -20,7 +20,7 @@ function EChart() {
   return (
     <>
       <div id="chart">
-        <Title level={5}>Doanh thu theo tháng</Title>
+        <Title level={5}>Revenue by month</Title>
         <ReactApexChart
           className="bar-chart"
           options={eChart.options}

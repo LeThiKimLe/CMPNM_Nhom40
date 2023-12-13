@@ -16,253 +16,18 @@ import orderThunk from '../../features/order/order.service';
 import { useNavigate } from 'react-router-dom';
 import productThunk from '../../features/product/product.service';
 import ReactApexChart from 'react-apexcharts';
-// import eChart from '../../components/chart/configs/eChart';
+import {
+  StockProductColumns,
+  RecentOrderColumns,
+  paymentStatusList,
+  orderStatusList,
+  eChartConfig,
+  monthNamesEn,
+  monthNamesVi,
+} from './config.js';
+import CustomItem from './custom-item.jsx';
 const { Title, Text } = Typography;
 
-const StockProductColumns = [
-  {
-    title: 'Tên sản phẩm',
-    dataIndex: 'name',
-    key: 'name',
-    width: '32%',
-  },
-  {
-    title: 'Số lượng bán',
-    key: 'amount',
-    dataIndex: 'amount',
-  },
-  {
-    title: 'Số lượng kho',
-    key: 'stock',
-    dataIndex: 'stock',
-  },
-  {
-    title: 'Giá tiền',
-    key: 'price',
-    dataIndex: 'price',
-  },
-];
-
-const RecentOrderColumns = [
-  {
-    title: 'Mã đơn',
-    dataIndex: 'id',
-    key: 'id',
-  },
-  {
-    title: 'Số lượng sản phẩm',
-    key: 'amount',
-    dataIndex: 'amount',
-  },
-  {
-    title: 'Trạng thái thanh toán',
-    key: 'paymentStatus',
-    dataIndex: 'paymentStatus',
-  },
-  {
-    title: 'Trạng thái đơn',
-    key: 'orderStatus',
-    dataIndex: 'orderStatus',
-  },
-  {
-    title: 'Tổng tiền',
-    key: 'totalAmount',
-    dataIndex: 'totalAmount',
-  },
-];
-const paymentStatusList = [
-  {
-    name: 'Chưa thanh toán',
-    value: 'pending',
-    color: '#5ba6a6',
-  },
-  {
-    name: 'Đã thanh toán',
-    value: 'completed',
-    color: '#b6d7a8',
-  },
-  {
-    name: 'Hủy đơn',
-    value: 'cancelled',
-    color: '#ea9999',
-  },
-  {
-    name: 'Đã hoàn tiền',
-    value: 'refund',
-    color: '#b4a7d6',
-  },
-];
-const orderStatusList = [
-  {
-    key: 'pending',
-    value: 'Chờ xác nhận',
-    color: '#5ba6a6',
-  },
-  {
-    key: 'packed',
-    value: 'Đã đóng gói',
-    color: '#6fa8dc',
-  },
-  {
-    key: 'shipping',
-    value: 'Đang giao hàng',
-    color: '#ffe599',
-  },
-  {
-    key: 'delivered',
-    value: 'Đã giao hàng',
-    color: '#b6d7a8',
-  },
-  {
-    key: 'cancelled',
-    value: 'Đã hủy',
-    color: '#ea9999',
-  },
-  {
-    key: 'refund',
-    value: 'Trả hàng',
-    color: '#b4a7d6',
-  },
-];
-const eChartConfig = {
-  series: [
-    {
-      name: 'Sales',
-      data: [450, 200, 100, 220, 500, 100, 400, 230, 500, 200, 400, 300],
-      color: '#fff',
-    },
-  ],
-
-  options: {
-    chart: {
-      type: 'bar',
-      width: '100%',
-      height: 'auto',
-
-      toolbar: {
-        show: false,
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '55%',
-        borderRadius: 5,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      show: true,
-      width: 1,
-      colors: ['transparent'],
-    },
-    grid: {
-      show: true,
-      borderColor: '#ccc',
-      strokeDashArray: 2,
-    },
-    xaxis: {
-      categories: [
-        'Tháng 1',
-        'Tháng 2',
-        'Tháng 3',
-        'Tháng 4',
-        'Tháng 5',
-        'Tháng 6',
-        'Tháng 7',
-        'Tháng 8',
-        'Tháng 9',
-        'Tháng 10',
-        'Tháng 11',
-        'Tháng 12',
-      ],
-      labels: {
-        show: true,
-        align: 'right',
-        minWidth: 0,
-        maxWidth: 160,
-        style: {
-          colors: [
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-          ],
-        },
-      },
-    },
-    yaxis: {
-      labels: {
-        show: true,
-        align: 'right',
-        minWidth: 0,
-        maxWidth: 160,
-        style: {
-          colors: [
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-            '#fff',
-          ],
-        },
-      },
-    },
-
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return '$ ' + val + ' thousands';
-        },
-      },
-    },
-  },
-};
-const monthNamesEn = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const monthNamesVi = [
-  'Tháng 1',
-  'Tháng 2',
-  'Tháng 3',
-  'Tháng 4',
-  'Tháng 5',
-  'Tháng 6',
-  'Tháng 7',
-  'Tháng 8',
-  'Tháng 9',
-  'Tháng 10',
-  'Tháng 11',
-  'Tháng 12',
-];
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -313,31 +78,30 @@ function Home() {
   };
   const count = [
     {
-      today: 'Tổng doanh thu',
+      today: 'Total revenue',
       title: `${formatThousand(totalAmount)}đ`,
       icon: <FontAwesomeIcon icon={faSackDollar} className="fa-2xl" />,
       bnb: 'bnb2',
     },
     {
-      today: 'Tổng số đơn hàng',
+      today: 'Total orders',
       title: `${orderList.length}`,
       icon: <FontAwesomeIcon icon={faBagShopping} className="fa-2xl" />,
       bnb: 'bnb2',
     },
     {
-      today: 'Lượng sản phẩm bán ra',
+      today: 'Amount of products sold',
       title: `${allItems}`,
       icon: <FontAwesomeIcon icon={faBoxesStacked} className="fa-2xl" />,
       bnb: 'redtext',
     },
     {
-      today: 'Tổng tiền vận chuyển',
+      today: 'Total shipping cost',
       title: `${formatThousand(totalShipAmount)}đ`,
       icon: <FontAwesomeIcon icon={faTruckFast} className="fa-2xl" />,
       bnb: 'bnb2',
     },
   ];
-
   const getRevenue = useCallback(async () => {
     try {
       const dataRevenue = await dispatch(
@@ -599,11 +363,12 @@ function Home() {
             <Title
               style={{
                 fontSize: '24px',
-                color: '#4e97fd',
+                fontFamily: 'Poppins',
+                color: '#323232',
                 fontWeight: '600',
               }}
             >
-              Chào buổi sáng, Tiệp!
+              Hello, Tiep!
             </Title>
 
             <Row gutter={[24, 0]}>
@@ -611,9 +376,10 @@ function Home() {
                 <Card bordered={false} className="criclebox">
                   {eChart && (
                     <div id="chart">
-                      <Title level={5}>Doanh thu theo tháng</Title>
+                      <Title level={5}>Revenue by month</Title>
                       <ReactApexChart
                         className="bar-chart"
+                        sx={{ color: '#111' }}
                         options={eChart.options}
                         series={eChart.series}
                         type="bar"
@@ -625,150 +391,9 @@ function Home() {
               </Col>
               <Col xs={24} sm={24} md={12} lg={12} xl={6} className="mb-24">
                 <Row className="rowgap-vbox" gutter={[24, 0]}>
-                  <Col
-                    xs={24}
-                    sm={24}
-                    md={24}
-                    lg={24}
-                    xl={24}
-                    className="mb-24"
-                  >
-                    <Card bordered={false} className="criclebox ">
-                      <div className="number">
-                        <Row align="middle" gutter={[24, 0]}>
-                          <Col xs={18}>
-                            <span>{count[0].today}</span>
-                            <Title
-                              style={{ fontSize: '20px', fontWeight: '700' }}
-                            >
-                              {count[0].title}{' '}
-                              <small className={count[0].bnb}>
-                                {count[0].persent}
-                              </small>
-                            </Title>
-                          </Col>
-                          <Col xs={6}>
-                            <div
-                              className="icon-box"
-                              style={{
-                                backgroundColor: '#3d85c6',
-                              }}
-                            >
-                              {count[0].icon}
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col
-                    xs={24}
-                    sm={24}
-                    md={24}
-                    lg={24}
-                    xl={24}
-                    className="mb-24"
-                  >
-                    <Card bordered={false} className="criclebox ">
-                      <div className="number">
-                        <Row align="middle" gutter={[24, 0]}>
-                          <Col xs={18}>
-                            <span>{count[1].today}</span>
-                            <Title
-                              style={{ fontSize: '20px', fontWeight: '700' }}
-                            >
-                              {count[1].title}{' '}
-                              <small className={count[1].bnb}>
-                                {count[1].persent}
-                              </small>
-                            </Title>
-                          </Col>
-                          <Col xs={6}>
-                            <div
-                              className="icon-box"
-                              style={{
-                                backgroundColor: '#3d85c6',
-                              }}
-                            >
-                              {count[1].icon}
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col
-                    xs={24}
-                    sm={24}
-                    md={24}
-                    lg={24}
-                    xl={24}
-                    className="mb-24"
-                  >
-                    <Card bordered={false} className="criclebox ">
-                      <div className="number">
-                        <Row align="middle" gutter={[24, 0]}>
-                          <Col xs={18}>
-                            <span>{count[2].today}</span>
-                            <Title
-                              style={{ fontSize: '20px', fontWeight: '700' }}
-                            >
-                              {count[2].title}{' '}
-                              <small className={count[2].bnb}>
-                                {count[2].persent}
-                              </small>
-                            </Title>
-                          </Col>
-                          <Col xs={6}>
-                            <div
-                              className="icon-box"
-                              style={{
-                                backgroundColor: '#3d85c6',
-                              }}
-                            >
-                              {count[2].icon}
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col
-                    xs={24}
-                    sm={24}
-                    md={24}
-                    lg={24}
-                    xl={24}
-                    className="mb-24"
-                  >
-                    <Card bordered={false} className="criclebox ">
-                      <div className="number">
-                        <Row align="middle" gutter={[24, 0]}>
-                          <Col xs={18}>
-                            <span>{count[3].today}</span>
-                            <Title
-                              style={{ fontSize: '20px', fontWeight: '700' }}
-                            >
-                              {count[3].title}{' '}
-                              <small className={count[3].bnb}>
-                                {count[3].persent}
-                              </small>
-                            </Title>
-                          </Col>
-                          <Col xs={6}>
-                            <div
-                              className="icon-box"
-                              style={{
-                                backgroundColor: '#3d85c6',
-                              }}
-                            >
-                              {count[3].icon}
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Card>
-                  </Col>
+                  {count.map((item, index) => (
+                    <CustomItem key={index} data={item} />
+                  ))}
                 </Row>
               </Col>
             </Row>
@@ -777,12 +402,12 @@ function Home() {
                 <Card bordered={false} className="criclebox cardbody h-full">
                   <div className="project-ant">
                     <div>
-                      <Title level={5}>Đơn hàng gần đây</Title>
+                      <Title level={5}>Recent orders</Title>
                     </div>
                     <div className="ant-filtertabs">
                       <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
                         <Button onClick={() => navigate('/orders')}>
-                          Xem tất cả
+                          See all
                         </Button>
                       </div>
                     </div>
@@ -808,11 +433,11 @@ function Home() {
                         color: '#2b3445',
                       }}
                     >
-                      Sản phẩm đã bán
+                      Product sold
                     </Title>
                     <div className="ant-filtertabs">
                       <div className="antd-pro-pages-dashboard-analysis-style-salesExtra">
-                        <Button>Xem tất cả</Button>
+                        <Button>See all</Button>
                       </div>
                     </div>
                   </div>

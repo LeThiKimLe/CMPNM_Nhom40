@@ -9,113 +9,19 @@ import {
   Typography,
   Table,
   Spin,
-  notification,
   Tag,
+  Space
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { EditOutlined } from "@ant-design/icons";
 
 import { customListOrder } from '../../utils/custom-order';
 
-import { SearchOutlined, EditOutlined } from '@ant-design/icons';
-
 const { Text, Title } = Typography;
-const paymentStatusList = [
-  {
-    name: 'Chưa thanh toán',
-    value: 'pending',
-    color: '#5ba6a6',
-  },
-  {
-    name: 'Đã thanh toán',
-    value: 'completed',
-    color: '#b6d7a8',
-  },
-  {
-    name: 'Hủy đơn',
-    value: 'cancelled',
-    color: '#ea9999',
-  },
-  {
-    name: 'Đã hoàn tiền',
-    value: 'refund',
-    color: '#b4a7d6',
-  },
-];
-const orderStatusList = [
-  {
-    key: 'pending',
-    value: 'Chờ xác nhận',
-    color: '#5ba6a6',
-  },
-  {
-    key: 'packed',
-    value: 'Đã đóng gói',
-    color: '#6fa8dc',
-  },
-  {
-    key: 'shipping',
-    value: 'Đang giao hàng',
-    color: '#ffe599',
-  },
-  {
-    key: 'delivered',
-    value: 'Đã giao hàng',
-    color: '#b6d7a8',
-  },
-  {
-    key: 'cancelled',
-    value: 'Đã hủy',
-    color: '#ea9999',
-  },
-  {
-    key: 'refund',
-    value: 'Trả hàng',
-    color: '#b4a7d6',
-  },
-];
-const columns = [
-  {
-    title: 'Mã đơn',
-    dataIndex: 'id',
-    key: 'id',
-  },
-  {
-    title: 'Số lượng sản phẩm',
-    key: 'amount',
-    dataIndex: 'amount',
-    width: '5%',
-  },
-  {
-    title: 'Ngày đặt hàng',
-    dataIndex: 'orderDate',
-    key: 'orderDate',
-    width: '5%',
-  },
-  {
-    title: 'Địa chỉ giao',
-    dataIndex: 'address',
-    key: 'address',
-    width: '30%',
-  },
-  {
-    title: 'Trạng thái thanh toán',
-    key: 'paymentStatus',
-    dataIndex: 'paymentStatus',
-    width: '5%',
-  },
-  {
-    title: 'Trạng thái đơn',
-    key: 'orderStatus',
-    dataIndex: 'orderStatus',
-    width: '5%',
-  },
-  {
-    title: 'Tổng tiền',
-    key: 'totalAmount',
-    dataIndex: 'totalAmount',
-    width: '10%',
-  },
-];
+
+const { paymentStatusList,
+  orderStatusList, } = require('./column-name');
+
 
 function Orders() {
   const dispatch = useDispatch();
@@ -123,31 +29,10 @@ function Orders() {
   const order = useSelector((state) => state.order);
   const { orderList } = order;
   const [listOrder, setListOrder] = useState(orderList);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(true);
-  const onSelectChange = (newSelectedRowKeys) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
 
-  const handleEditOrder = () => {
-    console.log(selectedRowKeys);
-    if (selectedRowKeys.length === 0) {
-      notification.error({
-        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
-        placement: 'top',
-      });
-    } else if (selectedRowKeys.length > 1) {
-      notification.error({
-        message: 'Vui lòng chỉ chọn một trường để chỉnh sửa',
-        placement: 'top',
-      });
-    } else {
-      navigate(`/orders/edit/${selectedRowKeys[0]}`);
-    }
+  const handleEditOrder = (id) => {
+    navigate(`/orders/edit/${id}`);
   };
 
   const fetchOrders = useCallback(async () => {
@@ -165,7 +50,59 @@ function Orders() {
       console.log(error);
     }
   }, [dispatch]);
-
+  const columns = [
+    {
+      title: 'Code',
+      dataIndex: 'id',
+      key: 'id',
+      width: '30%'
+    },
+    {
+      title: 'Product quantity',
+      key: 'amount',
+      dataIndex: 'amount',
+      width: '5%',
+    },
+    {
+      title: 'Order date',
+      dataIndex: 'orderDate',
+      key: 'orderDate',
+      width: '5%',
+    },
+    {
+      title: 'Delivery address',
+      dataIndex: 'address',
+      key: 'address',
+      width: '30%',
+    },
+    {
+      title: 'Payment status',
+      key: 'paymentStatus',
+      dataIndex: 'paymentStatus',
+      width: '5%',
+    },
+    {
+      title: 'Status',
+      key: 'orderStatus',
+      dataIndex: 'orderStatus',
+      width: '5%',
+    },
+    {
+      title: 'Total amount',
+      key: 'totalAmount',
+      dataIndex: 'totalAmount',
+      width: '10%',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+          <button className="edit-button" onClick={() => handleEditOrder(record.key)}>
+            <EditOutlined/>
+          </button>
+      ),
+    }
+  ];
   useEffect(() => {
     setLoading(true);
     fetchOrders();
@@ -250,48 +187,12 @@ function Orders() {
     } else {
       return [];
     }
+
   }, [listOrder]);
 
   return (
     <div className="tabled">
       <Row gutter={[24, 0]}>
-        <Col xs="24" xl={24}>
-          <Title level={3}>Danh sách đơn hàng</Title>
-        </Col>
-        <Col xs="24" xl={24}>
-          <Row
-            gutter={[32, 16]}
-            style={{ marginTop: '10px', marginBottom: '20px' }}
-          >
-            <Col>
-              <Button
-                style={{
-                  background: '#FFB266',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<SearchOutlined />}
-              >
-                Tìm kiếm
-              </Button>
-            </Col>
-
-            <Col>
-              <Button
-                style={{
-                  background: '#0066CC',
-                  color: 'white',
-                  borderRadius: '10px',
-                }}
-                icon={<EditOutlined />}
-                onClick={handleEditOrder}
-              >
-                Chỉnh sửa
-              </Button>
-            </Col>
-          </Row>
-        </Col>
-
         <Col xs="24" xl={24}>
           <div className="table-responsive" style={{ borderRadius: '10px' }}>
             {loading ? (
@@ -307,7 +208,6 @@ function Orders() {
               </div>
             ) : (
               <Table
-                rowSelection={rowSelection}
                 columns={columns}
                 dataSource={data}
                 pagination={true}

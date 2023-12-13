@@ -555,7 +555,7 @@ const getOrder = (req, res) => {
   Order.findOne({ _id: id })
     .populate(
       'items.productId',
-      '_id name productPictures salePrice color detailsProduct regularPrice category'
+      '_id name productPictures salePrice color ram storage regularPrice category'
     )
     .lean()
     .exec((error, order) => {

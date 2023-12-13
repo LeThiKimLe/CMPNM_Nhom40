@@ -21,36 +21,37 @@ import OrderDetailItem from './order-detail-item';
 import { formatThousand } from '../../utils';
 import { customOrderStatusList } from '../../utils/custom-order';
 const { Step } = Steps;
+const { Title } = Typography;
 
 const orderStatusList = [
   {
     key: 'pending',
-    value: 'Chờ xác nhận',
+    value: 'Waiting for confirmation',
     color: '#eeeeee',
   },
   {
     key: 'packed',
-    value: 'Đã đóng gói',
+    value: 'Packaged',
     color: '#6fa8dc',
   },
   {
     key: 'shipping',
-    value: 'Đang giao hàng',
+    value: 'Delivery',
     color: '#ffe599',
   },
   {
     key: 'delivered',
-    value: 'Đã giao hàng',
+    value: 'Delivered',
     color: '#b6d7a8',
   },
   {
     key: 'cancelled',
-    value: 'Đã hủy',
+    value: 'Canceled',
     color: '#ea9999',
   },
   {
     key: 'refund',
-    value: 'Trả hàng',
+    value: 'Return',
     color: '#b4a7d6',
   },
 ];
@@ -111,7 +112,7 @@ const EditOrder = () => {
       .unwrap()
       .then(() => {
         notification.success({
-          message: 'Cập nhật trạng thái đơn hàng thành công',
+          message: 'Update order status successfully!',
           placement: 'top',
         });
         dispatch(orderThunk.getOrder(orderId))
@@ -141,11 +142,6 @@ const EditOrder = () => {
 
   return (
     <div className="tabled">
-      <Row gutter={[24, 0]}>
-        <Col xs="24" xl={24}>
-          <Typography.Title level={3}>Chi tiết đơn hàng</Typography.Title>
-        </Col>
-      </Row>
       {order.loading ? (
         <div
           style={{
@@ -170,37 +166,38 @@ const EditOrder = () => {
             }}
           >
             <Col span={24}>
+              <Title level={3}>Order detail</Title>
               <Row gutter={[8, 0]}>
                 <Col>
                   <Typography.Text
-                    style={{ fontSize: '14px', color: '#7d879c' }}
+                      style={{ fontSize: '14px', color: '#7d879c' }}
                   >
-                    Mã đơn hàng:
+                    Code orders:
                   </Typography.Text>
                 </Col>
                 <Col>
                   <Typography.Text
-                    style={{ fontSize: '14px', color: '#2b3445' }}
+                      style={{ fontSize: '14px', color: '#2b3445' }}
                   >
                     {orderId}
                   </Typography.Text>
                 </Col>
                 <Col style={{ marginLeft: '20px' }}>
                   <Typography.Text
-                    style={{ fontSize: '14px', color: '#7d879c' }}
+                      style={{ fontSize: '14px', color: '#7d879c' }}
                   >
-                    Ngày đặt hàng:
+                    Order date:
                   </Typography.Text>
                 </Col>
                 <Col>
                   <Typography.Text
-                    style={{ fontSize: '14px', color: '#2b3445' }}
+                      style={{ fontSize: '14px', color: '#2b3445' }}
                   >
                     {orderSelected.orderStatus
-                      ? new Date(
-                          orderSelected.orderStatus[0].date
+                        ? new Date(
+                            orderSelected.orderStatus[0].date
                         ).toLocaleDateString()
-                      : null}
+                        : null}
                   </Typography.Text>
                 </Col>
               </Row>
@@ -212,16 +209,16 @@ const EditOrder = () => {
               >
                 <Col>
                   <Typography.Text
-                    style={{ fontSize: '14px', color: '#7d879c' }}
+                      style={{ fontSize: '14px', color: '#7d879c' }}
                   >
-                    Trạng thái đơn hàng:
+                    Order status:
                   </Typography.Text>
                 </Col>
                 <Col gutter={[8, 0]}>
                   <Typography.Text style={{ fontSize: '14px', color: 'black' }}>
                     {orderSelected.paymentStatus === 'completed'
-                      ? 'Đã thanh toán'
-                      : 'Chưa thanh toán'}
+                        ? 'Paid'
+                        : 'Unpaid'}
                   </Typography.Text>
                 </Col>
               </Row>
@@ -285,7 +282,7 @@ const EditOrder = () => {
                     <Typography.Text
                       style={{ fontSize: '14px', color: '#7d879c' }}
                     >
-                      Cập nhật trạng thái đơn hàng:
+                      Update order status:
                     </Typography.Text>
                   </Col>
                   <Col>
@@ -305,7 +302,7 @@ const EditOrder = () => {
                         }}
                         onClick={handleUpdateStatus}
                       >
-                        Cập nhật
+                        Update
                       </Button>
                     </div>
                   </Col>
@@ -353,7 +350,7 @@ const EditOrder = () => {
                       marginBottom: '10px',
                     }}
                   >
-                    Địa chỉ giao hàng:
+                    Delivery address:
                   </Typography.Text>
                 </Row>
                 <Row>
@@ -384,7 +381,7 @@ const EditOrder = () => {
                       marginBottom: '10px',
                     }}
                   >
-                    Phương thức thanh toán:
+                    Payment methods:
                   </Typography.Text>
                 </Row>
                 <Row>
@@ -393,10 +390,10 @@ const EditOrder = () => {
                     strong
                   >
                     {orderSelected.paymentType === 'paypal'
-                      ? 'Thanh toán qua ví điện tử Paypal'
-                      : orderSelected.paymentType === 'momo'
-                      ? 'Thanh toán qua ví điện tử Momo'
-                      : ' Thanh toán khi nhận hàng'}
+                        ? 'Payment via Paypal e-wallet'
+                        : orderSelected.paymentType === 'momo'
+                            ? 'Payment via Momo e-wallet'
+                            : ' Payment on delivery'}
                   </Typography.Text>
                 </Row>
               </div>
@@ -420,7 +417,7 @@ const EditOrder = () => {
                     <Typography.Text
                       style={{ fontSize: '14px', color: '#7d879c' }}
                     >
-                      Tổng tiền hàng:
+                      Total cost:
                     </Typography.Text>
                   </Col>
                   <Col>
@@ -444,7 +441,7 @@ const EditOrder = () => {
                     <Typography.Text
                       style={{ fontSize: '14px', color: '#7d879c' }}
                     >
-                      Tổng phí vận chuyển:
+                      Total shipping fee:
                     </Typography.Text>
                   </Col>
                   <Col>
@@ -464,7 +461,7 @@ const EditOrder = () => {
                     <Typography.Text
                       style={{ fontSize: '14px', color: '#7d879c' }}
                     >
-                      Tổng giảm phí vận chuyển:
+                      Total shipping fee reduction:
                     </Typography.Text>
                   </Col>
                   <Col>
@@ -490,7 +487,7 @@ const EditOrder = () => {
                       style={{ fontSize: '14px', color: '#7d879c' }}
                       strong
                     >
-                      Tổng cộng:
+                      Total:
                     </Typography.Text>
                   </Col>
                   <Col>

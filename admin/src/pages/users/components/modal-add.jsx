@@ -30,11 +30,11 @@ const AddUserModal = (props) => {
   };
   const options = [
     {
-      label: 'Quảng trị viên',
+      label: 'Admin',
       value: 'admin',
     },
     {
-      label: 'Người dùng',
+      label: 'User',
       value: 'user',
     },
   ];
@@ -52,7 +52,7 @@ const AddUserModal = (props) => {
         width={600}
         footer={null}
         open={visible}
-        title="Thêm mới tài khoản"
+        title="Add new user"
         onCancel={onCancel}
       >
         <Form
@@ -67,40 +67,40 @@ const AddUserModal = (props) => {
               {' '}
               <Form.Item
                 className="username"
-                label="Tên"
+                label="First name"
                 style={{ fontWeight: '600' }}
                 name="firstName"
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên!',
+                    message: 'Please enter first name!',
                   },
                 ]}
                 hasFeedback
               >
                 <Input
                   style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                  placeholder="Tên"
+                  placeholder="First name"
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 className="username"
-                label="Họ"
+                label="Last name"
                 style={{ fontWeight: '600' }}
                 name="lastName"
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập họ!',
+                    message: 'Please enter lastname!',
                   },
                 ]}
                 hasFeedback
               >
                 <Input
                   style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-                  placeholder="Họ"
+                  placeholder="Last name"
                 />
               </Form.Item>
             </Col>
@@ -114,11 +114,11 @@ const AddUserModal = (props) => {
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập địa chỉ email!',
+                message: 'Please enter email address!',
               },
               {
                 type: 'email',
-                message: 'Vui lòng nhập đúng địa chỉ email',
+                message: 'Please enter the correct email address!',
               },
             ]}
             hasFeedback
@@ -130,16 +130,16 @@ const AddUserModal = (props) => {
           </Form.Item>
           <Form.Item
             className="username"
-            label="Số điện thoại"
+            label="Phone number"
             style={{ fontWeight: '600' }}
             name="contactNumber"
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập số điện thoại!',
+                message: 'Please enter phone number!',
               },
               {
-                message: 'Vui lòng nhập đúng số điện thoại',
+                message: 'Please enter the correct phone number!',
                 pattern: new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g),
               },
             ]}
@@ -147,12 +147,12 @@ const AddUserModal = (props) => {
           >
             <Input
               style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-              placeholder="Số điện thoại"
+              placeholder="Phone number"
             />
           </Form.Item>
           <Form.Item
             className="username"
-            label="Quyền"
+            label="Role"
             name="roles"
             style={{ fontWeight: '600' }}
             hasFeedback
@@ -186,43 +186,43 @@ const AddUserModal = (props) => {
 
           <Form.Item
             className="username"
-            label="Mật khẩu"
+            label="Password"
             name="password"
             style={{ fontWeight: '600' }}
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập mật khẩu!',
+                message: 'Please enter password!',
               },
               {
                 min: 6,
-                message: 'Mật khẩu phải ít nhất 6 ký tự',
+                message: 'Password must be at least 6 characters!',
               },
             ]}
             hasFeedback
           >
             <Input.Password
               style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-              placeholder="Mật khẩu"
+              placeholder="Password"
             />
           </Form.Item>
           <Form.Item
             className="username"
-            label="Nhập lại mật khẩu"
+            label="Confirm password"
             name="confirmPassword"
             style={{ fontWeight: '600' }}
             dependencies={['password']}
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập lại mật khẩu!',
+                message: 'Please re-enter your password!',
               },
               ({ getFieldValue }) => ({
                 validator(rule, value) {
                   if (!value || getFieldValue('password') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject('Mật khẩu không khớp!');
+                  return Promise.reject('Password incorrect!');
                 },
               }),
             ]}
@@ -230,7 +230,7 @@ const AddUserModal = (props) => {
           >
             <Input.Password
               style={{ border: '1px solid #C0C0C0', borderRadius: '10px' }}
-              placeholder="Nhập lại mật khẩu"
+              placeholder="Confirm password"
             />
           </Form.Item>
           <Form.Item
@@ -251,28 +251,15 @@ const AddUserModal = (props) => {
           >
             <Button
               htmlType="submit"
-              style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
-                background: '#40E0D0',
-                color: 'white',
-                width: '30%',
-                marginRight: '10px',
-              }}
+              className={'add-button'}
             >
-              Tạo
+              Create
             </Button>
             <Button
               onClick={handleCancel}
-              style={{
-                border: '1px solid #C0C0C0',
-                borderRadius: '10px',
-                background: '#FF6347',
-                color: 'white',
-                width: '30%',
-              }}
+                className={"delete-button"}
             >
-              Hủy
+              Cancel
             </Button>
           </div>
         </Form>

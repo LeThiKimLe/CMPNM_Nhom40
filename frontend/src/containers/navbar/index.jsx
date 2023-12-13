@@ -157,7 +157,7 @@ const Navbar = () => {
                 {suggestions.map((suggestion, key) => {
                   console.log(suggestion);
                   const product = suggestion.groups[0].items[0];
-                  const category = product.category.slug;
+                  const category = product.category._id;
                   const {
                     ram,
                     storage,

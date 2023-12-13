@@ -32,29 +32,29 @@ export const customOrderStatusList = (orderStatusList) => {
     options = [
       {
         value: 'packed',
-        label: 'Đã đóng gói',
+        label: 'Packaged',
       },
       {
         value: 'cancelled',
-        label: 'Đã hủy',
+        label: 'Canceled',
       },
     ];
   } else if (size > 1 && orderStatusList[size - 1].type == 'packed') {
     options = [
       {
         value: 'shipping',
-        label: 'Đang giao hàng',
+        label: 'Delivery',
       },
     ];
   } else if (size > 1 && orderStatusList[size - 1].type == 'shipping') {
     options = [
       {
         value: 'delivered',
-        label: 'Đã giao hàng',
+        label: 'Delivered',
       },
       {
         value: 'refund',
-        label: 'Đã trả hàng',
+        label: 'Returned',
       },
     ];
   }

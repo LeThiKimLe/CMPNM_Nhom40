@@ -1,6 +1,5 @@
 import { Modal, Form, Button, Upload, Input, Spin, Switch } from 'antd';
 import ImgCrop from 'antd-img-crop';
-import { UploadOutlined } from '@ant-design/icons';
 import React from 'react';
 
 const EditCategoryModal = (props) => {
