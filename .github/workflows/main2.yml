@@ -19,13 +19,13 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: yarn install
+        run: cd frontend && yarn install
 
       - name: Set CI environment variable
         run: echo "CI=false" >> $GITHUB_ENV
         
       - name: Build
-        run: cd frontend && yarn run build
+        run:  yarn run build
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
