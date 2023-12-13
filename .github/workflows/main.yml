@@ -29,7 +29,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # SSH into EC2 and execute commands
-            ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
+            ssh -T ${{ secrets.SSH_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
               # Remove all files and directories in the destination folder
               rm -rf /home/${{ secrets.SSH_USERNAME }}/app/backend/*
           
