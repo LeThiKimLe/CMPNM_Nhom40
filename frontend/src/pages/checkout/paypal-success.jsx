@@ -95,7 +95,7 @@ const PaypalSuccessPage = () => {
                     spacing={2}
                   >
                     <MDTypography variant="h4" color="primary">
-                      {`Đơn hàng có mã ${orderId} của bạn đã hoàn thành!`}
+                      {`Your order with code ${orderId} has been completed!`}
                     </MDTypography>
                     <MDTypography variant="body1" color="dark">
                       You will receive a confirmation email with your order

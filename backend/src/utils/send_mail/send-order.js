@@ -4,7 +4,6 @@ const sendEmail = require('./send-mail');
 const customizePrice = (num) =>
   num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 const sendOrderConfirm = async (orderData) => {
-  console.log('orderData', orderData);
   const {
     email,
     address,
@@ -13,80 +12,73 @@ const sendOrderConfirm = async (orderData) => {
     subTotal,
     freeShip,
     paymentType,
-    // createdAt,
     items,
     _id,
   } = orderData;
 
   const { mobileNumber, provinceName, districtName, wardName } = address;
   let payment;
-
   if (paymentType === 'cod') {
-    payment = 'Thanh toán khi nhận hàng';
+    payment = 'Pay upon delivery';
   } else if (paymentType === 'momo') {
-    payment = 'Thanh toán qua ví MoMo';
+    payment = 'Payment via MoMo wallet';
   } else {
-    payment = 'Thanh toán qua ví Paypal';
+    payment = 'Pay via Paypal wallet';
   }
 
   const dataProduct = items.map((item) => {
     const { productId, price, purchasedQty } = item;
-    const { ram, storage } = productId.detailsProduct;
+    const { ram, storage, name } = productId;
     return {
-      Tên: `${productId.name}`,
+      Name: `${name}`,
       '': `${ram} ${storage} x${purchasedQty}`,
-      Giá: `${customizePrice(price)}đ`,
+      Price: `${customizePrice(price)}đ`,
     };
   });
   const mailGenerator = new Mailgen({
     theme: 'neopolitan',
     product: {
       // Appears in header & footer of e-mails
-      name: 'MT Shop',
+      name: 'Nhom 50',
       link: 'http://localhost:3002',
     },
   });
   const emailConfig = {
     body: {
       name: `${address.name}`,
-      intro: `Đơn hàng của bạn có mã: ${_id}`,
+      intro: `Your order has code: ${_id}`,
       table: [
         {
-          //
-          // Optionally, add a title to each table.
-          title: `CHI TIẾT ĐƠN HÀNG`,
+          title: `ORDER DETAILS`,
           data: dataProduct,
           columns: {
-            // Optionally, customize the column widths
             customWidth: {
-              Tên: '50%',
-              Giá: '10%',
+              Name: '50%',
+              Price: '10%',
             },
-            // Optionally, change column text alignment
             customAlignment: {
-              Giá: 'right',
+              Price: 'right',
             },
           },
         },
         {
-          // Optionally, add a title to each table.
-          title: 'CHI TIẾT ĐƠN GIÁ',
+          title: 'UNIT PRICE DETAILS',
           data: [
             {
-              '': 'Tổng tiền hàng',
-              Giá: `${customizePrice(subTotal)}đ`,
+              '': 'Total cost',
+              Price: `${customizePrice(subTotal)}đ`,
             },
             {
-              '': 'Tổng phí vận chuyển',
-              Giá: `${customizePrice(shipAmount)}đ`,
+              '': 'Total shipping fee',
+              Price: `${customizePrice(shipAmount)}đ`,
             },
             {
-              '': 'Tổng giảm phí vận chuyển',
-              Giá: `-${customizePrice(freeShip)}đ`,
+              '': 'Total shipping fee reduction',
+              Price: `-${customizePrice(freeShip)}đ`,
             },
             {
-              '': 'Tổng thanh toán',
-              Giá: `${customizePrice(totalAmount)}đ`,
+              '': 'Total payment',
+              Price: `${customizePrice(totalAmount)}đ`,
             },
           ],
           columns: {
@@ -95,56 +87,55 @@ const sendOrderConfirm = async (orderData) => {
             },
             // Optionally, change column text alignment
             customAlignment: {
-              Giá: 'right',
+              Price: 'right',
             },
           },
         },
         {
-          title: 'THÔNG TIN VẬN CHUYỂN',
+          title: 'SHIPPING INFORMATION',
           data: [
             {
-              'Địa chỉ giao hàng': `${address.name} ${mobileNumber}`,
-              'Phương thức thanh toán': `${payment}`,
+              'Delivery address': `${address.name} ${mobileNumber}`,
+              'Payment method': `${payment}`,
             },
             {
-              'Địa chỉ giao hàng': `${wardName}`,
-              'Phương thức thanh toán': '',
+              'Delivery address': `${wardName}`,
+              'Payment methods': '',
             },
             {
-              'Địa chỉ giao hàng': `${districtName}, ${provinceName}`,
-              'Phương thức thanh toán': '',
+              'Delivery address': `${districtName}, ${provinceName}`,
+              'Payment methods': '',
             },
           ],
           columns: {
             customWidth: {
-              'Địa chỉ giao hàng': '60%',
+              'Delivery address': '60%',
             },
             // Optionally, change column text alignment
             customAlignment: {
-              'Địa chỉ giao hàng': 'left',
+              'Delivery address': 'left',
             },
           },
         },
       ],
       action: {
         instructions:
-          'Bạn có thể kiểm tra trạng thái đơn đặt hàng của mình tại đây:',
+          'You can check your order status here:',
         button: {
           color: '#3869D4',
-          text: 'Xem chi tiết',
+          text: 'See details',
           link: `http://localhost:3002/user/order/${_id}`,
         },
       },
-      outro: 'Cảm ơn bạn đã mua hàng.',
+      outro: 'Thank you for your purchase.',
     },
   };
 
   const emailBody = mailGenerator.generate(emailConfig);
   sendEmail({
     to: email,
-    subject: 'XÁC NHẬN ĐƠN HÀNG',
+    subject: 'CONFIRM ORDER',
     html: emailBody,
   });
 };
-// Configure mailgen by setting a theme and your product info
 module.exports = sendOrderConfirm;

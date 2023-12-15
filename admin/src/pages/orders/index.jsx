@@ -2,33 +2,20 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import orderThunk from '../../features/order/order.service';
 import { formatThousand } from '../../utils';
-import {
-  Button,
-  Row,
-  Col,
-  Typography,
-  Table,
-  Spin,
-  Tag,
-  Space
-} from 'antd';
+import { Button, Row, Col, Typography, Table, Spin, Tag, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined } from '@ant-design/icons';
 
 import { customListOrder } from '../../utils/custom-order';
 
 const { Text, Title } = Typography;
 
-const { paymentStatusList,
-  orderStatusList, } = require('./column-name');
-
+const { paymentStatusList, orderStatusList } = require('./column-name');
 
 function Orders() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const order = useSelector((state) => state.order);
-  const { orderList } = order;
-  const [listOrder, setListOrder] = useState(orderList);
+  const [listOrder, setListOrder] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleEditOrder = (id) => {
@@ -38,13 +25,13 @@ function Orders() {
   const fetchOrders = useCallback(async () => {
     try {
       const value = await dispatch(orderThunk.getAllOrder()).unwrap();
+      console.log('orders', value);
       if (value.list[1].length === 0) {
         setListOrder([]);
       } else {
         const newListOrder = customListOrder(value.list[1], value.list[0]);
         setListOrder(newListOrder);
       }
-
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -55,7 +42,7 @@ function Orders() {
       title: 'Code',
       dataIndex: 'id',
       key: 'id',
-      width: '30%'
+      width: '30%',
     },
     {
       title: 'Product quantity',
@@ -97,11 +84,14 @@ function Orders() {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-          <button className="edit-button" onClick={() => handleEditOrder(record.key)}>
-            <EditOutlined/>
-          </button>
+        <button
+          className="edit-button"
+          onClick={() => handleEditOrder(record.key)}
+        >
+          <EditOutlined />
+        </button>
       ),
-    }
+    },
   ];
   useEffect(() => {
     setLoading(true);
@@ -187,7 +177,6 @@ function Orders() {
     } else {
       return [];
     }
-
   }, [listOrder]);
 
   return (
@@ -207,11 +196,7 @@ function Orders() {
                 <Spin size="large" />
               </div>
             ) : (
-              <Table
-                columns={columns}
-                dataSource={data}
-                pagination={true}
-              />
+              <Table columns={columns} dataSource={data} pagination={true} />
             )}
           </div>
         </Col>

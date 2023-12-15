@@ -210,9 +210,7 @@ export const customeListOrderProductsPaypal = (products) => {
   let list = [];
 
   products.map((item) => {
-    const { ram, storage } = item.detailsProduct;
-    const { name, salePrice, quantity } = item;
-    const colorName = getColorProduct(item, colorList);
+    const { name, salePrice, quantity, ram, storage, color } = item;
 
     const newItem = {
       name,
@@ -220,7 +218,7 @@ export const customeListOrderProductsPaypal = (products) => {
       storage,
       salePrice,
       quantity,
-      colorName,
+      colorName: color,
     };
     list.push(newItem);
   });

@@ -10,6 +10,8 @@ const { Response, ServerError } = require('../../utils');
 const addAddress = (req, res) => {
   const { address } = req.body.data;
   const { userId } = req.user;
+  console.log("address", address);
+  console.log("userid", userId);
   // find address default
   if (!address.isDefault) {
     UserAddress.updateOne(

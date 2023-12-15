@@ -195,7 +195,7 @@ const VerifyEmail = () => {
                         color="info"
                         onClick={onClickHandler}
                       >
-                        Gửi lại
+                        Resend
                       </MDButton>
                     </Stack>
                   </MDBox>
@@ -226,7 +226,7 @@ const VerifyEmail = () => {
                   verticalAlign="middle"
                   sx={{ marginBottom: '30px' }}
                 >
-                  Bạn đã kích hoạt tài khoản thành công!
+                  You have successfully activated your account!
                 </MDTypography>
                 <MDButton
                   variant="contained"
@@ -234,7 +234,7 @@ const VerifyEmail = () => {
                   to="/sign-in"
                   color="info"
                 >
-                  Đăng nhập
+                  Login
                 </MDButton>
               </div>
             )}

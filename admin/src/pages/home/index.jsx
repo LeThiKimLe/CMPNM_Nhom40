@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Col, Row, Typography, Card, Button, Spin, Table, Tag } from 'antd';
 import {
   faSackDollar,

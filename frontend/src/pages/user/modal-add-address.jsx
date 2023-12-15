@@ -50,8 +50,8 @@ const ModalAddAddress = (props) => {
   const [address, setAddress] = useState('');
 
   // * list id
-  const [provinceID, setProvinceID] = useState('');
-  const [districtID, setDistrictID] = useState('');
+  const [provinceId, setProvinceId] = useState('');
+  const [districtId, setDistrictId] = useState('');
   const [wardCode, setWardCode] = useState('');
   // * end list id
 
@@ -75,9 +75,9 @@ const ModalAddAddress = (props) => {
     setMobileNumber('');
     setAddress('');
     setListProvince([]);
-    setProvinceID('');
+    setProvinceId('');
     setProvinceName('');
-    setDistrictID('');
+    setDistrictId('');
     setDistrictName('');
     setWardCode('');
     setWardName('');
@@ -101,18 +101,18 @@ const ModalAddAddress = (props) => {
     const province = e.target.value;
     const provinceObject = _.find(listProvince, { ProvinceName: province });
     setProvinceName(provinceObject.ProvinceName);
-    setProvinceID(provinceObject.ProvinceID);
+    setProvinceId(provinceObject.ProvinceID);
     getAddressAPI.getAPIDistrict(provinceObject.ProvinceID).then((data) => {
       setListDistrict(data);
       setDistrictName('');
-      setDistrictID('');
+      setDistrictId('');
     });
   };
   const handleChangeDistrict = (e) => {
     const district = e.target.value;
     const provinceObject = _.find(listDistrict, { DistrictName: district });
     setDistrictName(provinceObject.DistrictName);
-    setDistrictID(provinceObject.DistrictID);
+    setDistrictId(provinceObject.DistrictID);
     getAddressAPI.getAPIWard(provinceObject.DistrictID).then((data) => {
       setListWard(data);
       setWardCode('');
@@ -128,12 +128,12 @@ const ModalAddAddress = (props) => {
   const handleAddAddress = (data) => {
     const addressData = {
       ...data,
-      provinceID,
-      districtID,
+      provinceId,
+      districtId,
       wardCode,
       isDefault: checked,
     };
-    console.log(addressData);
+    console.log('address data', addressData);
     dispatch(addressThunk.addAddressAPI({ address: addressData }))
       .unwrap()
       .then(() => {
