@@ -34,7 +34,7 @@ const CompareProducts = ({ open, onClose, products }) => {
   return (
     <Dialog maxWidth="xl" open={open} onClose={onClose}>
       <DialogTitle fullWidth={true} sx={{ textAlign: 'center' }}>
-        So sánh sản phẩm
+        Compare product
       </DialogTitle>
       <MDBox
         color="#000000"
