@@ -18,7 +18,7 @@ const { Order, Cart, UserAddress, Product } = require('../../models');
 const { Response, ServerError, Create } = require('../../utils/response');
 
 const sendOrderConfirm = require('../../utils/send_mail/send-order');
-
+// momo config 
 const partnerCode = 'MOMO';
 const accessKey = 'F8BBA842ECF85';
 const secretkey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
@@ -28,7 +28,12 @@ const orderInfo = 'pay with MoMo';
 const redirectUrl = 'http://localhost:3002/checkout/checkResponse';
 const ipnUrl = 'http://localhost:3000/api/order/checkResponse';
 const requestType = 'captureWallet';
+// const autoCapture = true;
 const extraData = '';
+const orderGroupId = '';
+const autoCapture = true;
+
+// end momo config 
 const exchangePrice = async (from, to) => {
   let url = '';
   if (to === 'USD') {
@@ -45,7 +50,7 @@ const exchangePrice = async (from, to) => {
 const paymentWithPaypal = async (req, res) => {
   const orderData = req.body.data;
 
-  const { subTotal, totalAmount, shipAmount, freeShip, items } = orderData;
+  const { subTotal, shipAmount, freeShip, items } = orderData;
   const {
     name,
     address,
@@ -67,7 +72,6 @@ const paymentWithPaypal = async (req, res) => {
     .toFixed(2)
     .toString();
 
-  console.log(totalPrice);
   const listProducts = items.map((item) => {
     const priceItem = (item.salePrice * exchange).toFixed(2).toString();
     return {
@@ -181,7 +185,6 @@ const getMonthlyRevenue = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 const paymentPaypalSuccess = (req, res) => {
   const { paymentId, payerId, total, shipping_discount, shipping, subtotal } =
     req.query;
@@ -238,7 +241,7 @@ const addOrderPaypal = (req, res) => {
           Order.findOne({ _id: data._id })
             .populate(
               'items.productId',
-              '_id name productPictures salePrice color detailsProduct regularPrice category'
+              '_id name productPictures salePrice color ram storage regularPrice category_path'
             )
             .lean()
             .exec((error, orderFull) => {
@@ -286,7 +289,7 @@ const addOrder = (req, res) => {
           Order.findOne({ _id: data._id })
             .populate(
               'items.productId',
-              '_id name productPictures salePrice color detailsProduct regularPrice category'
+              '_id name productPictures salePrice color ram storage regularPrice category_path'
             )
             .lean()
             .exec((error, orderFull) => {
@@ -315,10 +318,10 @@ const addOrder = (req, res) => {
     }
   });
 };
-
 // api momo
 const paymentWithMomo = (req, res) => {
   const { totalAmount } = req.body.data;
+  console.log("total", totalAmount)
   const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
   console.log(rawSignature);
   const signature = crypto
@@ -327,17 +330,21 @@ const paymentWithMomo = (req, res) => {
     .digest('hex');
   console.log('--------------------SIGNATURE----------------');
   console.log('chu ky', signature);
+
   const requestBody = JSON.stringify({
     partnerCode,
-    accessKey,
+    partnerName: "Test",
+    storeId: "MomoTestStore",
     requestId,
     amount: totalAmount,
     orderId,
     orderInfo,
     redirectUrl,
     ipnUrl,
-    extraData,
     requestType,
+    autoCapture,
+    extraData,
+    orderGroupId,
     signature,
     lang: 'en',
   });
@@ -348,10 +355,9 @@ const paymentWithMomo = (req, res) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(requestBody),
-    },
-    data: requestBody,
-  };
+      'Content-Length': Buffer.byteLength(requestBody)
+    }
+  }
   const reqChild = https.request(options, (resChild) => {
     console.log(`Status: ${resChild.statusCode}`);
     console.log(`Headers: ${JSON.stringify(resChild.headers)}`);
@@ -373,7 +379,6 @@ const paymentWithMomo = (req, res) => {
     console.log(`problem with request: ${e.message}`);
   });
   // write data to request body
-  console.log('Sending....');
   reqChild.write(requestBody);
   reqChild.end();
 };
@@ -430,7 +435,6 @@ const checkResponseMomo = (req, res) => {
           orderData.user = userId;
           orderData.paymentType = 'momo';
           orderData.paymentStatus = 'completed';
-          console.log('chay');
           const order = new Order(orderData);
           order.save(async (err, data) => {
             if (err) return res.status(400).json({ err });
@@ -439,7 +443,7 @@ const checkResponseMomo = (req, res) => {
               Order.findOne({ _id: data._id })
                 .populate(
                   'items.productId',
-                  '_id name productPictures salePrice color detailsProduct regularPrice category'
+                  '_id name productPictures salePrice color ram storage regularPrice category_path'
                 )
                 .lean()
                 .exec((error, orderFull) => {
@@ -537,10 +541,9 @@ const getAllOrder = async (req, res) => {
         )
         .populate(
           'items.productId',
-          '_id name productPictures salePrice detailsProduct'
+          '_id name productPictures salePrice detailsProduct ram storage'
         ),
     ]);
-
     Response(res, {
       list: [listUserAddress, listOrder],
     });
@@ -555,7 +558,7 @@ const getOrder = (req, res) => {
   Order.findOne({ _id: id })
     .populate(
       'items.productId',
-      '_id name productPictures salePrice color ram storage regularPrice category'
+      '_id name productPictures salePrice detailsProduct ram storage color category_path'
     )
     .lean()
     .exec((error, order) => {
@@ -615,7 +618,7 @@ const updateOrderStatus = (req, res) => {
         Order.findOne({ _id: orderId })
           .populate(
             'items.productId',
-            '_id name productPictures salePrice color detailsProduct regularPrice category quantitySold'
+            '_id name productPictures salePrice color detailsProduct regularPrice category_path quantitySold ram storage'
           )
           .lean()
           .exec((error, order) => {
@@ -650,7 +653,7 @@ const updateOrderStatus = (req, res) => {
         Order.findOne({ _id: orderId })
           .populate(
             'items.productId',
-            '_id name productPictures salePrice color detailsProduct regularPrice category'
+            '_id name productPictures salePrice color detailsProduct regularPrice category_path ram storage'
           )
           .lean()
           .exec((error, order) => {

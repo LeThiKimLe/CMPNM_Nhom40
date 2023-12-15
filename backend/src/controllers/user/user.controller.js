@@ -43,21 +43,33 @@ const oneDay = 60 * 60 * 24;
 const signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (user) return BadRequest(res, 'Email account has been registered!');
+    if (user) return BadRequest(res, 'Email đã được đăng ký tài khoản');
+    const userSize = await User.count();
     const { firstName, lastName, email, password } = req.body;
+    const verificationToken = crypto.randomBytes(40).toString('hex');
     let newUser;
+    const verifyDate = new Date(Date.now() + oneDay);
     // eslint-disable-next-line prefer-const
     newUser = new User({
       firstName,
       lastName,
       email,
       password,
-      isVerified,
+      verificationToken,
+      verifyDate,
     });
+    if (userSize === 0) {
+      newUser.roles = 'admin';
+    }
     // eslint-disable-next-line no-shadow,
     newUser.save(async (error, user) => {
       if (error) return ServerError(res, error.message);
       if (user) {
+        await sendVerificationEmail({
+          firstName,
+          email,
+          verificationToken,
+        });
         // nhận toàn bộ dư liệu của user
         return Create(res, {
           firstName,
@@ -72,30 +84,28 @@ const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).exec();
   if (!user) {
-    return BadRequest(res, 'Email account has not been registered!');
+    return BadRequest(res, 'Email chưa được đăng ký tài khoản');
   }
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return BadRequest(res, 'Please review your password!');
+    return BadRequest(res, 'Please review your password');
   }
   if (!user.isVerified) {
-    return Unauthenticated(res, 'Account has not been activated!');
+    return Unauthenticated(res, 'Account has not been activated');
   }
 
   const userData = createTokenUser(user);
 
   const accessToken = createAccessToken(userData);
   const newRefreshToken = createRefreshToken(userData);
-
   // Saving refreshToken with current user
   user.refreshToken = newRefreshToken;
-
   await user.save();
   // Creates Secure Cookie with refresh token
 
   Response(res, {
-    userId: userData.userId,
+    userData,
     accessToken,
   });
 };
@@ -154,7 +164,7 @@ const verifyEmail = (req, res) => {
       const now = new Date(Date.now()).getTime();
 
       if (user.verifyDate.getTime() < now) {
-        return BadRequest(res, 'Đường dẫn kích hoạt đã hết hạn!');
+        return BadRequest(res, 'Activation link has expired!');
       }
       user.isVerified = true;
       user.verified = Date.now();
@@ -164,7 +174,7 @@ const verifyEmail = (req, res) => {
         if (data) {
           return Response(
             res,
-            'Thành công! Tài khoản của ban đã được kích hoạt.'
+            'Success! Your account has been activated.'
           );
         }
       });
@@ -182,7 +192,7 @@ const reSendVerifyEmail = async (req, res) => {
   const email = req.body.data;
   User.findOne({ email }).exec(async (error, user) => {
     if (error) return ServerError(res, error.message);
-    if (!user) return NotFound(res, 'Tài khoản');
+    if (!user) return NotFound(res, 'Account');
     const verificationToken = crypto.randomBytes(40).toString('hex');
     const newUser = await User.findOne({ email });
 
@@ -207,7 +217,7 @@ const changePassword = async (req, res) => {
   const user = await User.findOne({ email: req.user.email });
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    return BadRequest(res, 'Vui lòng xem lại mật khẩu');
+    return BadRequest(res, 'Please review your password');
   }
   user
     .updatePassword(newPassword)

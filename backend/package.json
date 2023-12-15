@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@strapi/provider-email-nodemailer": "^4.15.5",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.41.0",
     "connect-mongo": "^5.0.0",

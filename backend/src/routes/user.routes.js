@@ -24,6 +24,7 @@ const {
 const {
   getProductsOption,
 } = require('../controllers/product/product.controller');
+
 const { authenticateUser } = require('../middlewares/authenticate');
 const { userCheckRole } = require('../middlewares/authorization');
 
