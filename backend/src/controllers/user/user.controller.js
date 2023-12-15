@@ -395,6 +395,86 @@ const getProduct = async (req, res) => {
   ]);
   return Response(res, { products: products[0].groups });
 };
+// const getAllData = async (req, res) => {
+//   try {
+//     const listCategory = await Category.find({}).lean().exec();
+//     const listBanner = await Banner.find({}).lean().exec();
+//     const products = await Product.aggregate([
+//       {
+//         $match: {
+//           active: true,
+//           category_path: { $exists: true, $ne: [] },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           name: 1,
+//           slug: 1,
+//           regularPrice: 1,
+//           detailsProduct: 1,
+//           productPictures: 1,
+//           sale: 1,
+//           salePrice: 1,
+//           ram: 1,
+//           storage: 1,
+//           category_path: { $arrayElemAt: ['$category_path', -1] },
+//           category_slug: 1,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: 'categories', // Assuming the collection name is 'categories'
+//           localField: 'category_path',
+//           foreignField: '_id',
+//           as: 'category',
+//         },
+//       },
+//       {
+//         $unwind: '$category',
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             category_path: '$category_path',
+//             ram: '$ram',
+//             storage: '$storage',
+//           },
+//           products: { $push: '$$ROOT' },
+//           category_slug: { $first: '$category.slug' },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: '$_id.category_path',
+//           groups: {
+//             $push: {
+//               _id: {
+//                 ram: '$_id.ram',
+//                 storage: '$_id.storage',
+//               },
+//               items: '$products',
+//               category_slug: '$category_slug',
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           category_path: '$_id',
+//           groups: 1,
+//         },
+//       },
+//     ]);
+
+//     return Response(res, {
+//       list: [listCategory, products, listBanner],
+//     });
+//   } catch (error) {
+//     ServerError(res);
+//   }
+// };
 const getAllData = async (req, res) => {
   try {
     const listCategory = await Category.find({}).lean().exec();
@@ -408,7 +488,7 @@ const getAllData = async (req, res) => {
       },
       {
         $project: {
-          _id: 0,
+          _id: 1, // Include the 'id' field in the projection
           name: 1,
           slug: 1,
           regularPrice: 1,
@@ -424,7 +504,7 @@ const getAllData = async (req, res) => {
       },
       {
         $lookup: {
-          from: 'categories', // Assuming the collection name is 'categories'
+          from: 'categories',
           localField: 'category_path',
           foreignField: '_id',
           as: 'category',
@@ -475,6 +555,7 @@ const getAllData = async (req, res) => {
     ServerError(res);
   }
 };
+
 
 const createReview = async (req, res) => {
   try {
