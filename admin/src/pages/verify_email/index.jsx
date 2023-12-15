@@ -35,7 +35,6 @@ function VerifyAccount() {
         style={{
           margin: 'auto',
           width: '50%',
-
           padding: '10px',
         }}
       >

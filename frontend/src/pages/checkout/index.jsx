@@ -195,6 +195,7 @@ const CheckOutPage = () => {
     setOpenModalAdd(false);
   };
   const getListService = async (to_district) => {
+    console.log('to_district', to_district);
     const response = await fetch(
       'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services',
       {
@@ -214,7 +215,6 @@ const CheckOutPage = () => {
 
     // update the state
     if (response.code === 200) {
-      //      const { service_id, short_name, service_type_id } = response.data;
       return response.data;
     }
   };
@@ -302,13 +302,12 @@ const CheckOutPage = () => {
   };
 
   const handleCancel = () => {
+    console.log('chay 1');
     setOpenModalAddress(false);
     setAddressIndex(addressIndexSelected);
   };
   const handleChangeAddress = () => {
-    if (addressIndexSelected === addressIndex) {
-      return;
-    } else {
+    if (addressIndexSelected !== addressIndex) {
       setAddressSelected(listAddress[addressIndex]);
       setAddressIndexSelected(addressIndex);
       localStorage.setItem(
@@ -344,7 +343,7 @@ const CheckOutPage = () => {
           .unwrap()
           .then((value) => {
             setTimeout(() => {
-              notification.success({ message: 'Đặt hàng thành công!' });
+              notification.success({ message: 'Checkout successfully!' });
               setCheckoutLoading(false);
               // navigation order-confirmation
               dispatch(cartActions.reset());
@@ -997,21 +996,6 @@ const CheckOutPage = () => {
                                 }}
                               >
                                 Payment via Paypal wallet
-                              </MDTypography>
-                            }
-                          />
-                          <FormControlLabel
-                            value={2}
-                            control={<BpRadio />}
-                            label={
-                              <MDTypography
-                                sx={{
-                                  fontWeight: '500',
-                                  fontSize: '13px',
-                                  color: '#323232',
-                                }}
-                              >
-                                Payment via Momo wallet
                               </MDTypography>
                             }
                           />

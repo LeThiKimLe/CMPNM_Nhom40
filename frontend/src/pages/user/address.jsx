@@ -23,7 +23,6 @@ const AddressPage = () => {
     dispatch(addressThunk.getAllAPI())
       .unwrap()
       .then((data) => {
-        console.log(data);
         if (data.list.length === 0) {
           setListAddress([]);
         } else {

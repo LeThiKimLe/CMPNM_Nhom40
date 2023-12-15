@@ -1,5 +1,8 @@
 export const customListOrder = (listOrder, listUserAddress) => {
   let newListOrder = [];
+  if (listOrder == null || listOrder.length == 0) {
+    return [];
+  }
   listOrder.map((item) => {
     const address = getAddressUser(listUserAddress, item.user, item.addressId);
     const newOrder = {
